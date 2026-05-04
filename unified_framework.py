@@ -108,55 +108,46 @@ class RadarEnvironment:
     
     def generate_with_jammer(self, jammer):
         """
-        使用指定的干扰器生成复合信号
-        
+        使用指定的干扰器生成复合信号（严格调用标准接口）。
+
         参数:
-            jammer: 干扰器实例，需有 generate 方法
-        
+            jammer: 干扰器实例，必须实现 generate(R_target, JSR_dB, noise_var) 方法
+
         返回:
-            radar_par: 字典，包含 Srt_matrix, St_base, 目标索引等
+            radar_par: 字典，包含 Srt_matrix, St_base, target_idx, jam_info
+
+        异常:
+            直接抛出干扰器调用时的异常，不做 try-except 吞没
         """
         # 生成目标信号
         St_base = self.generate_target_signal()
-        
-        # 调用干扰器的 generate 方法
-        # 假设干扰器需要目标距离和 JSR 等参数
-        # 这里简化处理，实际可能需要根据干扰器类型调整
-        try:
-            # 尝试使用干扰器的默认参数
-            J_compound, X_t, jam_info = jammer.generate(
-                R_target=self.radar_params['target_dist'],
-                JSR_dB=10,  # 默认干信比
-                noise_var=0.1
-            )
-        except Exception as e:
-            # 如果失败，尝试其他调用方式
-            print(f"干扰器生成失败: {e}")
-            # 生成一个简单的干扰信号作为备用
-            N = self.radar_params['N']
-            J_compound = np.zeros(N, dtype=complex)
-            jam_info = {}
-        
-        # 构建 Srt_matrix（假设干扰器返回的复合信号已经包含目标和干扰）
-        # 但为了通用性，我们可能需要在干扰器返回的信号基础上添加目标信号
-        # 这里假设干扰器返回的是复合信号（目标+干扰+噪声）
+
+        # 直接调用干扰器的标准 generate 方法
+        J_compound, X_t, jam_info = jammer.generate(
+            R_target=self.radar_params['target_dist'],
+            JSR_dB=self.radar_params.get('JSR_dB', 10),
+            noise_var=self.radar_params.get('noise_var', 0.1)
+        )
+
+        # 构建 Srt_matrix
         M = self.radar_params['M']
         N = self.radar_params['N']
         Srt_matrix = np.zeros((M, N), dtype=complex)
-        
+
         # 将复合信号放入矩阵（如果是单脉冲）
         if len(J_compound) >= N:
             Srt_matrix[0, :] = J_compound[:N]
         else:
             Srt_matrix[0, :len(J_compound)] = J_compound
-        
+
         # 构建雷达参数字典
         radar_par = self.radar_params.copy()
         radar_par['Srt_matrix'] = Srt_matrix
         radar_par['St_base'] = St_base
         radar_par['target_idx'] = self.target_idx
         radar_par['jam_info'] = jam_info
-        
+        radar_par['X_t'] = X_t
+
         return radar_par
     
     def generate_without_jammer(self, noise_level=0.5):
@@ -220,43 +211,18 @@ class RadarEnvironment:
 # 抗干扰处理器
 # =====================================================================
 class AntiJammingProcessor:
-    """加载并应用抗干扰算法"""
+    """加载并应用抗干扰算法（统一接口）"""
     
     def __init__(self, antijam_type='WLN'):
         self.antijam_type = antijam_type
         self.process_func = self._load_antijam_function()
     
     def _load_antijam_function(self):
-        """动态加载抗干扰函数"""
+        """通过统一适配器加载抗干扰函数"""
+        from anti_jamming.adapters import get_antijam_func
         try:
-            if self.antijam_type == 'WLN':
-                # 从 anti_jamming.wln_filter 导入 WLN 函数
-                from anti_jamming.wln_filter import WLN
-                return WLN
-            elif self.antijam_type == 'FrequencyDomainCanceller':
-                from anti_jamming.FrequencyDomainCanceller import FrequencyDomainCanceller
-                return FrequencyDomainCanceller
-            elif self.antijam_type == 'adapt_filter':
-                from anti_jamming.adapt_filter import adapt_filter
-                return adapt_filter
-            elif self.antijam_type == 'wave_agile':
-                from anti_jamming.wave_agile import WaveAgileRadar
-                return WaveAgileRadar
-            elif self.antijam_type == 'Frequency_agile':
-                from anti_jamming.Frequency_agile import FrequencyAgileRadar
-                return FrequencyAgileRadar
-            elif self.antijam_type == 'frft_filter':
-                from anti_jamming.frft_filter import frft_anti_jamming
-                return frft_anti_jamming
-            elif self.antijam_type == 'qpzh':
-                from anti_jamming.qpzh import SliceCombineJam
-                return SliceCombineJam
-            elif self.antijam_type == 'FastSlowTimeProcessor':
-                from anti_jamming.FastSlowTimeProcessor import FastSlowTimeProcessor
-                return FastSlowTimeProcessor
-            else:
-                raise ValueError(f"未知的抗干扰类型: {self.antijam_type}")
-        except ImportError as e:
+            return get_antijam_func(self.antijam_type)
+        except ValueError as e:
             print(f"无法加载抗干扰模块 {self.antijam_type}: {e}")
             # 返回一个空处理函数作为备用
             def dummy_processor(radar_par, **kwargs):
@@ -264,32 +230,16 @@ class AntiJammingProcessor:
             return dummy_processor
     
     def process(self, radar_par, **kwargs):
-        """应用抗干扰处理"""
-        # 创建适配的雷达参数字典，确保包含抗干扰函数所需的键
-        radar_par_adapted = radar_par.copy()
-        
-        # 确保存在抗干扰函数可能需要的键
-        if 'Srt_matrix' in radar_par_adapted and 'Srt_temp' not in radar_par_adapted:
-            radar_par_adapted['Srt_temp'] = radar_par_adapted['Srt_matrix']
-        if 'St_base' in radar_par_adapted and 'St1' not in radar_par_adapted:
-            radar_par_adapted['St1'] = radar_par_adapted['St_base']
-        
-        # 调用抗干扰函数
-        # 注意：不同的抗干扰函数可能需要不同的参数
+        """
+        应用抗干扰处理（统一接口调用）。
+
+        所有算法通过 self.process_func(radar_par, **kwargs) 调用，
+        返回 (processed_signal, processed_template)。
+        """
         try:
-            if self.antijam_type in ['WLN', 'FrequencyDomainCanceller', 'adapt_filter', 
-                                     'wave_agile', 'Frequency_agile', 'frft_filter', 'qpzh']:
-                # 这些函数通常接受 radar_par 和可选参数
-                processed_signal, processed_template = self.process_func(radar_par_adapted, **kwargs)
-            elif self.antijam_type == 'FastSlowTimeProcessor':
-                # 可能需要不同的调用方式
-                processed_signal = self.process_func(radar_par_adapted, **kwargs)
-                processed_template = radar_par_adapted['St_base']
-            else:
-                processed_signal, processed_template = self.process_func(radar_par_adapted, **kwargs)
+            processed_signal, processed_template = self.process_func(radar_par, **kwargs)
         except Exception as e:
-            print(f"抗干扰处理失败: {e}")
-            # 返回原始信号
+            print(f"抗干扰处理失败 [{self.antijam_type}]: {e}")
             processed_signal = radar_par['Srt_matrix']
             processed_template = radar_par['St_base']
         
@@ -300,64 +250,100 @@ class AntiJammingProcessor:
 # 干扰器加载器
 # =====================================================================
 class JammerLoader:
-    """加载干扰器类"""
+    """加载干扰器类（统一标准接口）"""
+    
+    # 标准默认雷达参数
+    DEFAULT_RADAR_PARAMS = {
+        'C': 3e8,
+        'f0': 15e6,
+        'T': 24e-6,
+        'Tr': 100e-6,
+        'B': 5e6,
+    }
     
     @staticmethod
     def load(jammer_type, **kwargs):
-        """加载干扰器类并创建实例"""
+        """
+        加载干扰器类并创建实例。
+
+        所有干扰类的构造函数都传入标准默认雷达参数，
+        可通过 kwargs 覆盖。
+
+        参数:
+            jammer_type: 干扰类型名称
+            **kwargs: 覆盖默认参数（如 f0, B, T 等）
+
+        返回:
+            干扰器实例，具有 generate(R_target, JSR_dB, noise_var) 方法
+        """
+        # 合并默认参数与用户传入参数（用户参数优先）
+        init_params = JammerLoader.DEFAULT_RADAR_PARAMS.copy()
+        init_params.update(kwargs)
+
         # 处理无干扰情况
         if jammer_type is None or jammer_type in ['None', 'NoJammer', 'no_jammer', '']:
-            # 返回无干扰器
-            class NoJammer:
-                def __init__(self, **kwargs):
-                    self.jammer_type = 'NoJammer'
-                
-                def generate(self, R_target, JSR_dB=10, noise_var=0.1):
-                    # 返回空信号，表示无干扰
-                    N = 5000  # 默认长度，实际会在环境中被覆盖
-                    signal = np.zeros(N, dtype=complex)
-                    return signal, np.arange(N), {'type': 'NoJammer'}
-            return NoJammer(**kwargs)
-        
+            return NoJammer()
+
         try:
             if jammer_type == 'FMZuse':
                 from jamming.FMZuse import FMZuse
-                return FMZuse(**kwargs)
+                return FMZuse(**init_params)
             elif jammer_type == 'RGPO':
                 from jamming.RGPO import RGPO
-                return RGPO(**kwargs)
+                return RGPO(**init_params)
             elif jammer_type == 'ISDJ':
                 from jamming.ISDJ import ISDJ
-                return ISDJ(**kwargs)
+                return ISDJ(**init_params)
             elif jammer_type == 'SMSP':
                 from jamming.SMSP import SMSP
-                return SMSP(**kwargs)
+                return SMSP(**init_params)
             elif jammer_type == 'NoiseProductJamming':
                 from jamming.NoiseProductJamming import NoiseProductJamming
-                return NoiseProductJamming(**kwargs)
+                return NoiseProductJamming(**init_params)
             elif jammer_type == 'NoiseConvolutionJamming':
                 from jamming.NoiseConvolutionJamming import NoiseConvolutionJamming
-                return NoiseConvolutionJamming(**kwargs)
+                return NoiseConvolutionJamming(**init_params)
             elif jammer_type == 'FMNoiseSaopin':
                 from jamming.FMNoiseSaopin import FMNoiseSaopin
-                return FMNoiseSaopin(**kwargs)
+                return FMNoiseSaopin(**init_params)
             elif jammer_type == 'FMNoiseAimedJam':
                 from jamming.FMNoiseAimedJam import FMNoiseAimedJam
-                return FMNoiseAimedJam(**kwargs)
+                return FMNoiseAimedJam(**init_params)
             elif jammer_type == 'AMNoiseGaiJam':
                 from jamming.AMNoiseGaiJam import AMNoiseGaiJam
-                return AMNoiseGaiJam(**kwargs)
+                return AMNoiseGaiJam(**init_params)
+            elif jammer_type == 'SliceCombineJam':
+                from anti_jamming.qpzh import SliceCombineJam
+                return SliceCombineJam(**init_params)
             else:
                 raise ValueError(f"未知的干扰类型: {jammer_type}")
         except ImportError as e:
-            print(f"无法加载干扰模块 {jammer_type}: {e}")
-            # 返回一个虚拟干扰器
-            class DummyJammer:
-                def generate(self, R_target, JSR_dB=10, noise_var=0.1):
-                    N = 1000
-                    signal = np.zeros(N, dtype=complex)
-                    return signal, np.arange(N), {}
-            return DummyJammer()
+            raise ImportError(f"无法加载干扰模块 {jammer_type}: {e}")
+
+
+class NoJammer:
+    """无干扰器（符合标准接口）。"""
+    def __init__(self, **kwargs):
+        self.jammer_type = 'NoJammer'
+    
+    def generate(self, R_target, JSR_dB=10, noise_var=0.1):
+        """
+        返回全零干扰信号。
+        
+        返回:
+            signal: 全零复数数组
+            range_axis: 全零距离轴
+            info_dict: 包含 'jammer_type' 的信息字典
+        """
+        N = 5000  # 默认长度，实际会在环境中被裁剪
+        signal_data = np.zeros(N, dtype=complex)
+        info_dict = {
+            'jammer_type': 'NoJammer',
+            'JSR_dB': JSR_dB,
+            'noise_var': noise_var,
+            'R_target': R_target,
+        }
+        return signal_data, np.zeros(N), info_dict
 
 
 # =====================================================================
@@ -842,10 +828,10 @@ if __name__ == "__main__":
         
         # 运行单个仿真
         results = run_simulation(
-            jammer_type='FMNoiseAimedJam',
-            antijam_type='WLN',
+            jammer_type='RGPO',
+            antijam_type='wave_agile',
             radar_params=custom_radar_params,
-            antijam_kwargs={'par1': 2.5, 'par2': 6}
+            antijam_kwargs={'par1': 1}
         )
         
         # 打印摘要

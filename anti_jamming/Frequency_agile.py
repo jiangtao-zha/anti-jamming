@@ -158,130 +158,243 @@ class FrequencyAgileRadar:
 
         return wave_radar
 
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy import signal
-from scipy.fft import fft, fftshift, fftfreq
+def test_frequency_agile(seed=None):
+    """
+    测试频率捷变雷达（FrequencyAgileRadar）抗干扰策略。
+    使用项目标准干扰生成器加载 FMNoiseSaopin、ISDJ。
+    对比标准 LFM 与 Costas-LFM 频率捷变波形在相同干扰下的检测性能。
 
-# 假设你的 FrequencyAgileRadar 类已经定义在上方
-# from your_module import FrequencyAgileRadar 
+    参数:
+        seed: 随机种子（None表示随机）
 
-def run_agile_radar_test():
-    # ==========================================
-    # 1. 参数初始化 (构建雷达物理环境)
-    # ==========================================
-    C = 3.0e8
-    Pw = 20e-6             # 脉宽 20us (适当加长以便在时频图中看得更清晰)
-    Bw = 20e6              # 总带宽 20MHz
-    fs = 4.0 * Bw          # 采样率 80MHz
+    返回:
+        dict: {jammer_type: {'before': info, 'after': info, 'sinr_improvement': float}}
+    """
+    import sys, os
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _root not in sys.path:
+        sys.path.insert(0, _root)
+
+    if seed is not None:
+        np.random.seed(seed)
+
+    from unified_framework import RadarEnvironment, JammerLoader, UnifiedEvaluator
+    from scipy import signal as sig
+
+    # 频率捷变雷达参数（与类内部默认一致）
+    Pw = 20e-6
+    Bw = 20e6
+    f0 = 15e6
+    fs = 4.0 * Bw  # 80 MHz
     Ts = 1.0 / fs
-    
-    Range = 6000           # 目标距离 6km
-    tau = 2 * Range / C    # 目标回波时延 40us
-    
-    # 接收窗设置 (观察 0 到 100us 的时间段)
-    Twid = 100e-6
-    Nwid = int(Twid / Ts)
+    Range = 6000
+    tau = 2 * Range / 3e8
+    Npw = int(Pw / Ts)
+    Nwid = int(100e-6 / Ts)
     t0 = np.arange(0, Nwid) * Ts
-    
-    radar_par = {
-        'PRF': 1000,             # 脉冲重复频率 1kHz
-        'Pw': Pw,
-        'Bw': Bw,
-        'Range': Range,
-        'Rmin': 1000,
-        'Rmax': 15000,
-        'PulseNum': 1,           # 测试中我们只看单个脉冲
-        'Nwid': Nwid,            # 接收窗点数
-        'f0': 15e6,              # 中频载频 15MHz
-        'Vt': 150,               # 目标径向速度 150m/s
-        'Npw': int(Pw / Ts),     # 脉内采样点数 (1600点)
-        'fc': 10e9,              # 射频载频 10GHz (X波段，用于计算多普勒)
-        't0': t0                 # 接收时间轴
+
+    agile_par = {
+        'PRF': 1000, 'Pw': Pw, 'Bw': Bw, 'Range': Range,
+        'Rmin': 1000, 'Rmax': 15000, 'PulseNum': 1,
+        'Nwid': Nwid, 'f0': f0, 'Vt': 150,
+        'Npw': Npw, 'fc': 10e9, 't0': t0
     }
 
-    # ==========================================
-    # 2. 实例化并生成信号
-    # ==========================================
-    print("正在生成 Costas-LFM 频率捷变雷达信号...")
-    radar = FrequencyAgileRadar(radar_par)
-    
-    # 使用 seq_type=2 (线性跳频序列 [1,2,3...10]) 或 1 (伪随机序列) 来对比
-    # 这里用 seq_type=1 最能体现 Costas 伪随机跳频的抗干扰魅力
-    wave_data = radar.generate(seq_type=1, RCS=1.0)
-    
-    # 提取第一个脉冲的数据
-    St = wave_data['St'][0]          # 发射信号 (长度为 Npw)
-    Srti = wave_data['Srti'][0]      # 接收回波信号 (长度为 Nwid)
-    tref = wave_data['tref']         # 发射信号的时间轴
-    t_rx = wave_data['t0']           # 接收窗的时间轴
+    agile_radar = FrequencyAgileRadar(agile_par)
+    wave_data = agile_radar.generate(seq_type=1)
 
-    # ==========================================
-    # 3. 绘图展示 (时域、频域、时频域)
-    # ==========================================
-    plt.figure(figsize=(16, 10))
+    St_agile = wave_data['St'][0]   # Costas-LFM 发射信号 (Npw)
+    Srti_agile = wave_data['Srti'][0]  # Costas-LFM 接收回波 (Nwid)
 
-    # --- 图 1：时域幅度 (Tx 与 Rx 的延迟关系) ---
-    plt.subplot(2, 2, 1)
-    # 发射信号的绝对时间轴 (假设在 t=0 处发射)
-    t_tx_actual = tref + Pw/2 
-    plt.plot(t_tx_actual * 1e6, np.real(St), label='发射信号 (实部)', alpha=0.8)
-    plt.plot(t_rx * 1e6, np.real(Srti), label=f'接收回波 (距离={Range}m)', color='red', alpha=0.7)
-    plt.xlabel('时间 (us)')
-    plt.ylabel('幅度')
-    plt.title('1. 时域波形 (展现测距时延)')
-    plt.legend()
-    plt.grid(True)
+    # 标准纯 LFM（与 agile 同参数）
+    t_tx = np.linspace(-Pw / 2, Pw / 2, Npw)
+    K = Bw / Pw
+    St_lfm = np.exp(1j * 2 * np.pi * (f0 * t_tx + 0.5 * K * t_tx**2))
 
-    # --- 图 2：频域频谱 (发射信号) ---
-    plt.subplot(2, 2, 2)
-    # 计算发射信号的频谱
-    f_axis = fftshift(fftfreq(len(St), Ts))
-    St_spec = fftshift(fft(St))
-    St_spec_dB = 20 * np.log10(np.abs(St_spec) + 1e-10)
-    
-    plt.plot(f_axis / 1e6, St_spec_dB, color='purple')
-    plt.xlabel('频率 (MHz)')
-    plt.ylabel('功率 (dB)')
-    plt.title(f'2. 发射信号频谱 (中心频率 {radar_par["f0"]/1e6}MHz, 总带宽 {Bw/1e6}MHz)')
-    plt.xlim([-5, radar_par['f0']/1e6 + Bw/1e6 + 20])
-    plt.grid(True)
+    t_rx = t0 - tau
+    rect = np.where(np.abs(t_rx) <= Pw / 2, 1.0, 0.0)
+    Srti_lfm = rect * np.exp(1j * 2 * np.pi * (f0 * t_rx + 0.5 * K * t_rx**2))
 
-    # --- 图 3：时频图 (Spectrogram) - 频率捷变的核心 ---
-    # --- 图 3：时频图 (Spectrogram) - 频率捷变的核心 ---
-    plt.subplot(2, 1, 2)
-    # 设置 STFT 参数
-    nperseg = int((Pw / radar.M) / Ts) // 2 
-    
-    # 明确指定 return_onesided=False 以获取完整的复信号双边谱
-    f_stft, t_stft, Zxx = signal.spectrogram(St, fs=fs, window='hann', 
-                                             nperseg=nperseg, noverlap=nperseg-2,
-                                             return_onesided=False)
-    
-    # 【核心修复】：对频率轴和时频矩阵进行 fftshift，使其变成单调递增序列
-    f_stft = fftshift(f_stft)
-    Zxx = fftshift(Zxx, axes=0)
-    
-    # 转换为 dB 并绘制
-    Zxx_dB = 10 * np.log10(np.abs(Zxx) + 1e-10)
-    
-    # 现在 f_stft 是单调递增的，pcolormesh 可以正常渲染了
-    plt.pcolormesh(t_stft * 1e6, f_stft / 1e6, Zxx_dB, shading='auto', cmap='jet')
-    
-    # 添加子脉冲分割线辅助观察
-    for m in range(radar.M + 1):
-        plt.axvline(x=(m * radar.delta_t) * 1e6, color='white', linestyle='--', alpha=0.5)
-        
-    plt.colorbar(label='功率密度 (dB/Hz)')
-    plt.xlabel('脉内时间 (us)')
-    plt.ylabel('频率 (MHz)')
-    plt.title('3. 时频域分析 (Spectrogram) - 观察 Costas 序列跳频与 LFM 调频特征')
-    
-    # 因为加上了负频，我们将 Y 轴显示范围调整为 0 到 稍大于最高频率即可
-    plt.ylim([0, radar_par['f0']/1e6 + Bw/1e6 + 5])
+    # 目标在距离像中的索引（匹配滤波后峰值位置）
+    target_idx = int(tau / Ts) + Npw // 2
 
-    plt.tight_layout()
-    plt.show()
+    jammer_types = ['FMNoiseSaopin', 'ISDJ']
+    results = {}
+
+    for jt in jammer_types:
+        jammer = JammerLoader.load(jt)
+        J_signal, _, _ = jammer.generate(R_target=Range, JSR_dB=10, noise_var=0.1)
+
+        # 截取/补零干扰信号到 Nwid 长度
+        J = np.zeros(Nwid, dtype=complex)
+        jlen = min(len(J_signal), Nwid)
+        J[:jlen] = J_signal[:jlen]
+
+        noise = 0.3 * (np.random.randn(Nwid) + 1j * np.random.randn(Nwid))
+
+        # --- "处理前"：标准 LFM + 干扰 ---
+        pc_before = sig.fftconvolve(Srti_lfm + J + noise,
+                                    np.conj(St_lfm[::-1]), mode='same')
+
+        # --- "处理后"：频率捷变 Costas-LFM + 干扰 ---
+        pc_after = sig.fftconvolve(Srti_agile + J + noise,
+                                   np.conj(St_agile[::-1]), mode='same')
+
+        evaluator = UnifiedEvaluator()
+        info_before = evaluator.evaluate(np.abs(pc_before), target_idx)
+        info_after = evaluator.evaluate(np.abs(pc_after), target_idx)
+
+        results[jt] = {
+            'before': info_before,
+            'after': info_after,
+            'sinr_improvement': info_after['sinr_db'] - info_before['sinr_db']
+        }
+
+        print(f"\n{'='*55}")
+        print(f"  测试: Frequency_agile vs {jt}")
+        print(f"  处理前(LFM): 检测={info_before['is_detected']}, SINR={info_before['sinr_db']:.2f} dB")
+        print(f"  处理后(Costas): 检测={info_after['is_detected']}, SINR={info_after['sinr_db']:.2f} dB")
+        print(f"  SINR改善: {info_after['sinr_db'] - info_before['sinr_db']:.2f} dB")
+        print(f"{'='*55}")
+
+    return results
+
+
+def run_visual_test():
+    """
+    频率捷变雷达（FrequencyAgileRadar）的可视化测试。
+    对比标准 LFM 与 Costas-LFM 波形，展示在 FMNoiseSaopin / ISDJ 干扰下的效果。
+    """
+    import sys, os
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _root not in sys.path:
+        sys.path.insert(0, _root)
+
+    from unified_framework import RadarEnvironment, JammerLoader
+    from scipy import signal
+
+    Pw = 20e-6
+    Bw = 20e6
+    f0 = 15e6
+    fs = 4.0 * Bw
+    Ts = 1.0 / fs
+    Range = 6000
+    tau = 2 * Range / 3e8
+    Npw = int(Pw / Ts)
+    Nwid = int(100e-6 / Ts)
+    t0 = np.arange(0, Nwid) * Ts
+
+    agile_par = {
+        'PRF': 1000, 'Pw': Pw, 'Bw': Bw, 'Range': Range,
+        'Rmin': 1000, 'Rmax': 15000, 'PulseNum': 1,
+        'Nwid': Nwid, 'f0': f0, 'Vt': 150,
+        'Npw': Npw, 'fc': 10e9, 't0': t0
+    }
+
+    agile_radar = FrequencyAgileRadar(agile_par)
+    wave_data = agile_radar.generate(seq_type=1)
+
+    St_agile = wave_data['St'][0]
+    Srti_agile = wave_data['Srti'][0]
+
+    t_tx = np.linspace(-Pw / 2, Pw / 2, Npw)
+    K = Bw / Pw
+    St_lfm = np.exp(1j * 2 * np.pi * (f0 * t_tx + 0.5 * K * t_tx ** 2))
+
+    t_rx = t0 - tau
+    rect = np.where(np.abs(t_rx) <= Pw / 2, 1.0, 0.0)
+    Srti_lfm = rect * np.exp(1j * 2 * np.pi * (f0 * t_rx + 0.5 * K * t_rx ** 2))
+
+    target_idx = int(tau / Ts) + Npw // 2
+
+    jammer_types = ['FMNoiseSaopin', 'ISDJ']
+
+    for jt in jammer_types:
+        np.random.seed(42)
+        jammer = JammerLoader.load(jt)
+        J_signal, _, _ = jammer.generate(R_target=Range, JSR_dB=10, noise_var=0.1)
+
+        J = np.zeros(Nwid, dtype=complex)
+        jlen = min(len(J_signal), Nwid)
+        J[:jlen] = J_signal[:jlen]
+
+        noise = 0.3 * (np.random.randn(Nwid) + 1j * np.random.randn(Nwid))
+
+        pc_before = signal.fftconvolve(Srti_lfm + J + noise,
+                                       np.conj(St_lfm[::-1]), mode='same')
+        pc_after = signal.fftconvolve(Srti_agile + J + noise,
+                                      np.conj(St_agile[::-1]), mode='same')
+
+        fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+
+        # (a) 发射波形对比（实部）
+        axes[0, 0].plot(t_tx * 1e6, np.real(St_lfm), label='标准LFM', alpha=0.7)
+        axes[0, 0].plot(t_tx * 1e6, np.real(St_agile), label='Costas-LFM', alpha=0.7)
+        axes[0, 0].set_xlabel('时间 (μs)')
+        axes[0, 0].set_ylabel('实部')
+        axes[0, 0].set_title(f'(a) 发射波形对比 — {jt}')
+        axes[0, 0].legend()
+        axes[0, 0].grid(True)
+
+        # (b) 发射波形频谱
+        freq_tx = np.fft.fftfreq(Npw, 1 / fs)
+        freq_tx_shift = np.fft.fftshift(freq_tx)
+        spec_lfm = np.fft.fftshift(np.abs(np.fft.fft(St_lfm)))
+        spec_agile = np.fft.fftshift(np.abs(np.fft.fft(St_agile)))
+        axes[0, 1].plot(freq_tx_shift / 1e6, 20 * np.log10(spec_lfm + 1e-10),
+                        label='标准LFM', alpha=0.7)
+        axes[0, 1].plot(freq_tx_shift / 1e6, 20 * np.log10(spec_agile + 1e-10),
+                        label='Costas-LFM', alpha=0.7)
+        axes[0, 1].set_xlabel('频率 (MHz)')
+        axes[0, 1].set_ylabel('幅度 (dB)')
+        axes[0, 1].set_title(f'(b) 发射波形频谱 — {jt}')
+        axes[0, 1].legend()
+        axes[0, 1].grid(True)
+
+        # (c) 回波时频图（LFM + 干扰）
+        nperseg = min(256, Nwid // 4)
+        f_spec, t_spec, Zxx = signal.stft(Srti_lfm + J + noise, fs=fs, nperseg=nperseg)
+        im1 = axes[0, 2].pcolormesh(t_spec * 1e6, f_spec / 1e6, np.abs(Zxx),
+                                     shading='gouraud', cmap='jet')
+        axes[0, 2].set_xlabel('时间 (μs)')
+        axes[0, 2].set_ylabel('频率 (MHz)')
+        axes[0, 2].set_title(f'(c) 回波时频图（LFM + {jt}）')
+        plt.colorbar(im1, ax=axes[0, 2])
+
+        # (d) 回波时频图（Costas-LFM + 干扰）
+        f_spec2, t_spec2, Zxx2 = signal.stft(Srti_agile + J + noise, fs=fs, nperseg=nperseg)
+        im2 = axes[1, 0].pcolormesh(t_spec2 * 1e6, f_spec2 / 1e6, np.abs(Zxx2),
+                                     shading='gouraud', cmap='jet')
+        axes[1, 0].set_xlabel('时间 (μs)')
+        axes[1, 0].set_ylabel('频率 (MHz)')
+        axes[1, 0].set_title(f'(d) 回波时频图（Costas-LFM + {jt}）')
+        plt.colorbar(im2, ax=axes[1, 0])
+
+        # (e) 脉压距离像-线性
+        range_axis = np.arange(len(pc_before)) * 3e8 / (2 * fs)
+        axes[1, 1].plot(range_axis, np.abs(pc_before), label='标准LFM', alpha=0.7)
+        axes[1, 1].plot(range_axis, np.abs(pc_after), label='Costas-LFM', alpha=0.7)
+        axes[1, 1].set_xlabel('距离 (m)')
+        axes[1, 1].set_ylabel('幅度')
+        axes[1, 1].set_title(f'(e) 脉压距离像 — {jt}')
+        axes[1, 1].legend()
+        axes[1, 1].grid(True)
+
+        # (f) 脉压距离像-dB
+        axes[1, 2].plot(range_axis, 20 * np.log10(np.abs(pc_before) + 1e-10),
+                        label='标准LFM', alpha=0.7)
+        axes[1, 2].plot(range_axis, 20 * np.log10(np.abs(pc_after) + 1e-10),
+                        label='Costas-LFM', alpha=0.7)
+        axes[1, 2].set_xlabel('距离 (m)')
+        axes[1, 2].set_ylabel('幅度 (dB)')
+        axes[1, 2].set_title(f'(f) 脉压距离像 (dB) — {jt}')
+        axes[1, 2].legend()
+        axes[1, 2].grid(True)
+
+        plt.tight_layout()
+        plt.suptitle(f'频率捷变雷达 vs {jt}', fontsize=14, y=1.02)
+        plt.show()
+
 
 if __name__ == "__main__":
-    run_agile_radar_test()
+    run_visual_test()

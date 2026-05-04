@@ -11,7 +11,7 @@ class RGPO:
     生成多个脉冲的干扰序列，但最终输出第10个脉冲的干扰与目标回波合成的信号。
     """
 
-    def __init__(self, C=3e8, f0=50e6, T=24e-6, Tr=100e-6, B=20e6, N_pulses=16):
+    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, N_pulses=16):
         """
         参数:
             C        : 光速 (m/s)

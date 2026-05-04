@@ -18,6 +18,19 @@ def adapt_filter(radar_par, par1=0.0, par2=None):
     s = np.atleast_2d(radar_par['St1'])
     r = np.atleast_2d(radar_par['Srt_temp'])
     
+    # 处理维度不匹配: 若 St1 长度 < Srt_temp 长度，在脉冲起始位置对齐后补零
+    N_r = r.shape[1]
+    N_s = s.shape[1]
+    if N_s != N_r:
+        s_padded = np.zeros((s.shape[0], N_r), dtype=complex)
+        # 将 St1 放在与发射脉冲对应的起始位置
+        offset = 0  # 适配器层负责设置正确的偏移
+        if 'target_idx' in radar_par:
+            offset = max(0, int(radar_par['target_idx']) - N_s // 2)
+        end = min(offset + N_s, N_r)
+        s_padded[0, offset:end] = s[0, :end - offset]
+        s = s_padded
+    
     # ---------------------------------------------------------
     # 方法一：严格按照 MATLAB 公式构建投影矩阵 Ps (原代码逻辑)
     # 适用条件：采样点数 N 较小。如果 N 很大(例如10000)，会生成 10000x10000 的复数矩阵，消耗大量内存
@@ -46,121 +59,157 @@ def adapt_filter(radar_par, par1=0.0, par2=None):
     
     return y
 
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.fft import fft, fftshift, fftfreq
-from scipy import signal
+def test_adapt_filter(seed=None):
+    """
+    测试自适应滤波器（adapt_filter）抗干扰算法。
+    使用项目标准干扰生成器加载 NoiseConvolutionJamming、NoiseProductJamming。
 
-plt.rcParams['font.sans-serif'] = ['SimHei']
-plt.rcParams['axes.unicode_minus'] = False
+    参数:
+        seed: 随机种子（None表示随机）
 
-# 如果你将上面的函数保存在 adapt_filter.py 中，请取消注释下一行
-# from adapt_filter import adapt_filter
+    返回:
+        dict: {jammer_type: {'before': info, 'after': info, 'sinr_improvement': float}}
+    """
+    import sys, os
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _root not in sys.path:
+        sys.path.insert(0, _root)
 
-def generate_noise_fm_jamming(t, fc, B_jam):
-    """生成简单的噪声调频干扰"""
-    noise = np.random.randn(len(t))
-    # 积分生成相位路径
-    phase_noise = 2 * np.pi * B_jam * np.cumsum(noise) * (t[1]-t[0])
-    return np.exp(1j * (2 * np.pi * fc * t + phase_noise))
+    if seed is not None:
+        np.random.seed(seed)
 
-def run_test():
-    # 1. 物理参数设置
-    f0 = 15e6
-    Bw = 10e6
-    Pw = 10e-6
-    Fs = 50e6
-    Ts = 1 / Fs
-    
-    Npw = int(Pw / Ts)
-    t = np.linspace(0, Pw, Npw, endpoint=False)
-    
-    # 2. 生成 LFM 模板 (参考信号)
-    K = Bw / Pw
-    St = np.exp(1j * 2 * np.pi * (f0 * t + 0.5 * K * t**2))
-    
-    # 3. 生成极强的噪声调频干扰 (JSR ≈ 20dB)
-    J_amplitude = 10.0
-    B_jam = 15e6 # 干扰带宽
-    Jamming = J_amplitude * generate_noise_fm_jamming(t, f0, B_jam)
-    
-    # 加入高斯白噪声
-    Noise = 0.5 * (np.random.randn(Npw) + 1j * np.random.randn(Npw))
-    
-    # 构造受干扰的接收信号
-    Srt = St + Jamming + Noise
-    
-    # 封装参数
-    radar_par = {
-        'St1': St,
-        'Srt_temp': Srt
-    }
-    
-    # 4. 执行自适应投影滤波
-    # 这里我们设置正则化参数 par1 = 0.1
-    print("正在执行自适应/自相关滤波...")
-    y_filtered = adapt_filter(radar_par, par1=0.1)
-    
-    # 提取单脉冲 (降维以便绘图)
-    Srt_1d = Srt
-    y_filtered_1d = y_filtered[0]
-    
-    # 5. 执行脉冲压缩对比 (匹配滤波)
-    def matched_filter(sig, ref):
-        h = np.conj(ref[::-1])
-        return signal.convolve(sig, h, mode='same')
-        
-    pc_clean = matched_filter(St, St)
-    pc_jammed = matched_filter(Srt_1d, St)
-    pc_filtered = matched_filter(y_filtered_1d, St)
-    
-    # ================= 绘图展示 =================
-    plt.figure(figsize=(15, 10))
-    
-    # --- 1. 时域信号对比 ---
-    plt.subplot(3, 1, 1)
-    plt.plot(t * 1e6, np.real(Srt_1d), label='受干扰接收信号 (实部)', color='gray', alpha=0.6)
-    plt.plot(t * 1e6, np.real(St), label='原始干净波形 (隐藏在干扰中)', linewidth=2)
-    plt.plot(t * 1e6, np.real(y_filtered_1d), label='自适应滤波后恢复的波形', color='red', linestyle='--')
-    plt.title('1. 时域幅度对比：自适应投影算子的提纯效果')
-    plt.xlabel('时间 (us)')
-    plt.ylabel('幅度')
-    plt.legend()
-    plt.grid(True)
-    
-    # --- 2. 频域频谱对比 ---
-    plt.subplot(3, 1, 2)
-    f_axis = fftshift(fftfreq(Npw, Ts))
-    spec_jam = 20 * np.log10(np.abs(fftshift(fft(Srt_1d))) + 1e-10)
-    spec_fil = 20 * np.log10(np.abs(fftshift(fft(y_filtered_1d))) + 1e-10)
-    spec_clean = 20 * np.log10(np.abs(fftshift(fft(St))) + 1e-10)
-    
-    plt.plot(f_axis / 1e6, spec_jam, label='滤波前频谱 (强噪声调频)', color='gray')
-    plt.plot(f_axis / 1e6, spec_fil, label='滤波后频谱', color='red')
-    plt.plot(f_axis / 1e6, spec_clean, label='理想参考频谱', color='blue', linestyle=':')
-    plt.title('2. 频域对比：干扰能量的剥离')
-    plt.xlabel('频率 (MHz)')
-    plt.ylabel('功率 (dB)')
-    plt.legend()
-    plt.grid(True)
-    
-    # --- 3. 脉冲压缩结果验证 ---
-    plt.subplot(3, 1, 3)
-    norm_factor = np.max(np.abs(pc_clean))
-    
-    plt.plot(t * 1e6, 20*np.log10(np.abs(pc_jammed)/norm_factor + 1e-10), label='受干扰信号直接脉压', color='gray')
-    plt.plot(t * 1e6, 20*np.log10(np.abs(pc_filtered)/norm_factor + 1e-10), label='自适应滤波后脉压', color='red', linewidth=2)
-    plt.plot(t * 1e6, 20*np.log10(np.abs(pc_clean)/norm_factor + 1e-10), label='理想无干扰脉压', color='blue', linestyle=':')
-    
-    plt.title('3. 脉冲压缩距离像：验证抗干扰是否成功')
-    plt.xlabel('脉内时间 (us) -> 距离对应')
-    plt.ylabel('归一化幅度 (dB)')
-    plt.ylim([-40, 5])
-    plt.legend()
-    plt.grid(True)
-    
+    from unified_framework import RadarEnvironment, JammerLoader, UnifiedEvaluator
+    from anti_jamming.adapters import get_antijam_func
+    from scipy import signal
+
+    radar_params = RadarEnvironment.DEFAULT_RADAR_PARAMS.copy()
+    antijam_type = 'adapt_filter'
+    jammer_types = ['NoiseConvolutionJamming', 'NoiseProductJamming']
+
+    results = {}
+    for jt in jammer_types:
+        jammer = JammerLoader.load(jt)
+        env = RadarEnvironment(radar_params)
+        radar_par = env.generate_with_jammer(jammer)
+
+        St_base = radar_par['St_base']
+        Srt_orig = radar_par['Srt_matrix'][0]
+
+        # 处理前：匹配滤波
+        pc_before = signal.fftconvolve(Srt_orig, np.conj(St_base[::-1]), mode='same')
+
+        # 应用自适应滤波抗干扰（使用默认参数）
+        antijam_func = get_antijam_func(antijam_type)
+        processed_signal, processed_template = antijam_func(radar_par)
+
+        # 处理后：匹配滤波
+        Srt_after = processed_signal[0] if processed_signal.ndim == 2 else processed_signal
+        pc_after = signal.fftconvolve(Srt_after, np.conj(processed_template[::-1]), mode='same')
+
+        # CA-CFAR 评估
+        evaluator = UnifiedEvaluator()
+        target_idx = radar_par['target_idx']
+        info_before = evaluator.evaluate(np.abs(pc_before), target_idx)
+        info_after = evaluator.evaluate(np.abs(pc_after), target_idx)
+
+        results[jt] = {
+            'before': info_before,
+            'after': info_after,
+            'sinr_improvement': info_after['sinr_db'] - info_before['sinr_db']
+        }
+
+        print(f"\n{'='*55}")
+        print(f"  测试: {antijam_type} vs {jt}")
+        print(f"  处理前: 检测={info_before['is_detected']}, SINR={info_before['sinr_db']:.2f} dB")
+        print(f"  处理后: 检测={info_after['is_detected']}, SINR={info_after['sinr_db']:.2f} dB")
+        print(f"  SINR改善: {info_after['sinr_db'] - info_before['sinr_db']:.2f} dB")
+        print(f"{'='*55}")
+
+    return results
+
+
+def run_visual_test():
+    """
+    自适应滤波器（adapt_filter）的可视化测试。
+    分别展示 NoiseConvolutionJamming 和 NoiseProductJamming 两种干扰下的处理效果。
+    """
+    import sys, os
+    import matplotlib.pyplot as plt
+    from scipy import signal
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _root not in sys.path:
+        sys.path.insert(0, _root)
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['axes.unicode_minus'] = False
+
+    from unified_framework import RadarEnvironment, JammerLoader
+    from anti_jamming.adapters import get_antijam_func
+
+    radar_params = RadarEnvironment.DEFAULT_RADAR_PARAMS.copy()
+    jammer_types = ['NoiseConvolutionJamming', 'NoiseProductJamming']
+
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+    axes_flat = axes.flatten()
+
+    for col, jt in enumerate(jammer_types):
+        np.random.seed(42)
+        jammer = JammerLoader.load(jt)
+        env = RadarEnvironment(radar_params)
+        radar_par = env.generate_with_jammer(jammer)
+
+        St_base = radar_par['St_base']
+        Srt_orig = radar_par['Srt_matrix'][0]
+        Fs = radar_params['Fs']
+
+        pc_before = signal.fftconvolve(Srt_orig, np.conj(St_base[::-1]), mode='same')
+
+        antijam_func = get_antijam_func('adapt_filter')
+        processed_signal, processed_template = antijam_func(radar_par)
+        Srt_after = processed_signal[0] if processed_signal.ndim == 2 else processed_signal
+        pc_after = signal.fftconvolve(Srt_after, np.conj(processed_template[::-1]), mode='same')
+
+        # (col*3+0) 时域对比
+        t = np.arange(len(Srt_orig)) / Fs
+        t2 = np.arange(len(Srt_after)) / Fs
+        axes_flat[col * 3].plot(t * 1e6, np.abs(Srt_orig), label='处理前', alpha=0.7)
+        axes_flat[col * 3].plot(t2 * 1e6, np.abs(Srt_after), label='自适应滤波后', alpha=0.7)
+        axes_flat[col * 3].set_xlabel('时间 (μs)')
+        axes_flat[col * 3].set_ylabel('幅度')
+        axes_flat[col * 3].set_title(f'({chr(97 + col * 3)}) 时域对比 — {jt}')
+        axes_flat[col * 3].legend()
+        axes_flat[col * 3].grid(True)
+
+        # (col*3+1) 频域对比
+        freq = np.fft.fftfreq(len(Srt_orig), 1 / Fs)
+        freq_shift = np.fft.fftshift(freq)
+        spec_before = np.fft.fftshift(np.abs(np.fft.fft(Srt_orig)))
+        spec_after = np.fft.fftshift(np.abs(np.fft.fft(Srt_after)))
+        axes_flat[col * 3 + 1].plot(freq_shift / 1e6, 20 * np.log10(spec_before + 1e-10),
+                                    label='处理前', alpha=0.7)
+        axes_flat[col * 3 + 1].plot(freq_shift / 1e6, 20 * np.log10(spec_after + 1e-10),
+                                    label='自适应滤波后', alpha=0.7)
+        axes_flat[col * 3 + 1].set_xlabel('频率 (MHz)')
+        axes_flat[col * 3 + 1].set_ylabel('幅度 (dB)')
+        axes_flat[col * 3 + 1].set_title(f'({chr(97 + col * 3 + 1)}) 频域频谱 — {jt}')
+        axes_flat[col * 3 + 1].legend()
+        axes_flat[col * 3 + 1].grid(True)
+
+        # (col*3+2) 脉压距离像
+        range_axis = np.arange(len(pc_before)) * 3e8 / (2 * Fs)
+        axes_flat[col * 3 + 2].plot(range_axis, 20 * np.log10(np.abs(pc_before) + 1e-10),
+                                    label='处理前', alpha=0.7)
+        axes_flat[col * 3 + 2].plot(range_axis, 20 * np.log10(np.abs(pc_after) + 1e-10),
+                                    label='自适应滤波后', alpha=0.7)
+        axes_flat[col * 3 + 2].set_xlabel('距离 (m)')
+        axes_flat[col * 3 + 2].set_ylabel('幅度 (dB)')
+        axes_flat[col * 3 + 2].set_title(f'({chr(97 + col * 3 + 2)}) 脉压距离像 — {jt}')
+        axes_flat[col * 3 + 2].legend()
+        axes_flat[col * 3 + 2].grid(True)
+
     plt.tight_layout()
+    plt.suptitle('自适应滤波器（信号子空间投影）抗干扰效果', fontsize=14, y=1.02)
     plt.show()
 
+
 if __name__ == "__main__":
-    run_test()
+    run_visual_test()

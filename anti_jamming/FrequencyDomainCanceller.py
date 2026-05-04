@@ -120,103 +120,173 @@ class FrequencyDomainCanceller:
 
 
 
-if __name__ == "__main__":
-    from jamming.AMNoiseGaiJam import AMNoiseGaiJam
-    # 创建干扰对象
-    jammer = AMNoiseGaiJam()
+def test_frequency_domain_canceller(seed=None):
+    """
+    测试频域对消器（FrequencyDomainCanceller）抗干扰算法。
+    使用项目标准干扰生成器加载 AMNoiseGaiJam（噪声调幅干扰）。
 
-    # 固定目标距离
-    R = 5000  # 米
+    参数:
+        seed: 随机种子（None表示随机）
 
-    # 生成多个脉冲（例如8个脉冲），每个脉冲独立加入干扰（每次随机干扰带宽不同）
-    num_pulses = 8
-    pulse_list = []
-    for _ in range(num_pulses):
-        J_AM, X_t, Bj, _, _ = jammer.generate(R, JSR_dB=12, noise_var=0.1)
-        pulse_list.append(J_AM)
+    返回:
+        dict: {'AMNoiseGaiJam': {'before': info, 'after': info, 'sinr_improvement': float}}
+    """
+    import sys, os
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _root not in sys.path:
+        sys.path.insert(0, _root)
 
-    # 构建脉冲矩阵 (num_pulses, N2)
-    Srt = np.array(pulse_list)
-    fs = jammer.Fs
+    if seed is not None:
+        np.random.seed(seed)
 
-    # 创建对消器实例（使用拟合频率估计）
-    canceller = FrequencyDomainCanceller(use_fitted_freq=True)
-    y_cancelled = canceller.cancel(Srt, fs)
+    from unified_framework import RadarEnvironment, JammerLoader, UnifiedEvaluator
+    from anti_jamming.adapters import get_antijam_func
 
-    # 选择第一个脉冲进行绘图对比
-    idx = 0
-    original = Srt[idx, :]
-    cancelled = y_cancelled[idx, :]
+    radar_params = RadarEnvironment.DEFAULT_RADAR_PARAMS.copy()
+    antijam_type = 'FrequencyDomainCanceller'
+    jammer_types = ['AMNoiseGaiJam']
 
-    # 时域实部对比
-    plt.figure(figsize=(18, 10))
+    results = {}
+    for jt in jammer_types:
+        jammer = JammerLoader.load(jt)
+        env = RadarEnvironment(radar_params)
+        radar_par = env.generate_with_jammer(jammer)
 
-    plt.subplot(2, 3, 1)
-    plt.plot(X_t, np.real(original))
-    plt.xlabel('距离 (m)')
-    plt.ylabel('幅度 (实部)')
-    plt.title('对消前 - 时域实部')
-    plt.grid(True)
+        St_base = radar_par['St_base']
+        Srt_orig = radar_par['Srt_matrix'][0]
 
-    plt.subplot(2, 3, 4)
-    plt.plot(X_t, np.real(cancelled))
-    plt.xlabel('距离 (m)')
-    plt.ylabel('幅度 (实部)')
-    plt.title('对消后 - 时域实部')
-    plt.grid(True)
+        # 处理前：匹配滤波
+        pc_before = signal.fftconvolve(Srt_orig, np.conj(St_base[::-1]), mode='same')
 
-    # 频谱对比
-    f = np.fft.fftshift(np.fft.fftfreq(len(original), d=jammer.Ts))
-    spec_orig = np.fft.fftshift(np.fft.fft(original))
-    spec_canc = np.fft.fftshift(np.fft.fft(cancelled))
+        # 应用频域对消抗干扰（使用默认参数）
+        antijam_func = get_antijam_func(antijam_type)
+        processed_signal, processed_template = antijam_func(radar_par)
 
-    plt.subplot(2, 3, 2)
-    plt.plot(f/1e6, 20*np.log10(np.abs(spec_orig) + 1e-12))
-    plt.xlabel('频率 (MHz)')
-    plt.ylabel('幅度 (dB)')
-    plt.title('对消前 - 频谱')
-    plt.grid(True)
-    plt.xlim([-100, 100])
+        # 处理后：匹配滤波
+        Srt_after = processed_signal[0] if processed_signal.ndim == 2 else processed_signal
+        pc_after = signal.fftconvolve(Srt_after, np.conj(processed_template[::-1]), mode='same')
 
-    plt.subplot(2, 3, 5)
-    plt.plot(f/1e6, 20*np.log10(np.abs(spec_canc) + 1e-12))
-    plt.xlabel('频率 (MHz)')
-    plt.ylabel('幅度 (dB)')
-    plt.title('对消后 - 频谱')
-    plt.grid(True)
-    plt.xlim([-100, 100])
+        # CA-CFAR 评估
+        evaluator = UnifiedEvaluator()
+        target_idx = radar_par['target_idx']
+        info_before = evaluator.evaluate(np.abs(pc_before), target_idx)
+        info_after = evaluator.evaluate(np.abs(pc_after), target_idx)
 
-    # 时频图对比
-    plt.subplot(2, 3, 3)
-    f_spec, t_spec, Zxx_orig = signal.spectrogram(original, fs=jammer.Fs,
-                                                   nperseg=256, noverlap=128)
-    t_start = 2 * R / jammer.C
-    t_end = jammer.Tr + 2 * R / jammer.C
-    t_actual = t_start + t_spec
-    dist_axis = (t_actual - jammer.T/2) * jammer.C / 2
+        results[jt] = {
+            'before': info_before,
+            'after': info_after,
+            'sinr_improvement': info_after['sinr_db'] - info_before['sinr_db']
+        }
 
-    plt.imshow(10*np.log10(np.abs(Zxx_orig) + 1e-12),
-               aspect='auto',
-               extent=[dist_axis[0], dist_axis[-1],
-                       f_spec[0]/1e6, f_spec[-1]/1e6],
-               origin='lower', cmap='jet')
-    plt.xlabel('距离 (m)')
-    plt.ylabel('频率 (MHz)')
-    plt.title('对消前 - 时频图')
-    plt.colorbar(label='功率 (dB)')
+        print(f"\n{'='*55}")
+        print(f"  测试: {antijam_type} vs {jt}")
+        print(f"  处理前: 检测={info_before['is_detected']}, SINR={info_before['sinr_db']:.2f} dB")
+        print(f"  处理后: 检测={info_after['is_detected']}, SINR={info_after['sinr_db']:.2f} dB")
+        print(f"  SINR改善: {info_after['sinr_db'] - info_before['sinr_db']:.2f} dB")
+        print(f"{'='*55}")
 
-    plt.subplot(2, 3, 6)
-    f_spec, t_spec, Zxx_canc = signal.spectrogram(cancelled, fs=jammer.Fs,
-                                                   nperseg=256, noverlap=128)
-    plt.imshow(10*np.log10(np.abs(Zxx_canc) + 1e-12),
-               aspect='auto',
-               extent=[dist_axis[0], dist_axis[-1],
-                       f_spec[0]/1e6, f_spec[-1]/1e6],
-               origin='lower', cmap='jet')
-    plt.xlabel('距离 (m)')
-    plt.ylabel('频率 (MHz)')
-    plt.title('对消后 - 时频图')
-    plt.colorbar(label='功率 (dB)')
+    return results
+
+
+def run_visual_test():
+    """
+    频域对消器（FrequencyDomainCanceller）的可视化测试。
+    生成时域对比、频域频谱对比、短时傅里叶变换时频图对比。
+    """
+    import sys, os
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _root not in sys.path:
+        sys.path.insert(0, _root)
+
+    from unified_framework import RadarEnvironment, JammerLoader
+    from anti_jamming.adapters import get_antijam_func
+    from scipy import signal
+
+    radar_params = RadarEnvironment.DEFAULT_RADAR_PARAMS.copy()
+    jammer = JammerLoader.load('AMNoiseGaiJam')
+    env = RadarEnvironment(radar_params)
+    radar_par = env.generate_with_jammer(jammer)
+
+    St_base = radar_par['St_base']
+    Srt_orig = radar_par['Srt_matrix'][0]
+    Fs = radar_params['Fs']
+
+    # 处理前：匹配滤波
+    pc_before = signal.fftconvolve(Srt_orig, np.conj(St_base[::-1]), mode='same')
+
+    # 频域对消处理
+    antijam_func = get_antijam_func('FrequencyDomainCanceller')
+    processed_signal, processed_template = antijam_func(radar_par)
+    Srt_after = processed_signal[0] if processed_signal.ndim == 2 else processed_signal
+    pc_after = signal.fftconvolve(Srt_after, np.conj(processed_template[::-1]), mode='same')
+
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+
+    # (a) 时域-实部
+    t = np.arange(len(Srt_orig)) / Fs
+    axes[0, 0].plot(t * 1e6, np.real(Srt_orig), label='处理前', alpha=0.7)
+    axes[0, 0].plot(t * 1e6, np.real(Srt_after), label='对消处理后', alpha=0.7)
+    axes[0, 0].set_xlabel('时间 (μs)')
+    axes[0, 0].set_ylabel('实部')
+    axes[0, 0].set_title('(a) 时域信号对比（实部）')
+    axes[0, 0].legend()
+    axes[0, 0].grid(True)
+
+    # (b) 时域-包络
+    axes[0, 1].plot(t * 1e6, np.abs(Srt_orig), label='处理前', alpha=0.7)
+    axes[0, 1].plot(t * 1e6, np.abs(Srt_after), label='对消处理后', alpha=0.7)
+    axes[0, 1].set_xlabel('时间 (μs)')
+    axes[0, 1].set_ylabel('幅度')
+    axes[0, 1].set_title('(b) 时域信号对比（包络）')
+    axes[0, 1].legend()
+    axes[0, 1].grid(True)
+
+    # (c) 频域频谱
+    freq = np.fft.fftfreq(len(Srt_orig), 1 / Fs)
+    freq_shift = np.fft.fftshift(freq)
+    spec_before = np.fft.fftshift(np.abs(np.fft.fft(Srt_orig)))
+    spec_after = np.fft.fftshift(np.abs(np.fft.fft(Srt_after)))
+    axes[0, 2].plot(freq_shift / 1e6, 20 * np.log10(spec_before + 1e-10), label='处理前', alpha=0.7)
+    axes[0, 2].plot(freq_shift / 1e6, 20 * np.log10(spec_after + 1e-10), label='对消处理后', alpha=0.7)
+    axes[0, 2].set_xlabel('频率 (MHz)')
+    axes[0, 2].set_ylabel('幅度 (dB)')
+    axes[0, 2].set_title('(c) 频域频谱对比')
+    axes[0, 2].legend()
+    axes[0, 2].grid(True)
+
+    # (d) 时频图-处理前
+    nperseg = min(256, len(Srt_orig) // 4)
+    f_spec, t_spec, Zxx_before = signal.stft(Srt_orig, fs=Fs, nperseg=nperseg)
+    im1 = axes[1, 0].pcolormesh(t_spec * 1e6, f_spec / 1e6, np.abs(Zxx_before),
+                                  shading='gouraud', cmap='jet')
+    axes[1, 0].set_xlabel('时间 (μs)')
+    axes[1, 0].set_ylabel('频率 (MHz)')
+    axes[1, 0].set_title('(d) 时频图（处理前）')
+    plt.colorbar(im1, ax=axes[1, 0])
+
+    # (e) 时频图-处理后
+    f_spec2, t_spec2, Zxx_after = signal.stft(Srt_after, fs=Fs, nperseg=nperseg)
+    im2 = axes[1, 1].pcolormesh(t_spec2 * 1e6, f_spec2 / 1e6, np.abs(Zxx_after),
+                                  shading='gouraud', cmap='jet')
+    axes[1, 1].set_xlabel('时间 (μs)')
+    axes[1, 1].set_ylabel('频率 (MHz)')
+    axes[1, 1].set_title('(e) 时频图（对消处理后）')
+    plt.colorbar(im2, ax=axes[1, 1])
+
+    # (f) 脉压距离像对比
+    range_axis = np.arange(len(pc_before)) * 3e8 / (2 * Fs)
+    axes[1, 2].plot(range_axis, 20 * np.log10(np.abs(pc_before) + 1e-10), label='处理前', alpha=0.7)
+    axes[1, 2].plot(range_axis, 20 * np.log10(np.abs(pc_after) + 1e-10), label='对消处理后', alpha=0.7)
+    axes[1, 2].set_xlabel('距离 (m)')
+    axes[1, 2].set_ylabel('幅度 (dB)')
+    axes[1, 2].set_title('(f) 脉冲压缩距离像对比')
+    axes[1, 2].legend()
+    axes[1, 2].grid(True)
 
     plt.tight_layout()
+    plt.suptitle('频域对消器 vs AMNoiseGaiJam 噪声调幅干扰', fontsize=14, y=1.02)
     plt.show()
+
+
+if __name__ == "__main__":
+    run_visual_test()

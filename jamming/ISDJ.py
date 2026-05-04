@@ -10,17 +10,18 @@ class ISDJ:
     对应 MATLAB 脚本：间歇采样直接转发干扰。
     """
 
-    def __init__(self, C=3e8, fc=20e6, T=24e-6, Tr=100e-6, B=20e6):
+    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, **kwargs):
         """
         参数:
             C  : 光速 (m/s)
-            fc : 中心频率 (Hz)
+            f0 : 中心频率 (Hz)
             T  : 脉宽/采样时间 (s)
             Tr : 脉冲重复周期 (s)
             B  : 雷达信号带宽 (Hz)
         """
         self.C = C
-        self.fc = fc
+        self.f0 = f0
+        self.fc = f0  # 内部兼容别名
         self.T = T
         self.Tr = Tr
         self.B = B
@@ -64,18 +65,18 @@ class ISDJ:
         # 注意：脚本中 Srt 使用 td - T/1 (T/1 就是 T)，矩形窗宽度 T
         window_srt = self.rectpuls(td - self.T, self.T)
         Srt = window_srt * np.exp(1j * (np.pi * self.K * (td - self.T) ** 2 +
-                                         2 * np.pi * self.fc * (td - self.T)))
+                                         2 * np.pi * self.f0 * (td - self.T)))
 
         # --- 发射信号 (用于功率参考和干扰构造) ---
         t = np.linspace(0, self.T, self.Nsys)
         St = self.rectpuls(t - self.T/2, self.T) * \
-             np.exp(1j * 2 * np.pi * (self.fc * t + (self.K/2) * t**2))
+             np.exp(1j * 2 * np.pi * (self.f0 * t + (self.K/2) * t**2))
 
         # --- 间歇采样直接转发干扰生成 ---
         Tj = self.T / (2 * M)                     # 干扰采样时宽
         # 构造一个延时 Tj 的 LFM 信号 St2 (用于转发片段)
         St2 = self.rectpuls(t - Tj - self.T/2, self.T) * \
-              np.exp(1j * 2 * np.pi * (self.fc * (t - Tj) + (self.K/2) * (t - Tj)**2))
+              np.exp(1j * 2 * np.pi * (self.f0 * (t - Tj) + (self.K/2) * (t - Tj)**2))
 
         ISRJ_direct = np.zeros(self.Nsys, dtype=complex)
         for i in range(1, M+1):
@@ -117,7 +118,8 @@ class ISDJ:
             'R_target': R_target,
             'target_signal': Srt,
             'noise_signal': noise,
-            'fc': self.fc,
+            'f0': self.f0,
+            'fc': self.fc,  # 向后兼容别名
             'T': self.T,
             'B': self.B,
             'Tr': self.Tr,

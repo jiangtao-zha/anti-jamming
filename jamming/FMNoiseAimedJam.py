@@ -11,7 +11,7 @@ class FMNoiseAimedJam:
     修正了采样率不一致的问题：将干扰重采样到系统采样率 Fs 后再插入。
     """
 
-    def __init__(self, C=3e8, f0=50e6, T=24e-6, Tr=100e-6, B=20e6):
+    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6):
         """
         参数:
             C  : 光速 (m/s)

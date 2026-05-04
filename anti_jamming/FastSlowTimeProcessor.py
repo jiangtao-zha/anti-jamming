@@ -53,88 +53,265 @@ class FastSlowTimeProcessor:
 # ==========================================
 # 闭环测试脚本
 # ==========================================
-def generate_isrj_jamming(ref_signal, repeats=4):
-    N = len(ref_signal)
-    slice_len = N // (repeats * 2)
-    jamming = np.zeros(N, dtype=complex)
-    sig_slice = ref_signal[:slice_len]
-    for i in range(repeats):
-        start = i * (slice_len * 2)
-        end = start + slice_len
-        if end <= N:
-            jamming[start:end] = sig_slice
-    return jamming
+def test_fast_slow_time_processor(seed=None):
+    """
+    测试快慢时间处理器（FastSlowTimeProcessor）抗干扰算法。
+    使用项目标准干扰生成器加载 SliceCombineJam、SMSP。
+    注意：该算法需要多脉冲数据（M>=2），测试使用 M=8 脉冲。
 
-def run_test():
-    f0, Bw, Pw, Fs = 10e6, 5e6, 20e-6, 40e6
-    Ts = 1 / Fs
-    M, N, Npw = 16, int(100e-6 / Ts), int(Pw / Ts)
-    t_fast = np.arange(0, Npw) * Ts
-    
-    K = Bw / Pw
-    St_base = np.exp(1j * 2 * np.pi * (f0 * t_fast + 0.5 * K * t_fast**2))
-    Srt_matrix = np.zeros((M, N), dtype=complex)
-    
-    # 真实目标参数
-    target_dist = 6000 # 6.0 km
-    target_delay_idx = int((target_dist * 2 / 3e8) / Ts) # 理论应为 1600
-    target_fd = 500 
-    
-    # 伴随干扰机参数
-    jammer_delay_idx = target_delay_idx - 50 
-    jammer_fd = -800 
-    
-    J_base = generate_isrj_jamming(St_base, repeats=4)
-    
-    for m in range(M):
-        phase_target = np.exp(1j * 2 * np.pi * target_fd * (m * 1e-3)) 
-        phase_jammer = np.exp(1j * 2 * np.pi * jammer_fd * (m * 1e-3))
-        
-        # 目标注入 (能量极弱)
-        Srt_matrix[m, target_delay_idx:target_delay_idx+Npw] += St_base * phase_target * 1.0
-        # 切片干扰注入 (能量极强)
-        Srt_matrix[m, jammer_delay_idx:jammer_delay_idx+Npw] += J_base * phase_jammer * 20.0
-        # 底噪
-        Srt_matrix[m, :] += 0.5 * (np.random.randn(N) + 1j * np.random.randn(N))
+    修改说明 (2026-04-27):
+        由于所有干扰器的 generate() 返回复合信号（目标+干扰+噪声），
+        测试中需要从复合信号中分离目标分量，以便对目标施加多普勒相移，
+        使目标与干扰在多普勒域可分离，从而验证算法有效性。
 
-    processor = FastSlowTimeProcessor(num_pulses=M, num_samples=N, limit_factor=3.0)
-    RD_orig, RD_filtered, profile_before, profile_after = processor.process(Srt_matrix, St_base)
+    参数:
+        seed: 随机种子（None表示随机）
 
-    # ================= 绘图展示 =================
-    plt.figure(figsize=(16, 10))
-    
-    # 【核心修复 1：X轴距离校准】扣除匹配滤波带来的 Pw/2 延迟
-    # Npw/2 对应的距离偏移刚好被减掉，使峰值回归真实的 6.00km
-    dist_axis = (np.arange(N) - Npw/2) * (3e8 / (2 * Fs)) / 1000 
-    
-    plt.subplot(2, 2, 1)
-    # 使用 extent 将二维图的 X 轴也映射为真实的距离(km)
-    extent = [dist_axis[0], dist_axis[-1], 0, M-1]
-    plt.imshow(20*np.log10(np.abs(RD_orig) + 1e-10), aspect='auto', cmap='jet', origin='lower', extent=extent)
-    plt.title('1. 抗干扰前 R-D 图 (目标与干扰在多普勒域分离)')
-    plt.xlabel('距离 (km)')
-    plt.ylabel('多普勒通道索引')
-    
-    plt.subplot(2, 2, 2)
-    plt.imshow(20*np.log10(np.abs(RD_filtered) + 1e-10), aspect='auto', cmap='jet', origin='lower', extent=extent)
-    plt.title('2. 抗干扰后 R-D 图 (干扰通道被整行彻底挖空填平)')
-    plt.xlabel('距离 (km)')
-    
-    plt.subplot(2, 1, 2)
-    plt.plot(dist_axis, 20*np.log10(profile_before + 1e-10), label='仅快时间一维处理 (虚假目标群横行)', color='gray', alpha=0.8)
-    plt.plot(dist_axis, 20*np.log10(profile_after + 1e-10), label='快慢时间联合抗干扰 (真实目标精准凸显)', color='red', linewidth=2.5)
-    
-    plt.axvline(x=target_dist/1000, color='blue', linestyle='--', label=f'真实目标位置 ({target_dist/1000:.2f} km)')
-    
-    plt.title('3. 距离像检测验证：彻底粉碎切片组合欺骗')
-    plt.xlabel('距离 (km)')
-    plt.ylabel('能量 (dB)')
-    plt.xlim([4, 10]) # 只看 4km 到 10km 的核心交战区
-    plt.ylim([0, 80])
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
+    返回:
+        dict: {jammer_type: {'before': info, 'after': info, 'sinr_improvement': float}}
+    """
+    import sys, os
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _root not in sys.path:
+        sys.path.insert(0, _root)
+
+    if seed is not None:
+        np.random.seed(seed)
+
+    from unified_framework import RadarEnvironment, JammerLoader, UnifiedEvaluator
+
+    # 多脉冲参数
+    radar_params = RadarEnvironment.DEFAULT_RADAR_PARAMS.copy()
+    M = 8  # 脉冲数
+    N = radar_params['N']
+    Fs = radar_params['Fs']
+    Pw = radar_params['Pw']
+    Ts = 1.0 / Fs
+    Npw = int(Pw / Ts)
+    target_dist = radar_params['target_dist']
+    target_amp = radar_params['target_amp']
+
+    # 计算目标在距离像中的索引
+    target_delay = target_dist * 2 / 3e8
+    target_delay_idx = int(target_delay / Ts)
+    target_idx = target_delay_idx + Npw // 2
+
+    jammer_types = ['SliceCombineJam', 'SMSP']
+    results = {}
+
+    for jt in jammer_types:
+        jammer = JammerLoader.load(jt)
+
+        # 用干扰器内部参数复现目标回波分量
+        # （所有干扰器的目标回波公式一致: rectpuls + LFM）
+        C_jam = jammer.C
+        f0_jam = jammer.f0
+        T_jam = jammer.T
+        Tr_jam = jammer.Tr
+        B_jam = jammer.B
+        K_jam = B_jam / T_jam
+        Fs_jam = jammer.Fs
+        Ts_jam = 1.0 / Fs_jam
+        N2 = int(np.ceil(Tr_jam / Ts_jam))
+
+        t1 = np.linspace(2 * target_dist / C_jam, Tr_jam + 2 * target_dist / C_jam, N2)
+        td = t1 - 2 * target_dist / C_jam
+
+        def _rectpuls(t, width):
+            return np.where((t >= 0) & (t < width), 1.0, 0.0)
+
+        window_srt = _rectpuls(td - T_jam, T_jam)
+        St_target_echo = window_srt * np.exp(1j * (np.pi * K_jam * (td - T_jam) ** 2 +
+                                                  2 * np.pi * f0_jam * (td - T_jam)))
+
+        # 生成 LFM 模板（用于脉冲压缩，使用统一框架的参数）
+        env = RadarEnvironment(radar_params)
+        St_base = env.generate_target_signal()
+
+        # 生成复合信号（含目标+干扰+噪声），然后分离目标分量得到纯干扰+噪声
+        J_composite, _, _ = jammer.generate(
+            R_target=target_dist,
+            JSR_dB=radar_params.get('JSR_dB', 10),
+            noise_var=radar_params.get('noise_var', 0.1)
+        )
+
+        # 裁剪或补零到统一长度 N
+        def _to_len(sig, length):
+            if len(sig) >= length:
+                return sig[:length]
+            out = np.zeros(length, dtype=complex)
+            out[:len(sig)] = sig
+            return out
+
+        St_target_N = _to_len(St_target_echo, N)
+        J_composite_N = _to_len(J_composite, N)
+        J_jamming_only = J_composite_N - St_target_N  # 干扰 + 首次噪声
+
+        # 构建多脉冲信号矩阵：目标有多普勒，干扰无多普勒
+        Srt_matrix = np.zeros((M, N), dtype=complex)
+        noise_var = radar_params.get('noise_var', 0.1)
+        noise_level = np.sqrt(noise_var)
+        fd_target = 500  # 目标多普勒频率 Hz
+
+        for m in range(M):
+            doppler_phase = np.exp(1j * 2 * np.pi * fd_target * m * 1e-3)
+            pulse_noise = noise_level * (np.random.randn(N) + 1j * np.random.randn(N))
+            Srt_matrix[m, :] = St_target_N * doppler_phase * target_amp + J_jamming_only + pulse_noise
+
+        # 应用 FastSlowTimeProcessor（直接调用类，不通过适配器）
+        processor = FastSlowTimeProcessor(num_pulses=M, num_samples=N)
+        RD_orig, RD_filtered, profile_before, profile_after = processor.process(Srt_matrix, St_base)
+
+        # CA-CFAR 评估距离像
+        evaluator = UnifiedEvaluator()
+        info_before = evaluator.evaluate(profile_before, target_idx)
+        info_after = evaluator.evaluate(profile_after, target_idx)
+
+        results[jt] = {
+            'before': info_before,
+            'after': info_after,
+            'sinr_improvement': info_after['sinr_db'] - info_before['sinr_db']
+        }
+
+        print(f"\n{'='*55}")
+        print(f"  测试: FastSlowTimeProcessor vs {jt} (M={M}脉冲)")
+        print(f"  处理前: 检测={info_before['is_detected']}, SINR={info_before['sinr_db']:.2f} dB")
+        print(f"  处理后: 检测={info_after['is_detected']}, SINR={info_after['sinr_db']:.2f} dB")
+        print(f"  SINR改善: {info_after['sinr_db'] - info_before['sinr_db']:.2f} dB")
+        print(f"{'='*55}")
+
+    return results
+
+
+def run_visual_test():
+    """
+    快慢时间处理器（FastSlowTimeProcessor）的可视化测试。
+    展示 R-D 图和距离像在 SliceCombineJam / SMSP 干扰下的变化。
+    """
+    import sys, os
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _root not in sys.path:
+        sys.path.insert(0, _root)
+
+    from unified_framework import RadarEnvironment, JammerLoader
+
+    radar_params = RadarEnvironment.DEFAULT_RADAR_PARAMS.copy()
+    M = 8
+    N = radar_params['N']
+    Fs = radar_params['Fs']
+    Pw = radar_params['Pw']
+    Ts = 1.0 / Fs
+    Npw = int(Pw / Ts)
+    target_dist = radar_params['target_dist']
+    target_amp = radar_params['target_amp']
+    target_delay = target_dist * 2 / 3e8
+    target_delay_idx = int(target_delay / Ts)
+    target_idx = target_delay_idx + Npw // 2
+    noise_var = radar_params.get('noise_var', 0.1)
+    noise_level = np.sqrt(noise_var)
+    fd_target = 500
+
+    env = RadarEnvironment(radar_params)
+    St_base = env.generate_target_signal()
+
+    jammer_types = ['SliceCombineJam', 'SMSP']
+
+    for jt in jammer_types:
+        np.random.seed(42)
+        jammer = JammerLoader.load(jt)
+
+        C_jam = jammer.C
+        f0_jam = jammer.f0
+        T_jam = jammer.T
+        Tr_jam = jammer.Tr
+        B_jam = jammer.B
+        K_jam = B_jam / T_jam
+        Fs_jam = jammer.Fs
+        Ts_jam = 1.0 / Fs_jam
+        N2 = int(np.ceil(Tr_jam / Ts_jam))
+
+        t1 = np.linspace(2 * target_dist / C_jam, Tr_jam + 2 * target_dist / C_jam, N2)
+        td = t1 - 2 * target_dist / C_jam
+
+        def _rectpuls(t, width):
+            return np.where((t >= 0) & (t < width), 1.0, 0.0)
+
+        window_srt = _rectpuls(td - T_jam, T_jam)
+        St_target_echo = window_srt * np.exp(1j * (np.pi * K_jam * (td - T_jam) ** 2 +
+                                                   2 * np.pi * f0_jam * (td - T_jam)))
+
+        J_composite, _, _ = jammer.generate(
+            R_target=target_dist,
+            JSR_dB=radar_params.get('JSR_dB', 10),
+            noise_var=radar_params.get('noise_var', 0.1)
+        )
+
+        def _to_len(sig, length):
+            if len(sig) >= length:
+                return sig[:length]
+            out = np.zeros(length, dtype=complex)
+            out[:len(sig)] = sig
+            return out
+
+        St_target_N = _to_len(St_target_echo, N)
+        J_composite_N = _to_len(J_composite, N)
+        J_jamming_only = J_composite_N - St_target_N
+
+        Srt_matrix = np.zeros((M, N), dtype=complex)
+        for m in range(M):
+            doppler_phase = np.exp(1j * 2 * np.pi * fd_target * m * 1e-3)
+            pulse_noise = noise_level * (np.random.randn(N) + 1j * np.random.randn(N))
+            Srt_matrix[m, :] = St_target_N * doppler_phase * target_amp + J_jamming_only + pulse_noise
+
+        processor = FastSlowTimeProcessor(num_pulses=M, num_samples=N)
+        RD_orig, RD_filtered, profile_before, profile_after = processor.process(Srt_matrix, St_base)
+
+        # --- 绘图 ---
+        fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+        # (a) R-D 图（处理前）
+        doppler_axis = np.linspace(-M / 2, M / 2, M)
+        range_axis_rd = np.arange(N) * 3e8 / (2 * Fs)
+        im1 = axes[0, 0].pcolormesh(range_axis_rd, doppler_axis,
+                                      20 * np.log10(np.abs(RD_orig) + 1e-10),
+                                      shading='auto', cmap='jet')
+        axes[0, 0].set_xlabel('距离 (m)')
+        axes[0, 0].set_ylabel('多普勒通道')
+        axes[0, 0].set_title(f'(a) R-D 图（处理前）— {jt}')
+        plt.colorbar(im1, ax=axes[0, 0], label='dB')
+
+        # (b) R-D 图（处理后）
+        im2 = axes[0, 1].pcolormesh(range_axis_rd, doppler_axis,
+                                      20 * np.log10(np.abs(RD_filtered) + 1e-10),
+                                      shading='auto', cmap='jet')
+        axes[0, 1].set_xlabel('距离 (m)')
+        axes[0, 1].set_ylabel('多普勒通道')
+        axes[0, 1].set_title(f'(b) R-D 图（处理后）— {jt}')
+        plt.colorbar(im2, ax=axes[0, 1], label='dB')
+
+        # (c) 距离像对比（线性）
+        range_axis = np.arange(len(profile_before)) * 3e8 / (2 * Fs)
+        axes[1, 0].plot(range_axis, profile_before, label='处理前', alpha=0.7)
+        axes[1, 0].plot(range_axis, profile_after, label='处理后', alpha=0.7)
+        axes[1, 0].set_xlabel('距离 (m)')
+        axes[1, 0].set_ylabel('幅度')
+        axes[1, 0].set_title(f'(c) 距离像对比 — {jt}')
+        axes[1, 0].legend()
+        axes[1, 0].grid(True)
+
+        # (d) 距离像对比（dB）
+        axes[1, 1].plot(range_axis, 20 * np.log10(profile_before + 1e-10), label='处理前', alpha=0.7)
+        axes[1, 1].plot(range_axis, 20 * np.log10(profile_after + 1e-10), label='处理后', alpha=0.7)
+        axes[1, 1].set_xlabel('距离 (m)')
+        axes[1, 1].set_ylabel('幅度 (dB)')
+        axes[1, 1].set_title(f'(d) 距离像对比 (dB) — {jt}')
+        axes[1, 1].legend()
+        axes[1, 1].grid(True)
+
+        plt.tight_layout()
+        plt.suptitle(f'快慢时间处理器 vs {jt}', fontsize=14, y=1.02)
+        plt.show()
+
 
 if __name__ == "__main__":
-    run_test()
+    run_visual_test()

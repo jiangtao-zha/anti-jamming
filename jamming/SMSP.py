@@ -10,7 +10,7 @@ class SMSP:
     对应 MATLAB 函数 SMSP_jam.m。
     """
 
-    def __init__(self, C=3e8, f0=50e6, T=24e-6, Tr=100e-6, B=20e6):
+    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6):
         """
         参数:
             C  : 光速 (m/s)

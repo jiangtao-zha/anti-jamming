@@ -162,148 +162,151 @@ def myfrft(f, a):
     
     return Faf
 
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.fft import fftshift, fftfreq
-from scipy import signal
-# 从刚才保存的文件中导入函数
-from frft_filter import frft_anti_jamming, myfrft
+def run_visual_test():
+    """
+    FrFT 分数阶傅里叶变换滤波器的可视化测试。
+    展示时域、FrFT 域、脉冲压缩距离像在 FMNoiseAimedJam 干扰下的变化。
+    """
+    import sys, os
+    import matplotlib.pyplot as plt
+    from scipy import signal as sig
+    _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if _root not in sys.path:
+        sys.path.insert(0, _root)
+    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['axes.unicode_minus'] = False
 
-plt.rcParams['font.sans-serif'] = ['SimHei']
-plt.rcParams['axes.unicode_minus'] = False
+    from unified_framework import RadarEnvironment, JammerLoader
+    from anti_jamming.adapters import get_antijam_func
 
-def generate_lfm_and_jamming():
-    # 1. 物理参数设置
-    f0 = 10e6
-    Bw = 5e6
-    Pw = 10e-6
-    Fs = 40e6
-    Ts = 1 / Fs
-    
-    # 设置接收窗与目标
-    Nwid = int(50e-6 / Ts)
+    radar_params = RadarEnvironment.DEFAULT_RADAR_PARAMS.copy()
+    M = 4
+    N = radar_params['N']
+    Fs = radar_params['Fs']
+    Pw = radar_params['Pw']
+    Ts = 1.0 / Fs
     Npw = int(Pw / Ts)
-    PulseNum = 2
-    
-    t_tx = np.linspace(0, Pw, Npw, endpoint=False)
-    t_rx = np.linspace(0, 50e-6, Nwid, endpoint=False)
-    
-    # 2. 生成 LFM 模板
-    K = Bw / Pw
-    St_base = np.exp(1j * 2 * np.pi * (f0 * t_tx + 0.5 * K * t_tx**2))
-    St = np.tile(St_base, (PulseNum, 1))
-    
-    # 3. 生成包含延时的真实回波
-    target_delay = 20e-6
-    delay_idx = int(target_delay / Ts)
-    S_clean = np.zeros((PulseNum, Nwid), dtype=complex)
-    for i in range(PulseNum):
-        S_clean[i, delay_idx:delay_idx+Npw] = St_base
-        
-    # 4. 生成强压制式单频/噪声干扰 (JSR = 20dB)
-    Jamming = np.zeros((PulseNum, Nwid), dtype=complex)
-    for i in range(PulseNum):
-        # 叠加一个极强的扫频干扰或单频干扰
-        J_cw = 10 * np.exp(1j * 2 * np.pi * (f0 + 1e6) * t_rx)
-        J_noise = 2 * (np.random.randn(Nwid) + 1j * np.random.randn(Nwid))
-        Jamming[i, :] = J_cw + J_noise
-        
-    Srt_temp = S_clean + Jamming
-    
+    target_dist = radar_params['target_dist']
+    target_amp = radar_params['target_amp']
+    target_delay = target_dist * 2 / 3e8
+    target_delay_idx = int(target_delay / Ts)
+    target_idx = target_delay_idx + Npw // 2
+    noise_var = radar_params.get('noise_var', 0.1)
+    noise_level = np.sqrt(noise_var)
+
+    np.random.seed(42)
+    env = RadarEnvironment(radar_params)
+    St_base = env.generate_target_signal()
+    jammer = JammerLoader.load('FMNoiseAimedJam')
+
+    J_signal, _, _ = jammer.generate(
+        R_target=target_dist,
+        JSR_dB=radar_params.get('JSR_dB', 10),
+        noise_var=radar_params.get('noise_var', 0.1)
+    )
+
+    Srt_matrix = np.zeros((M, N), dtype=complex)
+    for m in range(M):
+        doppler_phase = np.exp(1j * 2 * np.pi * 200 * m * 1e-3)
+        Srt_matrix[m, target_delay_idx:target_delay_idx + Npw] += \
+            St_base[:min(Npw, N - target_delay_idx)] * target_amp * doppler_phase
+        if len(J_signal) >= N:
+            Srt_matrix[m, :] += J_signal[:N]
+        else:
+            Srt_matrix[m, :len(J_signal)] += J_signal
+        Srt_matrix[m, :] += noise_level * (np.random.randn(N) + 1j * np.random.randn(N))
+
+    # 处理前：第一个脉冲匹配滤波
+    pc_before = sig.fftconvolve(Srt_matrix[0], np.conj(St_base[::-1]), mode='same')
+
+    # FrFT 处理
     radar_par = {
-        'PulseNum': PulseNum,
-        'Nwid': Nwid,
-        'Npw': Npw,
-        'St': St,
-        'Srt_temp': Srt_temp,
-        'S_clean': S_clean # 仅作对比用
+        'Srt_matrix': Srt_matrix, 'St_base': St_base,
+        'target_idx': target_idx, 'Fs': Fs, 'Pw': Pw, 'M': M, 'N': N,
     }
-    return radar_par, Fs, t_rx
+    antijam_func = get_antijam_func('frft_filter')
+    processed_signal, processed_template = antijam_func(radar_par)
+    Srt_after = processed_signal[0] if processed_signal.ndim == 2 else processed_signal
+    pc_after = sig.fftconvolve(Srt_after, np.conj(processed_template[::-1]), mode='same')
 
-def find_optimal_frft_order(sig):
-    """自动扫描寻找使得 LFM 能量最集中的最优 FrFT 阶数"""
+    # 计算最优 FrFT 阶数用于可视化
     a_vals = np.linspace(0.8, 1.2, 50)
-    peaks = []
+    best_a, best_energy = 1.0, 0
     for a in a_vals:
-        peaks.append(np.max(np.abs(myfrft(sig, a))))
-    return a_vals[np.argmax(peaks)]
+        x_frft = myfrft(Srt_matrix[0], a)
+        e = np.max(np.abs(x_frft))
+        if e > best_energy:
+            best_energy = e
+            best_a = a
 
-def run_test():
-    radar_par, Fs, t_rx = generate_lfm_and_jamming()
-    
-    # 获取第一脉冲，提取干净回波以寻找最佳 FrFT 阶数
-    clean_sig = radar_par['S_clean'][0, :]
-    jammed_sig = radar_par['Srt_temp'][0, :]
-    
-    print("正在扫描最优分数阶阶数...")
-    a_opt = find_optimal_frft_order(clean_sig)
-    print(f"找到最优阶数 a_opt = {a_opt:.4f}")
-    
-    print("正在执行 FrFT 掩膜抗干扰...")
-    # 设置掩膜宽度 w=50 (根据目标峰值的锐度微调)
-    X_filtered, Srpc_after = frft_anti_jamming(radar_par, a_opt, a_opt, w=50)
-    
-    # 提取第一脉冲的处理结果作图
-    filtered_sig = X_filtered[0, :]
-    
-    # ================= 绘图展示 =================
-    plt.figure(figsize=(16, 12))
-    
-    # 1. 时域对比 (淹没与重现)
-    plt.subplot(3, 2, 1)
-    plt.plot(t_rx * 1e6, np.real(jammed_sig), label='受干扰波形 (实部)', alpha=0.6)
-    plt.plot(t_rx * 1e6, np.real(clean_sig), label='理想无干扰目标', linewidth=2)
-    plt.title('1. 时域：目标完全被干扰淹没')
-    plt.xlabel('时间 (us)')
-    plt.ylabel('幅度')
-    plt.legend()
-    
-    plt.subplot(3, 2, 2)
-    plt.plot(t_rx * 1e6, np.real(clean_sig), label='理想无干扰目标', alpha=0.6)
-    plt.plot(t_rx * 1e6, np.real(filtered_sig), label='FrFT抗干扰后恢复波形', color='red')
-    plt.title('2. 时域：掩膜提取后重构的目标信号')
-    plt.xlabel('时间 (us)')
-    plt.legend()
+    # --- 绘图 ---
+    fig, axes = plt.subplots(2, 3, figsize=(18, 10))
 
-    # 2. 分数阶傅里叶域对比 (核心逻辑展示)
-    plt.subplot(3, 1, 2)
-    # 将包含干扰的信号变到 a_opt 域
-    F_jammed = myfrft(jammed_sig, a_opt)
-    F_clean = myfrft(clean_sig, a_opt)
-    
-    plt.plot(np.abs(F_jammed), label='含干扰信号在 a_opt 域', color='gray', alpha=0.8)
-    plt.plot(np.abs(F_clean), label='干净目标在 a_opt 域 (呈现极致峰值)', color='blue', linewidth=1.5)
-    
-    # 绘制掩膜范围
-    u_star = np.argmax(np.abs(F_jammed))
-    w = 50
-    plt.axvspan(u_star - w//2, u_star + w//2, color='red', alpha=0.2, label='算法提取 Mask 区域')
-    
-    plt.title(f'3. 分数阶傅里叶域 (a={a_opt:.4f})：目标聚集成峰，干扰被铺平')
-    plt.xlabel('FrFT 采样点索引')
-    plt.ylabel('幅度')
-    plt.legend()
-    
-    # 3. 脉冲压缩结果 (最终目的)
-    plt.subplot(3, 1, 3)
-    # 计算未抗干扰的脉冲压缩
-    Nfft = 2**int(np.ceil(np.log2(radar_par['Nwid'] + radar_par['Npw'] - 1)))
-    Sw = fft(radar_par['St'][0, :], n=Nfft)
-    Srw_jammed = fft(np.pad(jammed_sig, (0, Nfft - radar_par['Nwid'])), n=Nfft)
-    Srpc_jammed = ifft(Srw_jammed * np.conj(Sw), n=Nfft)[:radar_par['Nwid']]
-    
-    plt.plot(t_rx * 1e6, 20*np.log10(np.abs(Srpc_jammed) + 1e-10), label='受干扰直接脉压 (目标丢失)', color='gray')
-    plt.plot(t_rx * 1e6, 20*np.log10(Srpc_after/2 + 1e-10), label='FrFT抗干扰后脉压 (峰值凸显)', color='red', linewidth=2)
-    
-    plt.title('4. 脉冲压缩距离像：抗干扰效能验证')
-    plt.xlabel('延迟时间 (us) -> 对应距离')
-    plt.ylabel('归一化幅度 (dB)')
-    plt.ylim([-20, 100])
-    plt.legend()
-    plt.grid(True)
-    
+    # (a) 时域对比
+    t = np.arange(N) / Fs
+    axes[0, 0].plot(t * 1e6, np.abs(Srt_matrix[0]), label='处理前', alpha=0.7)
+    axes[0, 0].plot(t[:len(Srt_after)] * 1e6, np.abs(Srt_after), label='FrFT处理后', alpha=0.7)
+    axes[0, 0].set_xlabel('时间 (μs)')
+    axes[0, 0].set_ylabel('幅度')
+    axes[0, 0].set_title(f'(a) 时域信号对比（脉冲1）')
+    axes[0, 0].legend()
+    axes[0, 0].grid(True)
+
+    # (b) FrFT 域（处理前）
+    x_frft_before = myfrft(Srt_matrix[0], best_a)
+    u_axis = np.arange(len(x_frft_before))
+    axes[0, 1].plot(u_axis, np.abs(x_frft_before), label=f'处理前 (a={best_a:.3f})', alpha=0.7)
+    axes[0, 1].set_xlabel('FrFT 域索引 u')
+    axes[0, 1].set_ylabel('幅度')
+    axes[0, 1].set_title(f'(b) FrFT 域频谱（处理前, 最优阶数 a={best_a:.3f}）')
+    axes[0, 1].legend()
+    axes[0, 1].grid(True)
+
+    # (c) FrFT 域（处理后）
+    x_frft_after = myfrft(Srt_after, best_a)
+    axes[0, 2].plot(u_axis, np.abs(x_frft_after), label=f'处理后 (a={best_a:.3f})', alpha=0.7)
+    axes[0, 2].set_xlabel('FrFT 域索引 u')
+    axes[0, 2].set_ylabel('幅度')
+    axes[0, 2].set_title(f'(c) FrFT 域频谱（处理后）')
+    axes[0, 2].legend()
+    axes[0, 2].grid(True)
+
+    # (d) 脉压距离像-线性
+    range_axis = np.arange(len(pc_before)) * 3e8 / (2 * Fs)
+    axes[1, 0].plot(range_axis, np.abs(pc_before), label='处理前', alpha=0.7)
+    axes[1, 0].plot(range_axis, np.abs(pc_after), label='FrFT处理后', alpha=0.7)
+    axes[1, 0].set_xlabel('距离 (m)')
+    axes[1, 0].set_ylabel('幅度')
+    axes[1, 0].set_title('(d) 脉压距离像对比')
+    axes[1, 0].legend()
+    axes[1, 0].grid(True)
+
+    # (e) 脉压距离像-dB
+    axes[1, 1].plot(range_axis, 20 * np.log10(np.abs(pc_before) + 1e-10), label='处理前', alpha=0.7)
+    axes[1, 1].plot(range_axis, 20 * np.log10(np.abs(pc_after) + 1e-10), label='FrFT处理后', alpha=0.7)
+    axes[1, 1].set_xlabel('距离 (m)')
+    axes[1, 1].set_ylabel('幅度 (dB)')
+    axes[1, 1].set_title('(e) 脉压距离像对比 (dB)')
+    axes[1, 1].legend()
+    axes[1, 1].grid(True)
+
+    # (f) FrFT 阶数扫描能量
+    energies = []
+    for a in a_vals:
+        x_frft_scan = myfrft(Srt_matrix[0], a)
+        energies.append(np.max(np.abs(x_frft_scan)))
+    axes[1, 2].plot(a_vals, energies, 'b-o', markersize=3)
+    axes[1, 2].axvline(x=best_a, color='r', linestyle='--', label=f'最优 a={best_a:.3f}')
+    axes[1, 2].set_xlabel('FrFT 阶数 a')
+    axes[1, 2].set_ylabel('峰值能量')
+    axes[1, 2].set_title('(f) FrFT 阶数扫描')
+    axes[1, 2].legend()
+    axes[1, 2].grid(True)
+
     plt.tight_layout()
+    plt.suptitle('FrFT 分数阶傅里叶变换滤波器 vs FMNoiseAimedJam 瞄频干扰', fontsize=14, y=1.02)
     plt.show()
 
+
 if __name__ == "__main__":
-    run_test()
+    run_visual_test()
