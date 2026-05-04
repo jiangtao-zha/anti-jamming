@@ -29,7 +29,7 @@ if _project_root not in sys.path:
 
 from rl_framework.config import Config
 from rl_framework.environment import AntiJamEnv
-from rl_framework.ppo_agent import PPOAgent
+from rl_framework.agent_factory import create_agent
 from rl_framework.utils import RolloutBuffer, set_seed, get_device
 
 import matplotlib
@@ -285,6 +285,11 @@ def parse_args():
     parser.add_argument('--no_tensorboard', action='store_true', help='禁用 TensorBoard')
     parser.add_argument('--plot_interval', type=int, default=None,
                         help='实时刷新图表的间隔（回合数），默认与 log_interval 相同')
+    parser.add_argument('--agent_type', type=str, default=None,
+                        choices=['cppo', 'std_ppo', 'expert'],
+                        help='智能体类型（默认使用 config 中的设置）')
+    parser.add_argument('--save_history', action='store_true',
+                        help='训练结束后将训练历史保存为 .npz 文件')
     return parser.parse_args()
 
 
@@ -308,13 +313,17 @@ def merge_args_to_config(cfg, args):
         cfg.log_dir = args.log_dir
     if args.save_dir is not None:
         cfg.model_save_dir = args.save_dir
+    if args.agent_type is not None:
+        cfg.agent_type = args.agent_type
+        cfg.use_jammer_type = (args.agent_type == 'cppo')
     return cfg
 
 
 # =====================================================================
 # 训练主函数
 # =====================================================================
-def train(cfg, use_tensorboard=True, resume_path=None, plot_interval=None):
+def train(cfg, use_tensorboard=True, resume_path=None, plot_interval=None,
+         save_history=False):
     """
     PPO 训练主函数。
     训练过程中弹窗实时刷新曲线，训练结束后关闭窗口并保存高清图片。
@@ -343,9 +352,14 @@ def train(cfg, use_tensorboard=True, resume_path=None, plot_interval=None):
     print(f"[train] 离散动作={env.num_discrete_actions}, 连续参数={env.max_continuous_dim}")
     print(f"[train] 干扰类型={len(env.jammer_list)}, 抗干扰={len(env.antijam_list)}")
 
-    # ---- PPO 智能体 ----
-    agent = PPOAgent(cfg, signal_shape=env.get_signal_shape(), num_jammers=env.num_jammers)
-    print(f"[train] PPO agent 已创建")
+    # ---- 智能体 ----
+    agent = create_agent(cfg, signal_shape=env.get_signal_shape(),
+                         num_jammers=env.num_jammers)
+    print(f"[train] 智能体类型: {cfg.agent_type}")
+
+    if cfg.agent_type == 'expert':
+        print("[train] Expert 策略无需训练，退出。")
+        return agent
 
     start_episode = 0
     if resume_path and os.path.isfile(resume_path):
@@ -478,6 +492,21 @@ def train(cfg, use_tensorboard=True, resume_path=None, plot_interval=None):
     if len(history['reward']) > 0:
         save_final_plots(history, cfg.model_save_dir)
 
+    # ---- 保存训练历史 (.npz) ----
+    if save_history and len(history['reward']) > 0:
+        history_path = os.path.join(
+            cfg.model_save_dir,
+            f'training_history_{cfg.agent_type}.npz')
+        np.savez_compressed(
+            history_path,
+            reward=np.array(history['reward'], dtype=np.float64),
+            sinr_improvement=np.array(history['sinr_improvement'], dtype=np.float64),
+            detect_rate=np.array(history['detect_rate'], dtype=np.float64),
+            actor_loss=np.array(history['actor_loss'], dtype=np.float64),
+            critic_loss=np.array(history['critic_loss'], dtype=np.float64),
+        )
+        print(f"[train] 训练历史已保存: {history_path}")
+
     if writer:
         writer.close()
 
@@ -491,7 +520,7 @@ def main():
 
     use_tb = not args.no_tensorboard
     train(cfg, use_tensorboard=use_tb, resume_path=args.resume,
-          plot_interval=args.plot_interval)
+          plot_interval=args.plot_interval, save_history=args.save_history)
 
 
 if __name__ == '__main__':

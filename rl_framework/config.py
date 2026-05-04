@@ -4,6 +4,24 @@ rl_framework/config.py
 所有可调参数集中管理：雷达参数、干扰/抗干扰列表、PPO 超参数、状态模式等。
 """
 
+from copy import deepcopy
+
+
+# =====================================================================
+# 领域专家规则（干扰类型 → 推荐算法 + 归一化连续参数）
+# =====================================================================
+DEFAULT_EXPERT_RULES = {
+    'FMNoiseAimedJam':       ('frft_filter',                [0.5, 0.5]),   # a≈1.0, w≈110
+    'FMZuse':                ('WLN',                        [0.6]),         # par1≈1.54
+    'AMNoiseGaiJam':         ('FrequencyDomainCanceller',   [1.0]),         # use_fitted=True
+    'FMNoiseSaopin':         ('adapt_filter',               [0.5]),         # par1≈0.0
+    'ISDJ':                  ('FastSlowTimeProcessor',      [0.35]),        # limit≈2.6
+    'SMSP':                  ('WLN',                        [0.8]),         # par1≈2.0
+    'NoiseProductJamming':   ('FrequencyDomainCanceller',   [1.0]),
+    'NoiseConvolutionJamming': ('adapt_filter',             [0.3]),
+    'RGPO':                  ('FastSlowTimeProcessor',      [0.5]),
+}
+
 
 class Config:
     # =================================================================
@@ -121,3 +139,74 @@ class Config:
     model_save_dir = 'rl_framework/checkpoints'
     seed = 42
     device = 'auto'          # 'auto' | 'cpu' | 'cuda'
+
+    # =================================================================
+    # 智能体类型
+    # =================================================================
+    agent_type = 'cppo'            # 'cppo' | 'std_ppo' | 'expert'
+    input_mode = 'signal_and_jammer'  # 'signal_and_jammer' | 'jammer_only'
+    use_jammer_type = True         # True → 特征拼接 one-hot (CPPO); False → 不拼接 (StdPPO)
+                                    # [已废弃] 请使用 input_mode; 仅用于旧 checkpoint 向后兼容
+    continuous_action = True       # 是否使用连续动作空间
+    expert_rules = {}              # Expert 映射表，默认用 DEFAULT_EXPERT_RULES
+
+
+class CPPOConfig(Config):
+    """CPPO 预设：信号 + 干扰 one-hot → CNN 特征 → 混合动作空间。"""
+    agent_type = 'cppo'
+    input_mode = 'signal_and_jammer'
+    use_jammer_type = True
+    continuous_action = True
+
+
+class StdPPOConfig(Config):
+    """Standard PPO 预设：仅干扰 one-hot → 小 MLP → 混合动作空间（不使用原始信号）。"""
+    agent_type = 'std_ppo'
+    input_mode = 'jammer_only'
+    use_jammer_type = False
+    continuous_action = True
+
+
+class ExpertConfig(Config):
+    """Expert 预设：固定规则策略（不训练）。"""
+    agent_type = 'expert'
+    input_mode = 'signal_and_jammer'
+    use_jammer_type = False
+    continuous_action = True
+    expert_rules = {}              # 空字典 → 使用默认 DEFAULT_EXPERT_RULES
+
+
+def resolve_config(config_or_name):
+    """
+    从 Config 实例或字符串名称解析出最终的 Config 对象。
+    保证 expert_rules 总是有值。
+
+    参数:
+        config_or_name : Config 子类 / Config 实例 / str (类名)
+
+    返回:
+        Config 实例
+    """
+    if isinstance(config_or_name, str):
+        name = config_or_name
+        registry = {
+            'Config': Config,
+            'CPPOConfig': CPPOConfig,
+            'StdPPOConfig': StdPPOConfig,
+            'ExpertConfig': ExpertConfig,
+        }
+        if name not in registry:
+            raise ValueError(f"Unknown config name: {name}. Available: {list(registry.keys())}")
+        cfg = registry[name]()
+    elif isinstance(config_or_name, type) and issubclass(config_or_name, Config):
+        cfg = config_or_name()
+    elif isinstance(config_or_name, Config):
+        cfg = deepcopy(config_or_name)
+    else:
+        raise TypeError(f"Expected Config/str/class, got {type(config_or_name)}")
+
+    # 确保 expert_rules 有默认值
+    if not cfg.expert_rules:
+        cfg.expert_rules = DEFAULT_EXPERT_RULES
+
+    return cfg
