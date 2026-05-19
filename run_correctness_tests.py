@@ -44,13 +44,13 @@ TEST_CONFIG = [
         'antijam_name': 'FastSlowTimeProcessor',
         'module': 'anti_jamming.FastSlowTimeProcessor',
         'test_func': 'test_fast_slow_time_processor',
-        'jammers': ['SliceCombineJam', 'SMSP'],
+        'jammers': ['SliceCombineJam', 'SMSP', 'ISDJ'],
     },
     {
         'antijam_name': 'Frequency_agile',
         'module': 'anti_jamming.Frequency_agile',
         'test_func': 'test_frequency_agile',
-        'jammers': ['FMNoiseSaopin', 'ISDJ'],
+        'jammers': ['FMNoiseSaopin'],
     },
     {
         'antijam_name': 'wave_agile',

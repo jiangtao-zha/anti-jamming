@@ -156,7 +156,7 @@ def run_visual_test():
     _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     if _root not in sys.path:
         sys.path.insert(0, _root)
-    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'PingFang SC', 'Heiti SC', 'sans-serif']
     plt.rcParams['axes.unicode_minus'] = False
 
     from unified_framework import RadarEnvironment, JammerLoader

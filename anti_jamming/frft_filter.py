@@ -1,15 +1,17 @@
 import numpy as np
 from scipy.fft import fft, ifft
 
-def frft_anti_jamming(radar_par, a1, a2, w=100):
+def frft_anti_jamming(radar_par, a1, a2, w=100, u1_target=None, u2_target=None):
     """
     基于分数阶傅里叶变换(FrFT)的雷达回波抗干扰处理
-    
+
     参数:
-        radar_par : 字典，需包含 PulseNum, Nwid, Npw, St (模板), Srt_temp (受干扰回波)
-        a1, a2    : 相邻脉冲的 FrFT 分数阶阶数
-        w         : 分数阶域中用于提取目标的掩膜宽度 (默认100)
-    
+        radar_par  : 字典，需包含 PulseNum, Nwid, Npw, St (模板), Srt_temp (受干扰回波)
+        a1, a2     : 相邻脉冲的 FrFT 分数阶阶数
+        w          : 分数阶域中用于提取目标的掩膜宽度 (默认100)
+        u1_target  : a1 阶数下目标在 FrFT 域的峰值位置（None 则用 argmax）
+        u2_target  : a2 阶数下目标在 FrFT 域的峰值位置（None 则用 argmax）
+
     返回:
         X_filtered_time  : 抗干扰后的时域回波矩阵
         Srpc_range_after : 抗干扰并脉压后的距离像 (一维数组)
@@ -17,55 +19,55 @@ def frft_anti_jamming(radar_par, a1, a2, w=100):
     PulseNum = radar_par['PulseNum']
     Nwid = radar_par['Nwid']
     Npw = radar_par['Npw']
-    
+
     # 脉冲压缩准备 (匹配滤波器)
     Nfft = 2**int(np.ceil(np.log2(Nwid + Npw - 1)))
     Sw = fft(radar_par['St'][0, :], n=Nfft)
-    
+
     # --- 1. 对所有脉冲进行 FrFT 变换 ---
     X_frft_a1 = np.zeros((PulseNum, Nwid), dtype=complex)
     X_frft_a2 = np.zeros((PulseNum, Nwid), dtype=complex)
-    
+
     for n in range(PulseNum):
         X_frft_a1[n, :] = myfrft(radar_par['Srt_temp'][n, :], a1)
         X_frft_a2[n, :] = myfrft(radar_par['Srt_temp'][n, :], a2)
-        
+
     # --- 2. 在 FrFT 域进行峰值掩膜滤波 (Masking) ---
     X_filtered_time = np.zeros((PulseNum, Nwid), dtype=complex)
     filter_count = np.zeros(PulseNum)
-    
+
     for n in range(PulseNum - 1):
         Xa = X_frft_a1[n, :]
         Xb = X_frft_a2[n+1, :]
-        
-        # 寻找目标在 FrFT 域的能量聚集峰值
-        u1_star = np.argmax(np.abs(Xa))
-        u2_star = np.argmax(np.abs(Xb))
-        
+
+        # 使用模板引导的峰值位置（抗干扰时干扰可能比目标更强）
+        u1_star = u1_target if u1_target is not None else np.argmax(np.abs(Xa))
+        u2_star = u2_target if u2_target is not None else np.argmax(np.abs(Xb))
+
         mask1 = np.zeros(Nwid)
         mask2 = np.zeros(Nwid)
-        
+
         # 构建矩形掩膜 (抠出目标，过滤干扰)
         i1 = max(0, u1_star - w // 2)
         j1 = min(Nwid, u1_star + w // 2 + 1)
         i2 = max(0, u2_star - w // 2)
         j2 = min(Nwid, u2_star + w // 2 + 1)
-        
+
         mask1[i1:j1] = 1.0
         mask2[i2:j2] = 1.0
-        
+
         Xa_f = Xa * mask1
         Xb_f = Xb * mask2
-        
+
         # 逆 FrFT 变回时域
         x_n = myfrft(Xa_f, -a1)
         x_np1 = myfrft(Xb_f, -a2)
-        
+
         X_filtered_time[n, :] += x_n
         filter_count[n] += 1
         X_filtered_time[n+1, :] += x_np1
         filter_count[n+1] += 1
-        
+
     # 重叠区域平均化
     for n in range(PulseNum):
         if filter_count[n] > 0:
@@ -173,7 +175,7 @@ def run_visual_test():
     _root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     if _root not in sys.path:
         sys.path.insert(0, _root)
-    plt.rcParams['font.sans-serif'] = ['SimHei']
+    plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'PingFang SC', 'Heiti SC', 'sans-serif']
     plt.rcParams['axes.unicode_minus'] = False
 
     from unified_framework import RadarEnvironment, JammerLoader

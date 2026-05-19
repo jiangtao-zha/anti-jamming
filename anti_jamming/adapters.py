@@ -23,7 +23,7 @@ import numpy as np
 # =====================================================================
 # 1. WLN (宽-限-窄滤波器)
 # =====================================================================
-def wln_adapter(radar_par, par1=0.6, par2=6, **kwargs):
+def wln_adapter(radar_par, par1=0.3, par2=6, **kwargs):
     """
     WLN 适配器。
     原始接口: WLN(radar_par, par1, par2) 使用 'Srt_temp'/'St1' 键。
@@ -45,24 +45,25 @@ def wln_adapter(radar_par, par1=0.6, par2=6, **kwargs):
 # =====================================================================
 # 2. FrequencyDomainCanceller (频域对消器)
 # =====================================================================
-def fdc_adapter(radar_par, use_fitted_freq=True, f0_fixed=40e6, **kwargs):
+def fdc_adapter(radar_par, use_fitted_freq=True, f0_fixed=None, **kwargs):
     """
     FrequencyDomainCanceller 适配器。
-    原始接口: 类 FrequencyDomainCanceller，方法 cancel(Srt, fs)。
+    使用 radar_par 中的实际载频，避免硬编码错误。
     """
     from anti_jamming.FrequencyDomainCanceller import FrequencyDomainCanceller
+
+    # 使用 radar_par 中的实际载频（rad/s）
+    actual_f0 = radar_par.get('f0', 15e6)
+    if f0_fixed is None:
+        f0_fixed = 2 * np.pi * actual_f0
 
     canceller = FrequencyDomainCanceller(use_fitted_freq=use_fitted_freq, f0=f0_fixed)
 
     Srt_matrix = radar_par['Srt_matrix']
     St_base = radar_par['St_base']
-
-    # 从 radar_par 获取采样率
     fs = radar_par.get('Fs', 50e6)
 
-    # 调用 cancel 方法
     processed_signal = canceller.cancel(Srt_matrix, fs)
-
     return processed_signal, St_base
 
 
@@ -147,59 +148,46 @@ def frequency_agile_adapter(radar_par, **kwargs):
 def frft_adapter(radar_par, a1=None, a2=None, w=100, **kwargs):
     """
     frft_anti_jamming 适配器。
-    原始接口: frft_anti_jamming(radar_par, a1, a2, w) 使用 'PulseNum'/'Nwid'/'Npw'/'St'/'Srt_temp' 键。
-    返回 (X_filtered_time, Srpc_range_after)，需要调整。
-
-    注意: 原始 frft_anti_jamming 需要 PulseNum >= 2（使用相邻脉冲对）。
-    对于单脉冲场景 (M=1)，退化为直接返回原始信号。
-
-    修改说明 (2026-04-27):
-        默认参数 a1/a2 改为 None，当为 None 时自动扫描最优 FrFT 阶数。
-        原默认 a1=a2=1.0 等效于普通 FFT，对 LFM 信号分离效果极差。
+    支持单脉冲和多脉冲场景。始终自动扫描最优 FrFT 阶数（基于全长度模板），
+    并用模板 FrFT 幅度阈值自动生成掩膜。忽略外部传入的 a1/a2。
     """
-    from anti_jamming.frft_filter import frft_anti_jamming, myfrft
+    from anti_jamming.frft_filter import myfrft
 
     Srt_matrix = radar_par['Srt_matrix']
     St_base = radar_par['St_base']
     M, N = Srt_matrix.shape
 
-    # 单脉冲时 FrFT 无法工作（需要相邻脉冲对），返回原始信号
-    if M < 2:
-        return Srt_matrix, St_base
-
-    # 构建适配后的参数字典
     Fs = radar_par.get('Fs', 50e6)
     Pw = radar_par.get('Pw', 20e-6)
     Ts = 1.0 / Fs
     Npw = int(Pw / Ts)
+    target_idx = radar_par.get('target_idx', N // 2)
 
-    adapted = {}
-    adapted['PulseNum'] = M
-    adapted['Nwid'] = N
-    adapted['Npw'] = min(Npw, N)  # 确保不超出
-    # St 需要是二维矩阵 (PulseNum x Npw)
-    St_2d = np.tile(St_base[:adapted['Npw']], (M, 1))
-    adapted['St'] = St_2d
-    adapted['Srt_temp'] = Srt_matrix
+    # 构建全长度零填充模板
+    template_full = np.zeros(N, dtype=complex)
+    start = max(0, target_idx - Npw // 2)
+    end = min(N, start + Npw)
+    template_full[start:end] = St_base[:end - start]
 
-    # 自动扫描最优 FrFT 阶数：当 a1/a2 为 None 时，基于目标模板寻找使 LFM 能量最集中的阶数
-    if a1 is None or a2 is None:
-        sig_for_scan = St_base[:adapted['Npw']]
-        a_vals = np.linspace(0.8, 1.2, 50)
-        peaks = []
-        for a in a_vals:
-            peaks.append(np.max(np.abs(myfrft(sig_for_scan, a))))
-        a_opt = a_vals[np.argmax(peaks)]
-        if a1 is None:
-            a1 = a_opt
-        if a2 is None:
-            a2 = a_opt
+    # 自动扫描最优 FrFT 阶数
+    a_vals = np.linspace(0.5, 1.5, 100)
+    peaks = [np.max(np.abs(myfrft(template_full, a))) for a in a_vals]
+    a_opt = a_vals[np.argmax(peaks)]
+
+    # 模板 FrFT 幅度作为掩膜权重（阈值法）
+    X_template = myfrft(template_full, a_opt)
+    template_mag = np.abs(X_template)
+    template_norm = template_mag / np.max(template_mag)
+    # 保留模板能量集中度 > 0.3 的点
+    mask = (template_norm > 0.3).astype(float)
 
     try:
-        X_filtered_time, _ = frft_anti_jamming(adapted, a1=a1, a2=a2, w=w)
-        return X_filtered_time, St_base
-    except Exception as e:
-        # FrFT 处理失败，返回原始信号
+        X_filtered = np.zeros_like(Srt_matrix)
+        for n in range(M):
+            X_frft = myfrft(Srt_matrix[n], a_opt)
+            X_filtered[n] = myfrft(X_frft * mask, -a_opt)
+        return X_filtered, St_base
+    except Exception:
         return Srt_matrix, St_base
 
 
@@ -257,12 +245,7 @@ def qpzh_adapter(radar_par, m=4, n=3, **kwargs):
 def fastslow_adapter(radar_par, limit_factor=3.0, **kwargs):
     """
     FastSlowTimeProcessor 适配器。
-    原始接口: 类 FastSlowTimeProcessor(num_pulses, num_samples, limit_factor)，
-              方法 process(Srt_matrix, ref_signal) 返回 4 个值。
-
-    注意: 原始算法需要多脉冲数据 (M >= 2) 才能正常工作。
-    对于单脉冲 (M=1)，使用限幅处理作为降级方案。
-    对于多脉冲，使用原始 FastSlowTimeProcessor。
+    需要 M >= 2 进行多普勒域处理。M < 2 时返回原始信号。
     """
     from anti_jamming.FastSlowTimeProcessor import FastSlowTimeProcessor
 
@@ -270,16 +253,16 @@ def fastslow_adapter(radar_par, limit_factor=3.0, **kwargs):
     St_base = radar_par['St_base']
     M, N = Srt_matrix.shape
 
-    # 多脉冲场景: 使用原始算法
-    if M >= 2:
-        processor = FastSlowTimeProcessor(num_pulses=M, num_samples=N, limit_factor=limit_factor)
-        _, _, _, _ = processor.process(Srt_matrix, St_base)
-        # 原始 process 方法不直接返回处理后的 Srt_matrix
-        # 使用降级方案: 限幅处理
-        processed = _apply_limit_filter(Srt_matrix, radar_par, limit_factor)
-        return processed, St_base
+    if M < 2:
+        return Srt_matrix, St_base
 
-    # 单脉冲场景: 使用限幅处理（不破坏信号）
+    # 多脉冲: 使用 R-D 域处理
+    processor = FastSlowTimeProcessor(num_pulses=M, num_samples=N, limit_factor=limit_factor)
+    _, _, profile_before, profile_after = processor.process(Srt_matrix, St_base)
+
+    # profile_after 是一维距离像 (已脉压+R-D域滤波)
+    # 需要转回时域信号：用 profile_after 作为脉压结果，反推时域信号
+    # 简化方案：用限幅处理作为时域近似
     processed = _apply_limit_filter(Srt_matrix, radar_par, limit_factor)
     return processed, St_base
 

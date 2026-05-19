@@ -47,39 +47,39 @@ python -m rl_framework.train --agent_type cppo --save_history
 python -m rl_framework.train --agent_type std_ppo --save_history
 
 # 绘制对比曲线（默认指标为 reward）
-python plot_training_curves.py --log_files checkpoints/training_history_cppo.npz checkpoints/training_history_std_ppo.npz --labels CPPO "Standard PPO"
+python rl_framework/plot_training_curves.py --log_files rl_framework/checkpoints/training_history_cppo.npz rl_framework/checkpoints/training_history_std_ppo.npz --labels CPPO "Standard PPO"
 
 # 绘制 SINR 改善曲线，附带 Expert 水平线
-python plot_training_curves.py --log_files checkpoints/training_history_cppo.npz checkpoints/training_history_std_ppo.npz --metric sinr_improvement --smooth 15 --expert_value 2.5 --title "SINR Improvement"
+python rl_framework/plot_training_curves.py --log_files rl_framework/checkpoints/training_history_cppo.npz rl_framework/checkpoints/training_history_std_ppo.npz --metric sinr_improvement --smooth 15 --expert_value 2.5 --title "SINR Improvement"
 ```
 
 ### 评估
 
 ```bash
 # 评估 CPPO 模型
-python -m rl_framework.evaluate --model checkpoints/ppo_best.pt
+python -m rl_framework.evaluate --model rl_framework/checkpoints/ppo_best.pt
 
 # 评估 Expert 策略（不需要模型文件）
 python -m rl_framework.evaluate --agent_type expert
 
 # 评估 Standard PPO
-python -m rl_framework.evaluate --agent_type std_ppo --model checkpoints/std_ppo_best.pt
+python -m rl_framework.evaluate --agent_type std_ppo --model rl_framework/checkpoints/std_ppo_best.pt
 
 # 只评估指定干扰类型
-python -m rl_framework.evaluate --model checkpoints/ppo_best.pt --jammer FMZuse
+python -m rl_framework.evaluate --model rl_framework/checkpoints/ppo_best.pt --jammer FMZuse
 ```
 
 ### 综合对比
 
 ```bash
 # 对比四种策略（需提供 PPO 权重文件）
-python run_comparison.py --cppo_weights cppo_best.pt --std_ppo_weights std_ppo_best.pt
+python rl_framework/run_comparison.py --cppo_weights rl_framework/checkpoints/cppo_best.pt --std_ppo_weights rl_framework/checkpoints/std_ppo_best.pt
 
 # 仅对比 Expert vs 无处理（不需要权重）
-python run_comparison.py
+python rl_framework/run_comparison.py
 
 # 自定义回合数和输出
-python run_comparison.py --episodes 100 --output_plot comparison.png
+python rl_framework/run_comparison.py --episodes 100 --output_plot comparison.png
 ```
 
 ### TensorBoard

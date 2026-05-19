@@ -170,7 +170,7 @@ class AntiJamEnv:
         # 5) 计算奖励: SINR 改善 + 检测成功奖励
         sinr_improvement = sinr_after - sinr_before
         detect_bonus = 0.0
-        if sinr_after > self.cfg.cfar_pfa:  # 简化检测判断
+        if sinr_after > 5.0:  # SINR > 5 dB 视为检测成功
             detect_bonus = self.detect_weight
 
         reward = self.sinr_weight * sinr_improvement + detect_bonus

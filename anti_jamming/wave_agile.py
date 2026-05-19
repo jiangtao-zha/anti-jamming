@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy import signal
 from scipy.fft import fft, fftshift, fftfreq
 
-plt.rcParams['font.sans-serif'] = ['SimHei'] # 设置中文字体
+plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'PingFang SC', 'Heiti SC', 'sans-serif'] # 设置中文字体
 plt.rcParams['axes.unicode_minus'] = False # 正常显示负号
 
 class WaveAgileRadar:

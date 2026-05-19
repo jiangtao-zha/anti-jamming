@@ -34,7 +34,10 @@ class UnifiedEvaluator:
         self.Pfa = Pfa
 
     def ca_cfar_fast(self, mag):
-        alpha = self.Pfa ** (-1.0 / (2 * self.ref_cells)) - 1
+        # 幅度域 CA-CFAR: alpha = sqrt(-4*ln(Pfa)/pi)
+        # 基于幅度服从 Rayleigh 分布: P(|x|>T) = exp(-T^2/(2σ^2)),
+        # σ = mean(|x|)*sqrt(2/π), 代入得 T = mean(|x|)*sqrt(-4*ln(Pfa)/π)
+        alpha = np.sqrt(-4.0 * np.log(self.Pfa) / np.pi)
         kernel_size = 1 + 2 * self.guard_cells + 2 * self.ref_cells
         kernel = np.ones(kernel_size)
         kernel[self.ref_cells : self.ref_cells + 2 * self.guard_cells + 1] = 0
@@ -544,7 +547,7 @@ Reward 改善: {proc['reward'] - orig['reward']:.4f}
         info_filtered = proc['evaluation']
         
         # 设置中文字体
-        plt.rcParams['font.sans-serif'] = ['SimHei']
+        plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS', 'PingFang SC', 'Heiti SC', 'sans-serif']
         plt.rcParams['axes.unicode_minus'] = False
         
         # 创建图形

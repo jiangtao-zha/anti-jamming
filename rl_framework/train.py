@@ -53,6 +53,10 @@ if not _interactive_ok:
 
 import matplotlib.pyplot as plt
 
+# 覆盖 unified_framework 等模块中设置的 SimHei 字体，macOS 上不可用
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS', 'PingFang SC', 'Heiti SC', 'sans-serif']
+plt.rcParams['axes.unicode_minus'] = False
+
 
 # =====================================================================
 # 绘图工具
@@ -85,41 +89,39 @@ class LivePlotter:
         # 预分配 x 轴容量
         self.x_capacity = max(200, max_episodes)
 
-        # ---- 创建 figure ----
+        # ---- 创建 figure (4 子图) ----
         self.fig, self.axes = plt.subplots(
-            3, 1, figsize=(12, 13),
-            gridspec_kw={'hspace': 0.40})
+            4, 1, figsize=(12, 16),
+            gridspec_kw={'hspace': 0.45})
         self.fig.canvas.manager.set_window_title('PPO Training Monitor')
         self.fig.patch.set_facecolor('#fafafa')
 
-        # ---- 子图 1: Reward & SINR (双 y 轴) ----
+        # ---- 子图 1: Reward ----
         ax = self.axes[0]
         ax.set_facecolor('#fdfdfd')
-        ax.set_title('Reward & SINR Improvement', fontsize=11, fontweight='bold')
+        ax.set_title('Average Reward per Episode', fontsize=11, fontweight='bold')
         ax.set_xlabel('Episode')
-        ax.set_ylabel('Reward', color='steelblue')
-        ax.tick_params(axis='y', labelcolor='steelblue')
+        ax.set_ylabel('Reward')
         ax.grid(True, alpha=0.25)
+        self.line_reward_raw, = ax.plot([], [], alpha=0.25, color='steelblue', lw=0.5)
+        self.line_reward_ma,  = ax.plot([], [], color='steelblue', lw=2, label='Reward (MA)')
+        ax.legend(loc='upper left', fontsize=8)
 
-        self.ax_r = ax
-        self.ax_sinr = ax.twinx()
-        self.ax_sinr.set_ylabel('SINR Improvement (dB)', color='darkorange')
-        self.ax_sinr.tick_params(axis='y', labelcolor='darkorange')
-
-        x0 = np.zeros(self.x_capacity)
-        self.line_reward_raw,  = ax.plot([], [], alpha=0.25, color='steelblue',  lw=0.5)
-        self.line_reward_ma,   = ax.plot([], [], color='steelblue',  lw=2, label='Reward (MA)')
-        self.line_sinr_raw,    = self.ax_sinr.plot([], [], alpha=0.25, color='darkorange', lw=0.5)
-        self.line_sinr_ma,     = self.ax_sinr.plot([], [], color='darkorange', lw=2, label='SINR imp. (MA)')
-        self.title_text_0 = ax.set_title('Reward & SINR Improvement', fontsize=11, fontweight='bold')
-
-        # 合并 legend
-        lines = [self.line_reward_ma, self.line_sinr_ma]
-        labels = [l.get_label() for l in lines]
-        ax.legend(lines, labels, loc='upper left', fontsize=8)
-
-        # ---- 子图 2: Loss ----
+        # ---- 子图 2: SINR Improvement ----
         ax = self.axes[1]
+        ax.set_facecolor('#fdfdfd')
+        ax.set_title('SINR Improvement per Episode', fontsize=11, fontweight='bold')
+        ax.set_xlabel('Episode')
+        ax.set_ylabel('SINR Improvement (dB)')
+        ax.grid(True, alpha=0.25)
+        self.line_sinr_raw, = ax.plot([], [], alpha=0.25, color='darkorange', lw=0.5)
+        self.line_sinr_ma,  = ax.plot([], [], color='darkorange', lw=2, label='SINR imp. (MA)')
+        ax.legend(loc='upper left', fontsize=8)
+
+        self.title_text_0 = self.axes[0].set_title('', fontsize=11, fontweight='bold')
+
+        # ---- 子图 3: Loss ----
+        ax = self.axes[2]
         ax.set_facecolor('#fdfdfd')
         ax.set_title('Actor & Critic Loss', fontsize=11, fontweight='bold')
         ax.set_xlabel('Episode')
@@ -132,8 +134,8 @@ class LivePlotter:
         self.line_critic_ma,  = ax.plot([], [], color='seagreen',   lw=2, label='Critic (MA)')
         ax.legend(loc='upper right', fontsize=8)
 
-        # ---- 子图 3: Detection Rate ----
-        ax = self.axes[2]
+        # ---- 子图 4: Detection Rate ----
+        ax = self.axes[3]
         ax.set_facecolor('#fdfdfd')
         ax.set_title('Detection Rate', fontsize=11, fontweight='bold')
         ax.set_xlabel('Episode')
@@ -163,40 +165,37 @@ class LivePlotter:
         x = np.arange(n)
         window = _ma_window(n)
 
-        # Reward
+        # Reward (子图 0)
         self.line_reward_raw.set_data(x, history['reward'])
         self.line_reward_ma.set_data(x, _smooth(history['reward'], window))
+        self.title_text_0.set_text(
+            f'[{current_episode}/{self.max_episodes}] Average Reward per Episode')
+        self.axes[0].set_xlim(0, max(n, 10))
+        self.axes[0].relim(); self.axes[0].autoscale_view()
 
-        # SINR
+        # SINR (子图 1)
         self.line_sinr_raw.set_data(x, history['sinr_improvement'])
         self.line_sinr_ma.set_data(x, _smooth(history['sinr_improvement'], window))
+        self.axes[1].set_xlim(0, max(n, 10))
+        self.axes[1].relim(); self.axes[1].autoscale_view()
 
-        self.title_text_0.set_text(
-            f'[{current_episode}/{self.max_episodes}] Reward & SINR Improvement')
-
-        # auto-scale
-        self.ax_r.set_xlim(0, max(n, 10))
-        self.ax_sinr.set_xlim(0, max(n, 10))
-        self.ax_r.relim(); self.ax_r.autoscale_view()
-        self.ax_sinr.relim(); self.ax_sinr.autoscale_view()
-
-        # Loss
+        # Loss (子图 2)
         self.line_actor_raw.set_data(x, history['actor_loss'])
         self.line_actor_ma.set_data(x, _smooth(history['actor_loss'], window))
         self.line_critic_raw.set_data(x, history['critic_loss'])
         self.line_critic_ma.set_data(x, _smooth(history['critic_loss'], window))
-        self.axes[1].set_xlim(0, max(n, 10))
-        self.axes[1].relim(); self.axes[1].autoscale_view()
+        self.axes[2].set_xlim(0, max(n, 10))
+        self.axes[2].relim(); self.axes[2].autoscale_view()
 
-        # Detection rate
+        # Detection rate (子图 3)
         self.line_det_raw.set_data(x, history['detect_rate'])
         self.line_det_ma.set_data(x, _smooth(history['detect_rate'], window))
 
         # 更新 fill_between（需要删旧的画新的）
         self.fill_det.remove()
-        self.fill_det = self.axes[2].fill_between(
+        self.fill_det = self.axes[3].fill_between(
             x, history['detect_rate'], alpha=0.12, color='mediumpurple')
-        self.axes[2].set_xlim(0, max(n, 10))
+        self.axes[3].set_xlim(0, max(n, 10))
 
         # 刷新 canvas
         if self.interactive:
@@ -211,7 +210,7 @@ class LivePlotter:
             pass
 
 
-def save_final_plots(history, save_dir):
+def save_final_plots(history, save_dir, agent_type='ppo'):
     """
     训练结束后绘制高清终版图表并保存到文件。
     2x2: reward / SINR / actor loss / critic loss + 检测率单独一张。
@@ -242,7 +241,7 @@ def save_final_plots(history, save_dir):
     smooth_plot(axes[1, 0], 'actor_loss',       'crimson',    'Actor Loss per Episode',                'Actor Loss')
     smooth_plot(axes[1, 1], 'critic_loss',      'seagreen',   'Critic Loss per Episode',               'Critic Loss')
     plt.tight_layout()
-    path1 = os.path.join(save_dir, 'training_curves.png')
+    path1 = os.path.join(save_dir, f'training_curves_{agent_type}.png')
     fig.savefig(path1, dpi=150)
     plt.close(fig)
     print(f"[train] 训练曲线已保存: {path1}")
@@ -257,7 +256,7 @@ def save_final_plots(history, save_dir):
     ax2.set_xlabel('Episode'); ax2.set_ylabel('Detection Rate')
     ax2.set_ylim(-0.05, 1.05); ax2.legend(); ax2.grid(True, alpha=0.3)
     plt.tight_layout()
-    path2 = os.path.join(save_dir, 'detect_rate.png')
+    path2 = os.path.join(save_dir, f'detect_rate_{agent_type}.png')
     fig2.savefig(path2, dpi=150)
     plt.close(fig2)
     print(f"[train] 检测率曲线已保存: {path2}")
@@ -309,6 +308,8 @@ def merge_args_to_config(cfg, args):
         cfg.seed = args.seed
     if args.device is not None:
         cfg.device = args.device
+    else:
+        cfg.device = get_device("auto")
     if args.log_dir is not None:
         cfg.log_dir = args.log_dir
     if args.save_dir is not None:
@@ -316,6 +317,7 @@ def merge_args_to_config(cfg, args):
     if args.agent_type is not None:
         cfg.agent_type = args.agent_type
         cfg.use_jammer_type = (args.agent_type == 'cppo')
+        cfg.input_mode = 'signal_and_jammer' if args.agent_type == 'cppo' else 'jammer_only'
     return cfg
 
 
@@ -490,7 +492,7 @@ def train(cfg, use_tensorboard=True, resume_path=None, plot_interval=None,
 
     # ---- 保存高清终版图片 ----
     if len(history['reward']) > 0:
-        save_final_plots(history, cfg.model_save_dir)
+        save_final_plots(history, cfg.model_save_dir, agent_type=cfg.agent_type)
 
     # ---- 保存训练历史 (.npz) ----
     if save_history and len(history['reward']) > 0:

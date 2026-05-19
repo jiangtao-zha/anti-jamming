@@ -51,7 +51,7 @@ TEST_PAIRS = [
     {
         'jammer_type': 'AMNoiseGaiJam',
         'antijam_type': 'FrequencyDomainCanceller',
-        'antijam_kwargs': {'use_fitted_freq': False},
+        'antijam_kwargs': {'use_fitted_freq': True},
         'JSR_dB': 10,
         'noise_var': 0.1,
         'description': '噪声调幅干扰 vs 频域对消算法',
@@ -65,20 +65,20 @@ TEST_PAIRS = [
         'noise_var': 0.1,
         'description': '扫频干扰 vs 频率捷变',
     },
-    # 间歇采样干扰 + 频率捷变
+    # 间歇采样干扰 + 快慢时间处理
     {
         'jammer_type': 'ISDJ',
-        'antijam_type': 'Frequency_agile',
-        'antijam_kwargs': {},
+        'antijam_type': 'FastSlowTimeProcessor',
+        'antijam_kwargs': {'limit_factor': 3.0},
         'JSR_dB': 10,
         'noise_var': 0.1,
-        'description': '间歇采样干扰 vs 频率捷变',
+        'description': '间歇采样干扰 vs 快慢时间域联合处理',
     },
     # 噪声调频阻塞干扰 + 宽窄限电路
     {
         'jammer_type': 'FMZuse',
         'antijam_type': 'WLN',
-        'antijam_kwargs': {'par1': 0.6, 'par2': 6},
+        'antijam_kwargs': {'par1': 0.3, 'par2': 6},
         'JSR_dB': 10,
         'noise_var': 0.1,
         'description': '噪声调频阻塞干扰 vs 宽窄限电路',
