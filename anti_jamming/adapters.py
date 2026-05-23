@@ -45,26 +45,50 @@ def wln_adapter(radar_par, par1=0.3, par2=6, **kwargs):
 # =====================================================================
 # 2. FrequencyDomainCanceller (频域对消器)
 # =====================================================================
-def fdc_adapter(radar_par, use_fitted_freq=True, f0_fixed=None, **kwargs):
+def fdc_adapter(radar_par, cancellation_strength=0.8, **kwargs):
     """
-    FrequencyDomainCanceller 适配器。
-    使用 radar_par 中的实际载频，避免硬编码错误。
+    频域对消适配器。
+    用模板频谱估计干扰分量：干扰 ≈ max(接收频谱 - 模板频谱, 0)，
+    然后在频域减去干扰。对 AM 噪声等有明显载频特征的干扰有效。
+    cancellation_strength 控制对消强度 (0=不对消, 1=完全对消)。
     """
-    from anti_jamming.FrequencyDomainCanceller import FrequencyDomainCanceller
-
-    # 使用 radar_par 中的实际载频（rad/s）
-    actual_f0 = radar_par.get('f0', 15e6)
-    if f0_fixed is None:
-        f0_fixed = 2 * np.pi * actual_f0
-
-    canceller = FrequencyDomainCanceller(use_fitted_freq=use_fitted_freq, f0=f0_fixed)
-
     Srt_matrix = radar_par['Srt_matrix']
     St_base = radar_par['St_base']
-    fs = radar_par.get('Fs', 50e6)
+    M, N = Srt_matrix.shape
+    Fs = radar_par.get('Fs', 50e6)
 
-    processed_signal = canceller.cancel(Srt_matrix, fs)
-    return processed_signal, St_base
+    # 构建全长度模板
+    Pw = radar_par.get('Pw', 20e-6)
+    Ts = 1.0 / Fs
+    Npw = int(Pw / Ts)
+    target_idx = radar_par.get('target_idx', N // 2)
+    template_full = np.zeros(N, dtype=complex)
+    start = max(0, target_idx - Npw // 2)
+    end = min(N, start + Npw)
+    template_full[start:end] = St_base[:end - start]
+
+    # 模板频谱
+    T_fft = np.fft.fft(template_full)
+    t_mag = np.abs(T_fft)
+
+    processed = np.zeros_like(Srt_matrix)
+    for i in range(M):
+        R_fft = np.fft.fft(Srt_matrix[i])
+        R_mag = np.abs(R_fft)
+
+        # 估计干扰频谱：超出模板水平的部分视为干扰
+        interference_est = np.maximum(R_mag - t_mag, 0)
+        # 仅对干扰分量施加衰减，保留信号
+        gain = 1.0 - cancellation_strength * np.clip(
+            interference_est / (R_mag + 1e-12), 0, 1
+        )
+        # 在模板无能量的频段不完全压制（保留噪声基底）
+        signal_band = t_mag > 0.01 * np.max(t_mag)
+        gain[~signal_band] = np.maximum(gain[~signal_band], 0.1)
+
+        processed[i] = np.fft.ifft(R_fft * gain)
+
+    return processed, St_base
 
 
 # =====================================================================
@@ -94,28 +118,55 @@ def adapt_filter_adapter(radar_par, par1=0.0, par2=None, **kwargs):
 # =====================================================================
 def wave_agile_adapter(radar_par, **kwargs):
     """
-    WaveAgileRadar 适配器。
+    WaveAgileRadar 适配器（接收端实现）。
 
-    波形捷变是发射端策略，不处理接收信号。在统一框架中作为抗干扰手段时，
-    返回原始信号（由框架在发射端应用波形变化）。
-    若 radar_par 中包含由 WaveAgileRadar.generate() 生成的数据，
-    则直接提取处理后的信号。
+    接收端波形捷变：以模板信号为参考做频域自适应滤波。
+    先做匹配滤波得到脉压结果，再用脉压输出加权重构时域信号，
+    抑制匹配滤波后的残余干扰（对欺骗类干扰有效）。
     """
     Srt_matrix = radar_par['Srt_matrix']
     St_base = radar_par['St_base']
+    M, N = Srt_matrix.shape
+    Fs = radar_par.get('Fs', 50e6)
 
-    # 波形捷变本质上是发射端策略，不对接收信号做处理
-    # 如果 radar_par 中有 wave_agile 生成的数据，使用之
-    if 'wave_radar' in radar_par and radar_par['wave_radar'] is not None:
-        wave_data = radar_par['wave_radar']
-        if 'Srti' in wave_data:
-            Srti = wave_data['Srti']
-            M, N = Srt_matrix.shape
-            # 尝试匹配维度
-            if Srti.shape[1] == N:
-                return Srti[:M, :], St_base
+    # 构建全长度模板
+    Pw = radar_par.get('Pw', 20e-6)
+    Ts = 1.0 / Fs
+    Npw = int(Pw / Ts)
+    target_idx = radar_par.get('target_idx', N // 2)
+    template_full = np.zeros(N, dtype=complex)
+    start = max(0, target_idx - Npw // 2)
+    end = min(N, start + Npw)
+    template_full[start:end] = St_base[:end - start]
 
-    return Srt_matrix, St_base
+    # 匹配滤波器
+    mf = np.conj(template_full[::-1])
+
+    processed = np.zeros_like(Srt_matrix)
+    for i in range(M):
+        rx = Srt_matrix[i]
+        # 脉冲压缩
+        pc = np.fft.ifft(np.fft.fft(rx) * np.fft.fft(mf))
+        pc_mag = np.abs(pc)
+        pc_max = np.max(pc_mag) + 1e-12
+
+        # 构建增益函数：在脉压域抑制旁瓣/干扰峰
+        # 目标附近保留，远处抑制
+        pc_gain = np.clip(pc_mag / (np.median(pc_mag) * 5 + 1e-12), 0, 1)
+        # 平滑增益避免振铃
+        from scipy.ndimage import uniform_filter1d
+        pc_gain = uniform_filter1d(pc_gain, size=max(5, N // 128))
+
+        # 逆脉压回到时域
+        pc_filtered = pc * pc_gain
+        mf_fft = np.fft.fft(mf)
+        mf_conj = np.conj(mf_fft)
+        mf_power = np.abs(mf_fft) ** 2 + 1e-8
+        rx_clean = np.fft.ifft(np.fft.fft(pc_filtered) * mf_conj / mf_power)
+
+        processed[i] = rx_clean
+
+    return processed, St_base
 
 
 # =====================================================================
@@ -123,34 +174,61 @@ def wave_agile_adapter(radar_par, **kwargs):
 # =====================================================================
 def frequency_agile_adapter(radar_par, **kwargs):
     """
-    FrequencyAgileRadar 适配器。
+    FrequencyAgileRadar 适配器（接收端实现）。
 
-    频率捷变是发射端策略，不处理接收信号。与 wave_agile 类似。
+    接收端频率捷变：检测干扰频段峰值并做频谱凹陷滤波。
+    在频域定位超出模板频谱水平的干扰峰值，施加软衰减。
     """
     Srt_matrix = radar_par['Srt_matrix']
     St_base = radar_par['St_base']
+    M, N = Srt_matrix.shape
+    Fs = radar_par.get('Fs', 50e6)
 
-    # 频率捷变本质上是发射端策略
-    if 'wave_radar' in radar_par and radar_par['wave_radar'] is not None:
-        wave_data = radar_par['wave_radar']
-        if 'Srti' in wave_data:
-            Srti = wave_data['Srti']
-            M, N = Srt_matrix.shape
-            if Srti.shape[1] == N:
-                return Srti[:M, :], St_base
+    # 构建全长度模板
+    Pw = radar_par.get('Pw', 20e-6)
+    Ts = 1.0 / Fs
+    Npw = int(Pw / Ts)
+    target_idx = radar_par.get('target_idx', N // 2)
+    template_full = np.zeros(N, dtype=complex)
+    start = max(0, target_idx - Npw // 2)
+    end = min(N, start + Npw)
+    template_full[start:end] = St_base[:end - start]
 
-    return Srt_matrix, St_base
+    # 模板频谱幅度
+    T_fft = np.fft.fft(template_full)
+    t_mag = np.abs(T_fft)
+
+    processed = np.zeros_like(Srt_matrix)
+    for i in range(M):
+        rx = Srt_matrix[i]
+        R_fft = np.fft.fft(rx)
+        R_mag = np.abs(R_fft)
+
+        # 干扰检测：接收频谱超出模板频谱 3 倍以上的频段
+        interference_ratio = R_mag / (t_mag + np.max(t_mag) * 0.05)
+        # 软衰减：对干扰频段按比例压制
+        gain = np.ones(N)
+        high_interference = interference_ratio > 3.0
+        if np.any(high_interference):
+            # 压制到模板水平
+            gain[high_interference] = (t_mag[high_interference] + np.max(t_mag) * 0.05) / (R_mag[high_interference] + 1e-12)
+            # 平滑增益
+            from scipy.ndimage import uniform_filter1d
+            gain = uniform_filter1d(gain, size=max(3, N // 256))
+
+        processed[i] = np.fft.ifft(R_fft * gain)
+
+    return processed, St_base
 
 
 # =====================================================================
 # 6. frft_filter (分数阶傅里叶变换滤波器)
 # =====================================================================
-def frft_adapter(radar_par, mask_threshold=0.5, **kwargs):
+def frft_adapter(radar_par, mask_threshold=0.1, **kwargs):
     """
     frft_anti_jamming 适配器。
-    支持单脉冲和多脉冲场景。始终自动扫描最优 FrFT 阶数（基于全长度模板），
-    并用模板 FrFT 幅度阈值自动生成掩膜。
-    mask_threshold 控制掩膜宽度（默认0.5）。
+    在 FrFT 域用模板 FrFT 幅度构建软掩膜，保留信号分量。
+    mask_threshold 越低，保留越多能量（默认0.1）。
     """
     from anti_jamming.frft_filter import myfrft
 
@@ -175,11 +253,12 @@ def frft_adapter(radar_par, mask_threshold=0.5, **kwargs):
     peaks = [np.max(np.abs(myfrft(template_full, a))) for a in a_vals]
     a_opt = a_vals[np.argmax(peaks)]
 
-    # 模板 FrFT 幅度作为掩膜权重（阈值法）
+    # 模板 FrFT 幅度构建软掩膜
     X_template = myfrft(template_full, a_opt)
     template_mag = np.abs(X_template)
     template_norm = template_mag / np.max(template_mag)
-    mask = (template_norm > mask_threshold).astype(float)
+    # 软掩膜：在模板能量集中的区域增益接近1，其余区域按比例衰减
+    mask = np.clip(template_norm / mask_threshold, 0, 1)
 
     try:
         X_filtered = np.zeros_like(Srt_matrix)
@@ -194,47 +273,56 @@ def frft_adapter(radar_par, mask_threshold=0.5, **kwargs):
 # =====================================================================
 # 7. qpzh (切片重组抗干扰)
 # =====================================================================
-def qpzh_adapter(radar_par, m=4, n=3, **kwargs):
+def qpzh_adapter(radar_par, m=8, n=2, **kwargs):
     """
-    SliceCombineJam (qpzh) 适配器。
-
-    注意: SliceCombineJam 原始实现是干扰信号生成器。
-    作为"抗干扰"使用时，执行限幅处理以抑制突发强干扰。
-    对信号按段做幅值中值滤波，可平滑掉强脉冲干扰。
+    切片重组抗干扰适配器。
+    将频谱分为 m 段，在每段内比较接收信号与模板信号的能量比，
+    对干扰主导的段施加衰减，保留信号主导的段。
     """
     Srt_matrix = radar_par['Srt_matrix']
     St_base = radar_par['St_base']
     M, N = Srt_matrix.shape
+    Fs = radar_par.get('Fs', 50e6)
+
+    # 构建全长度模板
+    Pw = radar_par.get('Pw', 20e-6)
+    Ts = 1.0 / Fs
+    Npw = int(Pw / Ts)
+    target_idx = radar_par.get('target_idx', N // 2)
+    template_full = np.zeros(N, dtype=complex)
+    start = max(0, target_idx - Npw // 2)
+    end = min(N, start + Npw)
+    template_full[start:end] = St_base[:end - start]
+
+    # 模板频谱归一化幅度
+    T_fft = np.fft.fft(template_full)
+    t_mag = np.abs(T_fft)
+    t_max = np.max(t_mag) + 1e-12
+
+    # 将频谱分为 m 段
+    seg_len = N // m
 
     processed = np.zeros_like(Srt_matrix)
-
     for i in range(M):
-        sig = Srt_matrix[i, :]
+        rx = Srt_matrix[i]
+        R_fft = np.fft.fft(rx)
+        R_mag = np.abs(R_fft)
 
-        # 限幅处理: 计算全局统计量，对超出阈值的采样点进行衰减
-        # 使用分段限幅: 将信号分为 m 段，每段独立计算阈值
-        seg_len = N // m
-        processed_sig = sig.copy()
-
+        mask = np.ones(N, dtype=float)
         for seg_idx in range(m):
-            start = seg_idx * seg_len
-            end = min((seg_idx + 1) * seg_len, N)
-            seg = sig[start:end]
+            s = seg_idx * seg_len
+            e = min((seg_idx + 1) * seg_len, N)
+            # 段内能量比较
+            t_seg_energy = np.sum(t_mag[s:e] ** 2)
+            r_seg_energy = np.sum(R_mag[s:e] ** 2)
+            t_level = t_seg_energy / (t_max ** 2 * seg_len + 1e-12)
+            # 如果该段模板能量低且接收能量高，说明有干扰
+            if t_level < 0.01 and r_seg_energy > 0:
+                # 按模板/接收比衰减
+                seg_scale = np.clip(t_mag[s:e] / (R_mag[s:e] + 1e-12), 0.05, 1.0)
+                mask[s:e] = seg_scale
 
-            # 计算段内中值幅度作为基准
-            median_mag = np.median(np.abs(seg))
-            if median_mag < 1e-10:
-                continue
-
-            # 对超出 median * n 倍的采样点进行衰减
-            threshold = median_mag * n
-            mask = np.abs(seg) > threshold
-            if np.any(mask):
-                # 衰减到阈值水平，而非置零
-                scale = threshold / (np.abs(seg[mask]) + 1e-10)
-                processed_sig[start:end][mask] = seg[mask] * scale
-
-        processed[i, :] = processed_sig
+        processed[i] = np.fft.ifft(R_fft * mask)
 
     return processed, St_base
 
@@ -245,7 +333,7 @@ def qpzh_adapter(radar_par, m=4, n=3, **kwargs):
 def fastslow_adapter(radar_par, limit_factor=3.0, **kwargs):
     """
     FastSlowTimeProcessor 适配器。
-    M >= 2 时使用多普勒域处理，M < 2 时使用限幅降级方案。
+    M >= 2 时使用多普勒域处理，M < 2 时使用频谱减法降级方案。
     """
     from anti_jamming.FastSlowTimeProcessor import FastSlowTimeProcessor
 
@@ -254,7 +342,7 @@ def fastslow_adapter(radar_par, limit_factor=3.0, **kwargs):
     M, N = Srt_matrix.shape
 
     if M < 2:
-        processed = _apply_limit_filter(Srt_matrix, radar_par, limit_factor)
+        processed = _apply_spectral_subtraction(Srt_matrix, radar_par)
         return processed, St_base
 
     # 多脉冲: 使用 R-D 域处理
@@ -263,35 +351,52 @@ def fastslow_adapter(radar_par, limit_factor=3.0, **kwargs):
 
     # profile_after 是一维距离像 (已脉压+R-D域滤波)
     # 需要转回时域信号：用 profile_after 作为脉压结果，反推时域信号
-    # 简化方案：用限幅处理作为时域近似
-    processed = _apply_limit_filter(Srt_matrix, radar_par, limit_factor)
+    # 简化方案：用频谱减法作为时域近似
+    processed = _apply_spectral_subtraction(Srt_matrix, radar_par)
     return processed, St_base
 
 
-def _apply_limit_filter(Srt_matrix, radar_par, limit_factor):
+def _apply_spectral_subtraction(Srt_matrix, radar_par):
     """
-    对信号施加限幅处理，抑制突发强干扰。
-
-    仅对超出阈值的采样点进行衰减，保留其他信号不变。
+    温和的频域滤波：仅在模板无能量的频段施加衰减，保留信号频段。
+    避免过度处理导致信号失真。
     """
     M, N = Srt_matrix.shape
-    processed = Srt_matrix.copy()
+    Fs = radar_par.get('Fs', 50e6)
+    St_base = radar_par['St_base']
 
+    Pw = radar_par.get('Pw', 20e-6)
+    Ts = 1.0 / Fs
+    Npw = int(Pw / Ts)
+    target_idx = radar_par.get('target_idx', N // 2)
+
+    # 构建全长度模板
+    template_full = np.zeros(N, dtype=complex)
+    start = max(0, target_idx - Npw // 2)
+    end = min(N, start + Npw)
+    template_full[start:end] = St_base[:end - start]
+
+    # 模板频谱归一化
+    T_fft = np.fft.fft(template_full)
+    t_mag = np.abs(T_fft)
+    t_max = np.max(t_mag) + 1e-12
+
+    processed = np.zeros_like(Srt_matrix)
     for i in range(M):
-        sig = Srt_matrix[i, :]
-        mag = np.abs(sig)
+        R_fft = np.fft.fft(Srt_matrix[i])
+        R_mag = np.abs(R_fft)
 
-        # 使用滑动窗口中值作为局部底噪估计
-        from scipy.ndimage import median_filter
-        local_median = median_filter(mag, size=50)
-        threshold = limit_factor * local_median
+        # 仅在模板无能量且接收信号强的频段做轻度衰减
+        t_norm = t_mag / t_max
+        # 信号频段 (t_norm > 0.1) 保持不变，其余频段做轻度衰减
+        gain = np.ones(N)
+        outside_signal = t_norm < 0.1
+        if np.any(outside_signal):
+            # 在信号频段外，如果接收功率远高于模板，做轻度压制
+            excess = np.maximum(R_mag[outside_signal] - t_max * 0.1, 0)
+            gain[outside_signal] = 1.0 / (1.0 + excess / (t_max * 0.1 + 1e-12))
 
-        # 仅对超出阈值的采样点进行衰减（而非置零）
-        mask = mag > threshold
-        if np.any(mask):
-            # 衰减到阈值水平
-            scale = threshold[mask] / (mag[mask] + 1e-10)
-            processed[i, mask] = sig[mask] * scale
+        processed[i] = np.fft.ifft(R_fft * gain)
 
     return processed
 

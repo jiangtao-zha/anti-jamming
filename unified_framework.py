@@ -91,10 +91,11 @@ class RadarEnvironment:
         self.Ts = 1 / self.radar_params['Fs']
         self.Npw = int(self.radar_params['Pw'] / self.Ts)
         # 计算目标在距离像中的索引位置
-        target_range = self.radar_params['target_dist']
-        time_delay = target_range * 2 / 3e8  # 往返时间延迟
-        range_bin = int(time_delay / self.Ts)
-        self.target_idx = range_bin + self.Npw // 2
+        # 干扰器时间轴 t1 从 2R/C 开始，信号出现在 td ∈ [T, 2T)
+        # 因此在 Srt 数组中，信号中心 = round(1.5 * Pw * Fs)
+        Pw = self.radar_params['Pw']
+        Fs = self.radar_params['Fs']
+        self.target_idx = round(1.5 * Pw * Fs)
         
     def generate_target_signal(self):
         """生成理想发射波形（LFM）"""
@@ -255,11 +256,11 @@ class AntiJammingProcessor:
 class JammerLoader:
     """加载干扰器类（统一标准接口）"""
     
-    # 标准默认雷达参数
+    # 标准默认雷达参数（T 与 RadarEnvironment.Pw 保持一致）
     DEFAULT_RADAR_PARAMS = {
         'C': 3e8,
         'f0': 15e6,
-        'T': 24e-6,
+        'T': 20e-6,
         'Tr': 100e-6,
         'B': 5e6,
         'Fs': 50e6,

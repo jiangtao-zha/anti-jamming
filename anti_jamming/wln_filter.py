@@ -25,7 +25,7 @@ def WLN(radar_par, par1=0.6, par2=6):
     B = radar_par['Bw']
     
     wid_factor = 2.0
-    nar_factor = 1.0
+    nar_factor = 1.5
     order_wide = int(par2)
     order_narrow = int(par2)
     
@@ -60,21 +60,34 @@ def WLN(radar_par, par1=0.6, par2=6):
     # --- (3) 初始化输出矩阵 ---
     num_pulses, num_samples = Srt.shape
     J_wln = np.zeros_like(Srt)
-    eps = np.finfo(float).eps # 机器精度，防止除零
-    
+    eps = np.finfo(float).eps
+
+    # 将模板零填充到与接收信号相同长度，以便频谱域操作
+    N_rx = num_samples
+    St_padded = np.zeros(N_rx, dtype=complex)
+    St_padded[:len(St_w)] = St_w
+    St_padded_fft = np.fft.fft(St_padded)
+    St_padded_mag = np.abs(St_padded_fft)
+
     # 对每个脉冲进行处理
     for i in range(num_pulses):
         J = Srt[i, :]
-        
+
         # a. 宽带带通
         J_w = signal.filtfilt(b_bw, a_bw, J)
-        
-        # b. 限幅 (np.minimum 相当于 MATLAB 的 min(1, 数组))
-        gain = np.minimum(1.0, VL / (np.abs(J_w) + eps))
-        J_lim = J_w * gain
-        
+
+        # b. 软限幅：仅压缩极高幅度峰值，保留信号
+        mag = np.abs(J_w)
+        phase = np.angle(J_w)
+        # 使用接收信号的 95 百分位作为阈值，仅压缩极端峰值
+        threshold = np.percentile(mag, 95) * max(par1 * 2.0, 1.5)
+        # μ律压缩：温和压缩，避免硬截断引入的谐波
+        mu = 5.0
+        mag_compressed = threshold * np.log1p(mu * mag / threshold) / np.log1p(mu)
+        J_limited = mag_compressed * np.exp(1j * phase)
+
         # c. 窄带带通
-        J_wln[i, :] = signal.filtfilt(b_bn, a_bn, J_lim)
+        J_wln[i, :] = signal.filtfilt(b_bn, a_bn, J_limited)
         
     # 对模板应用窄带滤波
     St_wln = signal.filtfilt(b_bn, a_bn, St_w)

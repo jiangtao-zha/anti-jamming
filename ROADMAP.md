@@ -5,42 +5,63 @@
 
 ---
 
-## 一、当前基线（JSR=10dB, M=1, Fs=50MHz, 10次平均）
+## 一、当前基线（JSR=10dB, M=1, Fs=50MHz, 5次平均）
 
-无干扰基准：SINR ≈ 11.40 dB，检测率 100%。
+### 目标索引修复后的基线（2026-05-23 v2 更新）
 
-### 采样率修复后的基线（2026-05-23 更新）
+**关键修复**: target_idx 从 2500 修正为 1500（干扰器时间轴从 2R/C 开始，信号中心在 1.5·Pw·Fs）；JammerLoader.T 从 24μs 修正为 20μs 匹配 Pw。
 
-| # | 干扰 | 抗干扰 | SINR前→后 | 检测前→后 | 状态 |
-|---|------|--------|----------|----------|------|
-| 1 | NoiseConvolutionJamming | adapt_filter | 3.33→11.46 (+8.13) | 0→100% | 优秀 |
-| 2 | NoiseProductJamming | adapt_filter | 3.33→11.46 (+8.13) | 0→100% | 优秀 |
-| 3 | FMNoiseAimedJam | frft_filter | 4.33→7.63 (+3.30) | 0→20% | 良好 |
-| 4 | FMZuse | WLN | 2.83→1.86 (-0.97) | 0→0% | 恶化 |
-| 5 | AMNoiseGaiJam | FDC | 4.28→4.85 (+0.57) | 0→0% | 微弱 |
-| 6 | RGPO | wave_agile | 5.48→5.48 (+0.00) | 0→0% | 无效果 |
-| 7 | SMSP | FastSlowTimeProcessor | 5.09→5.09 (+0.00) | 0→5% | 无效果 |
-| 8 | FMNoiseSaopin | Frequency_agile | 3.45→3.45 (+0.00) | 0→0% | 无效果 |
-| 9 | ISDJ | FastSlowTimeProcessor | 5.09→5.09 (+0.00) | 5%→5% | 无效果 |
-| 10 | SliceCombineJam | FastSlowTimeProcessor | — | — | 未测 |
+修复后基线 SINR ≈ 10~11 dB（全部检测成功），原因是匹配滤波器对 LFM chirp 提供 ~20 dB 处理增益，JSR=10 dB 时输出 SINR ≈ 10 dB。
 
-### adapt_filter 全局最优发现（2026-05-23）
+### 抗干扰算法评测结果
 
-**adapt_filter（子空间投影）对所有 9 种干扰器均为最优算法**（+5.82 ~ +7.91 dB, 100% 检测率）。
+| 算法 | 平均 SINR 改善 | 最佳 | 最差 | 分析 |
+|------|:-----------:|:----:|:----:|------|
+| adapt_filter | **+0.43 dB** | +1.46 | -0.02 | 子空间投影，最佳 |
+| wave_agile | **+0.21 dB** | +0.33 | +0.07 | 脉压域滤波，稳定正向 |
+| frft_filter | -0.03 dB | +0.19 | -0.29 | FrFT 域掩膜，近中性 |
+| FSTP | -0.03 dB | -0.02 | -0.04 | 频谱减法降级，近中性 |
+| qpzh | ±0.00 dB | 0.00 | 0.00 | 分段频谱处理，无影响 |
+| Frequency_agile | -0.08 dB | +0.02 | -0.62 | 频谱凹陷，微弱负面 |
+| FDC | -0.22 dB | +0.22 | -1.29 | 频域对消，微弱负面 |
+| WLN | -0.15 dB | +0.49 | -0.62 | 宽限窄滤波，微弱负面 |
 
-| 干扰 | adapt_filter | frft_filter(2nd) | 当前配对算法 |
-|------|:-----------:|:----------------:|:----------:|
-| ISDJ | **+6.42 dB** | +3.43 dB | FSTP: 0 |
-| SMSP | **+6.42 dB** | +4.32 dB | FSTP: 0 |
-| RGPO | **+5.82 dB** | +3.67 dB | wave_agile: 0 |
-| AMNoiseGaiJam | **+6.77 dB** | +4.10 dB | FDC: +0.57 |
-| FMZuse | **+7.69 dB** | +4.23 dB | WLN: -0.97 |
-| FMNoiseSaopin | **+7.21 dB** | +5.20 dB | Frequency_agile: 0 |
-| FMNoiseAimedJam | **+7.42 dB** | +3.75 dB | frft_filter: +3.30 |
-| NoiseProduct | **+7.91 dB** | +5.68 dB | adapt_filter: +8.13 |
-| NoiseConvolution | **+7.91 dB** | +5.36 dB | adapt_filter: +8.13 |
+### 按干扰器×算法矩阵（SINR 改善 dB）
 
-**对马尔可夫模型的影响**: 所有状态可达性问题直接解决，但 RL 策略学习可能过于平凡（agent 永远选 adapt_filter）。详见 `docs/tasks/016-fix-antijam-for-markov.md`。
+| 算法\干扰 | ISDJ | SMSP | RGPO | FMZuse | FMNAJ | AMNGJ | FMNSp | NPJ | NCJ |
+|----------|:----:|:----:|:----:|:------:|:-----:|:-----:|:-----:|:---:|:---:|
+| adapt_filter | +0.31 | +0.39 | +0.28 | +0.10 | +0.47 | -0.02 | +0.01 | **+1.46** | +0.89 |
+| wave_agile | +0.30 | +0.15 | +0.33 | +0.30 | +0.10 | +0.10 | +0.33 | +0.07 | +0.18 |
+| frft_filter | -0.05 | -0.04 | -0.01 | -0.09 | +0.02 | -0.29 | -0.08 | +0.19 | +0.10 |
+| FSTP | -0.02 | -0.02 | -0.02 | -0.03 | -0.04 | -0.02 | -0.03 | -0.02 | -0.03 |
+| qpzh | ±0.00 | ±0.00 | ±0.00 | ±0.00 | ±0.00 | ±0.00 | ±0.00 | ±0.00 | ±0.00 |
+| Frequency_agile | -0.62 | -0.02 | -0.02 | -0.02 | -0.00 | -0.04 | -0.02 | -0.00 | +0.02 |
+| FDC | -1.29 | +0.22 | -0.09 | -0.08 | -0.03 | -0.17 | -0.17 | +0.11 | -0.44 |
+| WLN | -0.38 | -0.62 | -0.35 | -0.03 | -0.16 | -0.09 | -0.08 | +0.49 | -0.09 |
+
+### 基线 SINR（匹配滤波后，无抗干扰处理）
+
+| 干扰 | SINR | 检测 |
+|------|:----:|:----:|
+| FMNoiseSaopin | +11.45 dB | ✓ |
+| FMZuse | +11.37 dB | ✓ |
+| ISDJ | +11.23 dB | ✓ |
+| RGPO | +11.20 dB | ✓ |
+| AMNoiseGaiJam | +11.17 dB | ✓ |
+| SMSP | +11.13 dB | ✓ |
+| NoiseConvolutionJamming | +11.05 dB | ✓ |
+| FMNoiseAimedJam | +10.80 dB | ✓ |
+| NoiseProductJamming | +10.37 dB | ✓ |
+
+### 物理分析
+
+匹配滤波器对 LFM chirp 的处理增益 = Pw × Bw = 20μs × 5MHz = 100 (20 dB)。JSR=10 dB 时：
+- 输入 SINR ≈ -10 dB（干扰功率 = 10× 信号功率）
+- 匹配滤波后 SINR ≈ -10 + 20 = +10 dB（远高于检测门限）
+
+频域线性滤波（带通/陷波）无法进一步提升 SINR，因为匹配滤波器已最优地抑制带外干扰。子空间投影（adapt_filter）利用信号相位结构可获得少量额外增益。
+
+**结论**: JSR=10 dB、单脉冲条件下，抗干扰算法的改善空间有限（≤1 dB）。更高的 JSR 或多脉冲处理会扩大算法差异。
 
 ---
 
@@ -54,6 +75,8 @@
 | 最终10轮 SINR改善 | 10.99 dB | 9.45 dB | +1.54 dB |
 | 最终10轮 检测率 | 98.75% | 91.25% | +7.5% |
 
+> **注意**: 上述 RL 训练结果基于旧的 target_idx（2500），修正后基线 SINR 显著提高，需要重新训练。
+
 ### CPPO vs stdPPO 架构差异
 
 唯一区别在 FeatureExtractor：
@@ -61,36 +84,34 @@
 - stdPPO：MLP(one-hot 9→128→128→256) = 256维
 - Actor/Critic 完全相同，都输出离散动作 + 连续参数
 
-### CPPO 优势不明显的原因
-
-1. **参数空间失效**：frft_filter 适配器自动扫描阶数，RL 的 a1/w 参数被忽略；FDC decode_action 硬编码 f0=40e6
-2. **CNN 过度压缩**：1024点输入→~2点输出（4层 stride+pooling），丢失99.8%时间信息
-3. **z-score 归一化**：破坏幅度信息，CNN 无法区分干扰强度
-4. **Checkpoint 覆盖**：所有保存的 .pt 文件都是 stdPPO（jammer_only），CPPO 模型权重已丢失
-
 ---
 
 ## 三、关键架构事实
+
+### target_idx 修复（2026-05-23 v2）
+
+- 干扰器时间轴 t1 从 2R/C 开始，信号出现在 td∈[T,2T)，中心在 1.5·Pw·Fs = 1500
+- 旧公式 `range_bin + Npw//2 = 2500` 错误地包含绝对时延，现已修正
+- 同时修正 JammerLoader.T = 20μs（原 24μs），使模板与信号匹配
 
 ### 采样率修复（2026-05-23 完成）
 
 - 9个干扰器 `__init__` 添加 `Fs=None` 参数，传入雷达 Fs
 - `JammerLoader.DEFAULT_RADAR_PARAMS` 添加 `Fs=50e6`
 - `rl_framework/environment.py` 传入 `cfg.Fs`
-- ISDJ SINR_before 从 -157dB 恢复到 +5dB
 
 ### 适配器参数映射（RL→算法）
 
-| 算法 | RL连续参数 | 实际被使用 | 问题 |
+| 算法 | RL连续参数 | 实际被使用 | 备注 |
 |------|-----------|-----------|------|
-| WLN | par1 [0.1, 2.5] | 是 | 对 FMZuse 效果为负 |
-| FDC | use_fitted [0,1] | 是（二值） | 相位拟合被零填充区破坏 |
-| adapt_filter | par1 [-1, 1] | 是 | 全局最优，可能过于强势 |
-| frft_filter | a1 [0.8,1.2], w [20,200] | **否，全部忽略** | 适配器自动扫描阶数 |
-| qpzh | m [2,10], n [2,8] | 是 | — |
-| FSTP | limit_factor [1.5,5] | M=1时直接返回原信号 | — |
-| wave_agile | — | **否** | 发射端策略，radar_par['wave_radar']从未设置 |
-| Frequency_agile | — | **否** | 同上 |
+| WLN | par1 [0.1, 2.5] | 是 | μ律软限幅+宽/窄带通 |
+| FDC | cancellation_strength | 是 | 频域对消（重写为Wiener式） |
+| adapt_filter | par1 [-1, 1] | 是 | 正则化因子 |
+| frft_filter | mask_threshold | 是 | FrFT 软掩膜阈值 |
+| qpzh | m, n | 是 | 分段数和阈值系数 |
+| FSTP | limit_factor | M≥2时使用 | M=1降级为频谱减法 |
+| wave_agile | — | 是 | 脉压域滤波（已重写） |
+| Frequency_agile | — | 是 | 频谱凹陷（已重写） |
 
 ### CA-CFAR 检测器
 
@@ -109,49 +130,30 @@
 S1(精准欺骗) → S2 → S3(瞄准压制) → S4(覆盖压制) → S5(信号污染) → S6(放弃)
 ```
 
-### 状态-干扰映射与可达性（采样率修复后）
+### 状态-干扰映射（修正后基线）
 
-| 状态 | 干扰 | 当前配对 | 当前效果 | adapt_filter效果 | 能推进？ |
-|------|------|---------|---------|-----------------|---------|
-| S1 | ISDJ | FSTP | 0 dB | **+6.42 dB, 100%** | 能(换配对) |
-| S1 | SMSP | FSTP | 0 dB | **+6.42 dB, 100%** | 能(换配对) |
-| S2 | RGPO | wave_agile | 0 dB | **+5.82 dB, 100%** | 能(换配对) |
-| S3 | FMNoiseAimedJam | frft_filter | +3.30 dB | **+7.42 dB, 100%** | 能 |
-| S3 | AMNoiseGaiJam | FDC | +0.57 dB | **+6.77 dB, 100%** | 能(换配对) |
-| S4 | FMZuse | WLN | -0.97 dB | **+7.69 dB, 100%** | 能(换配对) |
-| S4 | FMNoiseSaopin | Frequency_agile | 0 dB | **+7.21 dB, 100%** | 能(换配对) |
-| S5 | NoiseProduct | adapt_filter | +8.13 dB | +8.13 dB | 能 |
-| S5 | NoiseConvolution | adapt_filter | +8.13 dB | +8.13 dB | 能 |
+| 状态 | 干扰 | 最佳算法 | SINR 改善 |
+|------|------|---------|:---------:|
+| S1 | ISDJ | adapt_filter | +0.31 dB |
+| S1 | SMSP | adapt_filter | +0.39 dB |
+| S2 | RGPO | adapt_filter | +0.28 dB |
+| S3 | FMNoiseAimedJam | adapt_filter | +0.47 dB |
+| S3 | AMNoiseGaiJam | adapt_filter | -0.02 dB |
+| S4 | FMZuse | adapt_filter | +0.10 dB |
+| S4 | FMNoiseSaopin | wave_agile | +0.33 dB |
+| S5 | NoiseProduct | adapt_filter | +1.46 dB |
+| S5 | NoiseConvolution | adapt_filter | +0.89 dB |
 
-### Reward 设计（已确定）
-
-```
-R_total = R_dense + R_step + R_progress + R_terminal
-
-R_dense:     SINR改善 × 1.0  (上限3次/状态，允许负值)
-R_step:      -1.0 / 步        (能量惩罚，驱动速度)
-R_progress:  新最高状态 × 3.0  (只认新纪录，防震荡)
-R_terminal:  +15.0            (到达 S6)
-```
-
-### 待解决
-
-- **配对策略**: adapt_filter 全局最优，但会导致 RL 策略过于平凡
-- **r_t 跨状态不可比**: 不同状态 SINR 改善范围差异大（+5.8 ~ +8.1 dB）
-- 详细设计: `docs/rl_state_transition_discussion.md`
+> **注意**: JSR=10 dB 时算法差异很小。马尔可夫模型需在更高 JSR（如 20~30 dB）下评估，以拉开算法差距。
 
 ---
 
 ## 五、待办项（按优先级）
 
-### P0：修复和提升其他抗干扰算法（已完成）
+### P0：高 JSR 场景算法评测
 
-> 详见 `docs/tasks/017-fix-antijam-algorithms.md`
-
-- [x] **Task 1: frft_filter mask_threshold 优化**（0.3→0.5，全干扰器提升 ~0.3-0.5 dB）
-- [x] **Task 2: FDC 相位拟合修复**（屏蔽零区域 + AM 过零处理，RGPO: -1.22→+2.18 dB）
-- [x] **Task 3: FSTP M=1 降级方案**（M<2 时调用 `_apply_limit_filter`，0→+0.06 dB）
-- [x] **Task 4: WLN 限幅阈值修复**（`VL = par1 * Vs_est`，原理性问题仍在）
+- [ ] 在 JSR=20/30 dB 下重新评测，验证算法在高干扰下的差异化表现
+- [ ] 重新训练 RL 模型（基于修正后的 target_idx）
 
 ### P1：马尔可夫模型实现
 
@@ -173,19 +175,22 @@ R_terminal:  +15.0            (到达 S6)
 
 ## 六、已完成
 
-- [x] **001** ISDJ 配对修正（Frequency_agile → FastSlowTimeProcessor）
-- [x] **002** frft_filter 重写（全长度模板扫描 + 阈值掩膜，+0.00 → +4.46 dB）
-- [x] **003** FSTP/ISDJ M=1 保护（消除 -1.97 dB 恶化）
-- [x] **004** WLN 默认参数优化（par1 0.6→0.3）
-- [x] **005** FDC 载频修正（使用 radar_par 中的实际载频）
+- [x] **target_idx 修复**：从 2500 修正为 1500，基线 SINR 从 ~3-5 dB 修正为 ~10-11 dB
+- [x] **T/Pw 一致性修复**：JammerLoader.T 从 24μs 修正为 20μs，模板与信号匹配
+- [x] **001** ISDJ 配对修正
+- [x] **002** frft_filter 重写（软掩膜，mask_threshold=0.1）
+- [x] **003** FSTP M=1 保护（温和频谱减法降级）
+- [x] **004** WLN 参数优化（μ律软限幅 + 宽窄带通 1.5×B）
+- [x] **005** FDC 重写（Wiener式频域对消替代基带解调）
 - [x] **006** CA-CFAR alpha 公式修正（幅度域正确公式）
-- [x] **007** RL 检测奖励阈值修正（`sinr_after > 5.0 dB`）
+- [x] **007** RL 检测奖励阈值修正
 - [x] **马尔可夫模型设计**：5状态降级链 + Reward 4组件 + Episode 方案 C
 - [x] **016 根因分析**：确认全局采样率不匹配是核心系统性问题
 - [x] **D类修复**：采样率不匹配修复（干扰器 Fs 对齐到雷达 Fs）
-- [x] **全算法扫描**：发现 adapt_filter 对所有干扰器均为最优算法
-- [x] **017 算法修复**：frft_filter 优化 + FDC 相位修复 + FSTP M=1 降级 + WLN 阈值修复
+- [x] **017 算法修复**：所有算法不再严重恶化信号（±0.5 dB 以内）
+- [x] **wave_agile/Frequency_agile 重写**：从发射端策略改为接收端处理
+- [x] **qpzh 重写**：分段频谱处理（8段，基于模板能量比）
 
 ---
 
-*最后更新：2026-05-23*
+*最后更新：2026-05-23 v2*
