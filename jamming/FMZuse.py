@@ -10,7 +10,7 @@ class FMZuse:
     对应 MATLAB 函数 FM_zuse_jam.m。
     """
 
-    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6):
+    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, Fs=None, **kwargs):
         """
         参数:
             C  : 光速 (m/s)
@@ -27,7 +27,7 @@ class FMZuse:
         self.K = B / T
 
         # 系统统一采样率
-        self.Fs = 2 * (B + f0)
+        self.Fs = Fs if Fs is not None else 2 * (B + f0)
         self.Ts = 1 / self.Fs
         self.Nsys = round(T / self.Ts)
 

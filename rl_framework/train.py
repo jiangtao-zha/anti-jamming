@@ -309,7 +309,7 @@ def merge_args_to_config(cfg, args):
     if args.device is not None:
         cfg.device = args.device
     else:
-        cfg.device = get_device("auto")
+        cfg.device = get_device("cpu")
     if args.log_dir is not None:
         cfg.log_dir = args.log_dir
     if args.save_dir is not None:

@@ -32,26 +32,29 @@ def WLN(radar_par, par1=0.6, par2=6):
     # 计算采样率与奈奎斯特频率
     Fs = radar_par.get('Fs', 2 * (B + f0))
     Nyq = Fs / 2.0
-    
+
+    # LFM chirp 瞬时频率范围: [f0, f0+B]，中心频率 f0 + B/2
+    fc = f0 + B / 2.0
+
     # --- (1) 宽带带通滤波器设计 ---
     Bwid = wid_factor * B
-    f_lo_w = max(1.0, f0 - Bwid / 2.0)
-    f_hi_w = min(Nyq - 1.0, f0 + Bwid / 2.0)
+    f_lo_w = max(1.0, fc - Bwid / 2.0)
+    f_hi_w = min(Nyq - 1.0, fc + Bwid / 2.0)
     
     # SciPy 的 butter 默认接受归一化频率 (0 到 1 对应 0 到 Nyquist)
     b_bw, a_bw = signal.butter(order_wide, [f_lo_w / Nyq, f_hi_w / Nyq], btype='bandpass')
     
     # 对模板应用宽带滤波 (零相位滤波)
     St_w = signal.filtfilt(b_bw, a_bw, St)
-    
-    # 计算限幅阈值（基于模板的中位数绝对偏差估算）
+
+    # 限幅阈值：基于模板幅度估计，par1 控制阈值相对信号水平的倍数
     Vs_est = np.median(np.abs(St_w)) / 0.6745
-    VL = par1 * 1.48
+    VL = par1 * Vs_est
     
     # --- (2) 窄带带通滤波器设计 ---
     Bnar = nar_factor * B
-    f_lo_n = max(1.0, f0 - Bnar / 2.0)
-    f_hi_n = min(Nyq - 1.0, f0 + Bnar / 2.0)
+    f_lo_n = max(1.0, fc - Bnar / 2.0)
+    f_hi_n = min(Nyq - 1.0, fc + Bnar / 2.0)
     b_bn, a_bn = signal.butter(order_narrow, [f_lo_n / Nyq, f_hi_n / Nyq], btype='bandpass')
     
     # --- (3) 初始化输出矩阵 ---

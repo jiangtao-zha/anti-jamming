@@ -39,24 +39,18 @@ class FrequencyDomainCanceller:
             N = len(r)
             t = np.arange(N) / fs
 
-            # 添加微小扰动避免 log(0)
-            small = eps * (np.abs(r) < eps) * (1 + 1j)
-            r = r + small
-
-            # --- 步骤1：计算对数虚部（缠绕相位）---
-            log_r = np.log(r)
-            I = np.imag(log_r)  # 缠绕相位
-
-            # --- 步骤2：解缠绕并线性拟合估计载频和初相 ---
-            I_unwrap = np.unwrap(I)
-            p = np.polyfit(t, I_unwrap, 1)  # p[0]*t + p[1]
-
+            # --- 步骤1：使用 FFT 峰值检测载频 ---
             if self.use_fitted_freq:
-                omega_hat = p[0]          # 拟合斜率 (rad/s)
-                phi_hat = p[1]             # 截距 (rad)
+                R_fft = fft(r)
+                mag_fft = np.abs(R_fft)
+                # 只看正频率部分
+                pos_len = N // 2
+                peak_idx = np.argmax(mag_fft[1:pos_len + 1]) + 1
+                omega_hat = 2.0 * np.pi * peak_idx * fs / N
+                # 初始相位从峰值位置的相位估计
+                phi_hat = np.angle(R_fft[peak_idx])
             else:
-                # 固定值 (与原MATLAB代码一致)
-                omega_hat = self.f0  # 40e6 rad/s
+                omega_hat = self.f0
                 phi_hat = 0.0
 
             # 确保载频为正（频率不能为负）
@@ -109,10 +103,8 @@ class FrequencyDomainCanceller:
             if N % 2 == 0:
                 Y_new[nyquist_idx] = 0
 
-            # --- 步骤5：IFFT回时域（基带信号）---
+            # --- 步骤5：IFFT回时域（基带信号，不重调制）---
             y_out = ifft(Y_new)
-            
-            y_out = y_out * np.exp(1j * (omega_hat * t + phi_hat))
             # 不进行重调制（原代码注释掉了重调制步骤）
             y[i, :] = y_out
 

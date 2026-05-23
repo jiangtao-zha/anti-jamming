@@ -262,6 +262,7 @@ class JammerLoader:
         'T': 24e-6,
         'Tr': 100e-6,
         'B': 5e6,
+        'Fs': 50e6,
     }
     
     @staticmethod

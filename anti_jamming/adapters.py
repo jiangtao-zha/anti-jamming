@@ -145,11 +145,12 @@ def frequency_agile_adapter(radar_par, **kwargs):
 # =====================================================================
 # 6. frft_filter (分数阶傅里叶变换滤波器)
 # =====================================================================
-def frft_adapter(radar_par, a1=None, a2=None, w=100, **kwargs):
+def frft_adapter(radar_par, mask_threshold=0.5, **kwargs):
     """
     frft_anti_jamming 适配器。
     支持单脉冲和多脉冲场景。始终自动扫描最优 FrFT 阶数（基于全长度模板），
-    并用模板 FrFT 幅度阈值自动生成掩膜。忽略外部传入的 a1/a2。
+    并用模板 FrFT 幅度阈值自动生成掩膜。
+    mask_threshold 控制掩膜宽度（默认0.5）。
     """
     from anti_jamming.frft_filter import myfrft
 
@@ -178,8 +179,7 @@ def frft_adapter(radar_par, a1=None, a2=None, w=100, **kwargs):
     X_template = myfrft(template_full, a_opt)
     template_mag = np.abs(X_template)
     template_norm = template_mag / np.max(template_mag)
-    # 保留模板能量集中度 > 0.3 的点
-    mask = (template_norm > 0.3).astype(float)
+    mask = (template_norm > mask_threshold).astype(float)
 
     try:
         X_filtered = np.zeros_like(Srt_matrix)
@@ -245,7 +245,7 @@ def qpzh_adapter(radar_par, m=4, n=3, **kwargs):
 def fastslow_adapter(radar_par, limit_factor=3.0, **kwargs):
     """
     FastSlowTimeProcessor 适配器。
-    需要 M >= 2 进行多普勒域处理。M < 2 时返回原始信号。
+    M >= 2 时使用多普勒域处理，M < 2 时使用限幅降级方案。
     """
     from anti_jamming.FastSlowTimeProcessor import FastSlowTimeProcessor
 
@@ -254,7 +254,8 @@ def fastslow_adapter(radar_par, limit_factor=3.0, **kwargs):
     M, N = Srt_matrix.shape
 
     if M < 2:
-        return Srt_matrix, St_base
+        processed = _apply_limit_filter(Srt_matrix, radar_par, limit_factor)
+        return processed, St_base
 
     # 多脉冲: 使用 R-D 域处理
     processor = FastSlowTimeProcessor(num_pulses=M, num_samples=N, limit_factor=limit_factor)

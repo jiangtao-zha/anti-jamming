@@ -4,6 +4,8 @@ rl_framework/config.py
 所有可调参数集中管理：雷达参数、干扰/抗干扰列表、PPO 超参数、状态模式等。
 """
 
+import numpy as np
+
 from copy import deepcopy
 
 
@@ -11,7 +13,7 @@ from copy import deepcopy
 # 领域专家规则（干扰类型 → 推荐算法 + 归一化连续参数）
 # =====================================================================
 DEFAULT_EXPERT_RULES = {
-    'FMNoiseAimedJam':       ('frft_filter',                [0.5, 0.5]),   # a≈1.0, w≈110
+    'FMNoiseAimedJam':       ('frft_filter',                [0.5]),         # mask_threshold=0.3 (映射到0.3)
     'FMZuse':                ('WLN',                        [0.6]),         # par1≈1.54
     'AMNoiseGaiJam':         ('FrequencyDomainCanceller',   [1.0]),         # use_fitted=True
     'FMNoiseSaopin':         ('adapt_filter',               [0.5]),         # par1≈0.0
@@ -82,11 +84,22 @@ class Config:
         'WLN':                       (1, [[0.1,  2.5]]),
         'FrequencyDomainCanceller':  (1, [[0.0,  1.0]]),   # use_fitted_freq: 0=False, 1=True
         'adapt_filter':              (1, [[-1.0, 1.0]]),   # par1
-        'frft_filter':               (2, [[0.8,  1.2], [20, 200]]),  # a1, w
-        'qpzh':                      (2, [[2,    10],  [2,  8]]),    # m, n
+        'frft_filter':               (1, [[0.1,  0.8]]),   # mask_threshold (模板归一化幅度阈值)
+        'qpzh':                      (1, [[2,    10]]),   # m (segments), n fixed=3
         'FastSlowTimeProcessor':     (1, [[1.5,  5.0]]),   # limit_factor
     }
-    max_continuous_dim = 2    # 所有算法中最大的连续参数维度
+    max_continuous_dim = 1    # 所有算法中最大的连续参数维度
+
+    # stdPPO 使用的默认参数（归一化到 [0,1]），不依赖信号特征
+    # CPPO 正常使用网络输出，可以利用信号特征调整参数
+    algo_default_params = {
+        'WLN':                       np.array([0.3]),    # par1=0.82 (中间偏低)
+        'FrequencyDomainCanceller':  np.array([0.9]),    # use_fitted_freq=True
+        'adapt_filter':              np.array([0.5]),    # par1=0.0
+        'frft_filter':               np.array([0.29]),   # mask_threshold≈0.3
+        'qpzh':                      np.array([0.25]),   # m=4
+        'FastSlowTimeProcessor':     np.array([0.36]),   # limit_factor≈2.6
+    }
 
     # =================================================================
     # PPO 超参数
@@ -123,7 +136,7 @@ class Config:
     # 奖励
     # =================================================================
     reward_sinr_weight = 1.0     # SINR 改善权重 (dB)
-    reward_detect_weight = 0.5   # 检测成功附加奖励
+    reward_detect_weight = 2   # 检测成功附加奖励
 
     # =================================================================
     # CA-CFAR 评估参数

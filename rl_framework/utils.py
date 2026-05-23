@@ -85,10 +85,10 @@ class RolloutBuffer:
 def preprocess_raw_iq(rx_signal, target_len):
     """
     将复数信号转换为 (2, L) 的双通道实数矩阵。
-    
-    1. 分离实部 / 虚部  → (2, N)
-    2. 每通道独立 z-score 归一化
-    3. 截取或零填充至 target_len
+
+    使用幅度+相位表示（保留幅度信息，便于 CNN 区分干扰强度）:
+      通道0: 归一化幅度 |x| / max(|x|)
+      通道1: 归一化相位 angle(x) / π ∈ [-1, 1]
 
     参数:
         rx_signal  : 1D 复数 numpy 数组，长度 N
@@ -97,31 +97,28 @@ def preprocess_raw_iq(rx_signal, target_len):
     返回:
         state : numpy float32 数组，形状 (2, L)
     """
-    real_part = np.real(rx_signal).astype(np.float32)
-    imag_part = np.imag(rx_signal).astype(np.float32)
+    mag = np.abs(rx_signal).astype(np.float32)
+    phase = np.angle(rx_signal).astype(np.float32)
 
-    # z-score 归一化（避免零方差）
-    for ch in [real_part, imag_part]:
-        std = ch.std()
-        if std < 1e-10:
-            ch[:] = 0.0
-        else:
-            ch -= ch.mean()
-            ch /= std
+    # 幅度 max 归一化（保留相对功率）
+    mag_max = mag.max()
+    if mag_max > 1e-10:
+        mag /= mag_max
 
-    N = len(real_part)
+    # 相位归一化到 [-1, 1]
+    phase /= np.pi
+
+    N = len(mag)
     state = np.zeros((2, target_len), dtype=np.float32)
 
     if N >= target_len:
-        # 中心截取
         start = (N - target_len) // 2
-        state[0] = real_part[start:start + target_len]
-        state[1] = imag_part[start:start + target_len]
+        state[0] = mag[start:start + target_len]
+        state[1] = phase[start:start + target_len]
     else:
-        # 居中零填充
         start = (target_len - N) // 2
-        state[0, start:start + N] = real_part
-        state[1, start:start + N] = imag_part
+        state[0, start:start + N] = mag
+        state[1, start:start + N] = phase
 
     return state
 
@@ -244,26 +241,23 @@ def decode_action(algo_idx, continuous_vals, config):
     elif algo_name == 'FrequencyDomainCanceller':
         # use_fitted_freq: 0 or 1 based on continuous val
         param_dict['use_fitted_freq'] = bool(continuous_vals[0] > 0.5)
-        param_dict['f0_fixed'] = 40e6
+        param_dict['f0_fixed'] = 2 * np.pi * config.f0
 
     elif algo_name == 'adapt_filter':
         param_dict['par1'] = float(np.clip(continuous_vals[0], 0, 1) * (ranges[0][1] - ranges[0][0]) + ranges[0][0])
         param_dict['par2'] = None
 
     elif algo_name == 'frft_filter':
-        # a1: FrFT order, w: mask width
-        a1 = float(np.clip(continuous_vals[0], 0, 1) * (ranges[0][1] - ranges[0][0]) + ranges[0][0])
-        w = float(np.clip(continuous_vals[1], 0, 1) * (ranges[1][1] - ranges[1][0]) + ranges[1][0])
-        param_dict['a1'] = a1
-        param_dict['a2'] = a1  # a2 = a1
-        param_dict['w'] = w
+        # mask_threshold: 模板归一化幅度阈值，控制 FrFT 掩膜宽度
+        param_dict['mask_threshold'] = float(
+            np.clip(continuous_vals[0], 0, 1) * (ranges[0][1] - ranges[0][0]) + ranges[0][0]
+        )
 
     elif algo_name == 'qpzh':
-        # m: segments, n: threshold multiplier
+        # m: segments, n: fixed threshold multiplier
         m = int(np.clip(continuous_vals[0], 0, 1) * (ranges[0][1] - ranges[0][0]) + ranges[0][0])
-        n = float(np.clip(continuous_vals[1], 0, 1) * (ranges[1][1] - ranges[1][0]) + ranges[1][0])
         param_dict['m'] = max(2, m)
-        param_dict['n'] = max(1.0, n)
+        param_dict['n'] = 3.0
 
     elif algo_name == 'FastSlowTimeProcessor':
         limit = float(np.clip(continuous_vals[0], 0, 1) * (ranges[0][1] - ranges[0][0]) + ranges[0][0])

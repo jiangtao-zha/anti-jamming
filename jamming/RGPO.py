@@ -11,7 +11,7 @@ class RGPO:
     生成多个脉冲的干扰序列，但最终输出第10个脉冲的干扰与目标回波合成的信号。
     """
 
-    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, N_pulses=16):
+    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, N_pulses=16, Fs=None):
         """
         参数:
             C        : 光速 (m/s)
@@ -20,6 +20,7 @@ class RGPO:
             Tr       : 脉冲重复周期 (s)
             B        : 信号带宽 (Hz)
             N_pulses : 发射的脉冲数（用于构造拖引时序）
+            Fs       : 采样率 (Hz)，None 时使用内部默认 2*(B+f0)
         """
         self.C = C
         self.f0 = f0
@@ -29,8 +30,7 @@ class RGPO:
         self.K = B / T
         self.N_pulses = N_pulses
 
-        # 系统采样率
-        self.Fs = 2 * (B + f0)
+        self.Fs = Fs if Fs is not None else 2 * (B + f0)
         self.Ts = 1 / self.Fs
         self.Nsys = round(T / self.Ts)          # 脉内点数
 

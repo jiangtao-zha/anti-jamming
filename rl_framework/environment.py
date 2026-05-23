@@ -95,7 +95,7 @@ class AntiJamEnv:
     def reset(self):
         """
         重置环境，开始新回合。
-        
+
         返回:
             state : dict {'signal': np.array, 'jammer_onehot': np.array}
         """
@@ -115,6 +115,7 @@ class AntiJamEnv:
             B=self.cfg.Bw,
             T=self.cfg.Pw,
             Tr=self.cfg.Tr,
+            Fs=self.cfg.Fs,
         )
 
         # 3) 生成含干扰回波
@@ -143,6 +144,12 @@ class AntiJamEnv:
             info   : dict
         """
         # 1) 解码动作
+        # stdPPO 使用默认参数（不依赖信号），CPPO 使用网络输出的连续参数
+        if self.cfg.agent_type == 'std_ppo':
+            algo_name = self.cfg.antijam_list[discrete_idx]
+            defaults = self.cfg.algo_default_params.get(algo_name)
+            if defaults is not None:
+                continuous_vals = defaults.copy()
         algo_name, param_dict = decode_action(
             discrete_idx, continuous_vals, self.cfg)
 
