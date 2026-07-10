@@ -150,10 +150,12 @@ S1(精准欺骗) → S2 → S3(瞄准压制) → S4(覆盖压制) → S5(信号�
 
 ## 五、待办项（按优先级）
 
-### P0：高 JSR 场景算法评测
+### P0：高 JSR 评测与 RL 重训
 
-- [ ] 在 JSR=20/30 dB 下重新评测，验证算法在高干扰下的差异化表现
-- [ ] 重新训练 RL 模型（基于修正后的 target_idx）
+- [x] **018 高 JSR 场景算法评测**：在最新物理基线（Pw=20μs, Fs=50MHz, target_idx=1500）下评测 JSR=20/30dB，验证算法差异化表现（结果：`experiment_results/high_jsr_eval_20260710/`）
+- [ ] **019 基于新基线重新训练 RL 模型**：废弃旧 target_idx=2500 训练结论，先以 JSR=20dB、单 seed、300 episodes 重训 CPPO vs stdPPO
+
+> 执行前置发现：`rl_framework/config.py` 当前默认仍为 Pw=10μs、Fs=25MHz；P0 训练必须同步到最新物理基线，或通过 CLI 显式覆盖 `Pw=20μs, Fs=50MHz, JSR_dB=20`。
 
 ### P1：马尔可夫模型实现
 
