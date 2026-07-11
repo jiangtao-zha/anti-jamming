@@ -18,6 +18,7 @@ from scipy import signal
 from unified_framework import (
     RadarEnvironment, UnifiedEvaluator, AntiJammingProcessor
 )
+from configs.phase1_radar import get_phase1_radar_params
 
 
 def run_no_jammer_baseline():
@@ -28,16 +29,7 @@ def run_no_jammer_baseline():
         results: dict, 每个抗干扰算法的测试结果
     """
     # 雷达参数
-    radar_params = {
-        'f0': 15e6,
-        'Bw': 5e6,
-        'Pw': 20e-6,
-        'Fs': 50e6,
-        'M': 1,
-        'N': int(100e-6 * 50e6),
-        'target_dist': 6000,
-        'target_amp': 1.0,
-    }
+    radar_params = get_phase1_radar_params()
     
     # 抗干扰算法列表（含参数）
     antijam_configs = {

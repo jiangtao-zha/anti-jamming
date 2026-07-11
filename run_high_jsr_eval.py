@@ -24,6 +24,7 @@ from unified_framework import (
     RadarEnvironment,
     UnifiedEvaluator,
 )
+from configs.phase1_radar import get_phase1_radar_params
 
 
 JAMMERS = [
@@ -62,18 +63,7 @@ ANTIJAM_KWARGS = {
     "Frequency_agile": {},
 }
 
-BASELINE = {
-    "f0": 15e6,
-    "Bw": 5e6,
-    "Pw": 20e-6,
-    "Fs": 50e6,
-    "M": 1,
-    "N": 5000,
-    "target_dist": 6000,
-    "target_amp": 1.0,
-    "jammer_amp": 8.0,
-    "noise_var": 0.1,
-}
+BASELINE = get_phase1_radar_params({'jammer_amp': 8.0})
 
 
 def parse_args() -> argparse.Namespace:

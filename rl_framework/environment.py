@@ -17,6 +17,7 @@ if _project_root not in sys.path:
     sys.path.insert(0, _project_root)
 
 from unified_framework import RadarEnvironment, JammerLoader
+from configs.phase1_radar import get_phase1_radar_params
 from anti_jamming.adapters import get_antijam_func
 from rl_framework.config import Config
 from rl_framework.utils import (
@@ -43,20 +44,21 @@ class AntiJamEnv:
         self.cfg = cfg or Config()
         cfg = self.cfg
 
-        # ---- 雷达参数 (调低采样率 / 脉宽 以缩短信号) ----
-        radar_params = {
+        # Full physical receive data comes from the Phase 1 source. The
+        # fixed state_len is applied later by _extract_state only.
+        radar_params = get_phase1_radar_params({
             'f0': cfg.f0,
             'Bw': cfg.Bw,
             'Pw': cfg.Pw,
             'Fs': cfg.Fs,
+            'Tr': cfg.Tr,
             'M': 1,
-            'N': int(cfg.Tr * cfg.Fs),       # 接收窗长度
             'target_dist': cfg.target_dist,
             'target_amp': cfg.target_amp,
             'jammer_amp': cfg.jammer_amp,
             'JSR_dB': cfg.JSR_dB,
             'noise_var': cfg.noise_var,
-        }
+        })
         self.radar_env = RadarEnvironment(radar_params)
 
         # ---- 干扰列表 & 概率 ----

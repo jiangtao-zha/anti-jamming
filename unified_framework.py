@@ -23,6 +23,7 @@ import importlib
 import sys
 import os
 import matplotlib.pyplot as plt
+from configs.phase1_radar import get_phase1_jammer_params, get_phase1_radar_params
 
 # =====================================================================
 # 统一评价函数 (从 test_FMZuse_VS_wln_filter.py 复制并稍作修改)
@@ -70,32 +71,19 @@ class UnifiedEvaluator:
 class RadarEnvironment:
     """生成雷达信号（目标）和干扰信号"""
     
-    DEFAULT_RADAR_PARAMS = {
-        'f0': 15e6,         # 中心频率 (Hz)
-        'Bw': 5e6,          # 带宽 (Hz)
-        'Pw': 20e-6,        # 脉宽 (s)
-        'Fs': 50e6,         # 采样率 (Hz)
-        'M': 1,             # 脉冲数
-        'N': int(100e-6 * 50e6),  # 采样点数
-        'target_dist': 6000, # 目标距离 (m)
-        'target_amp': 1.0,   # 目标幅度
-        'jammer_amp': 8.0,   # 干扰幅度
-    }
+    DEFAULT_RADAR_PARAMS = get_phase1_radar_params()
+    DEFAULT_RADAR_PARAMS['jammer_amp'] = 8.0
     
     def __init__(self, radar_params=None):
-        self.radar_params = self.DEFAULT_RADAR_PARAMS.copy()
-        if radar_params:
-            self.radar_params.update(radar_params)
+        self.radar_params = get_phase1_radar_params(radar_params)
+        self.radar_params['jammer_amp'] = self.DEFAULT_RADAR_PARAMS['jammer_amp']
+        if radar_params and 'jammer_amp' in radar_params:
+            self.radar_params['jammer_amp'] = radar_params['jammer_amp']
         
         # 计算派生参数
         self.Ts = 1 / self.radar_params['Fs']
-        self.Npw = int(self.radar_params['Pw'] / self.Ts)
-        # 计算目标在距离像中的索引位置
-        # 干扰器时间轴 t1 从 2R/C 开始，信号出现在 td ∈ [T, 2T)
-        # 因此在 Srt 数组中，信号中心 = round(1.5 * Pw * Fs)
-        Pw = self.radar_params['Pw']
-        Fs = self.radar_params['Fs']
-        self.target_idx = round(1.5 * Pw * Fs)
+        self.Npw = self.radar_params['pulse_samples']
+        self.target_idx = self.radar_params['target_idx']
         
     def generate_target_signal(self):
         """生成理想发射波形（LFM）"""
@@ -105,7 +93,7 @@ class RadarEnvironment:
         Bw = self.radar_params['Bw']
         
         Ts = 1 / Fs
-        t_fast = np.arange(int(Pw / Ts)) * Ts
+        t_fast = np.arange(self.radar_params['pulse_samples']) * Ts
         K = Bw / Pw
         St_base = np.exp(1j * 2 * np.pi * (f0 * t_fast + 0.5 * K * t_fast**2))
         return St_base
@@ -175,16 +163,15 @@ class RadarEnvironment:
         Npw = self.Npw
         
         # 计算目标位置索引
-        target_range = self.radar_params['target_dist']
-        time_delay = target_range * 2 / 3e8  # 往返时间延迟
-        range_bin = int(time_delay / Ts)
+        # The receive array is delay-relative, matching generate_with_jammer.
+        # The target starts one pulse width after the array origin.
+        pulse_start = self.radar_params['target_start_idx']
         
         # 创建信号矩阵
         Srt_matrix = np.zeros((M, N), dtype=complex)
         
         # 注入目标信号
-        pulse_start = range_bin
-        pulse_end = min(range_bin + Npw, N)
+        pulse_end = min(pulse_start + Npw, N)
         pulse_length = pulse_end - pulse_start
         
         if pulse_length > 0:
@@ -256,15 +243,8 @@ class AntiJammingProcessor:
 class JammerLoader:
     """加载干扰器类（统一标准接口）"""
     
-    # 标准默认雷达参数（T 与 RadarEnvironment.Pw 保持一致）
-    DEFAULT_RADAR_PARAMS = {
-        'C': 3e8,
-        'f0': 15e6,
-        'T': 20e-6,
-        'Tr': 100e-6,
-        'B': 5e6,
-        'Fs': 50e6,
-    }
+    # Jammer-side names are derived from the Phase 1 radar configuration.
+    DEFAULT_RADAR_PARAMS = get_phase1_jammer_params()
     
     @staticmethod
     def load(jammer_type, **kwargs):
@@ -812,14 +792,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     # 自定义雷达参数（可选）
-    custom_radar_params = {
-        'f0': 15e6,
-        'Bw': 5e6,
-        'Pw': 20e-6,
-        'Fs': 50e6,
-        'target_dist': 6000,
-        'jammer_amp': 8.0
-    }
+    custom_radar_params = get_phase1_radar_params({'jammer_amp': 8.0})
     
     # 抗干扰参数映射（根据需要调整）
     antijam_kwargs_map = {

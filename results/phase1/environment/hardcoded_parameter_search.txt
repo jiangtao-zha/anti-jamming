@@ -1,0 +1,224 @@
+validate_no_jammer.py:58:          f"target_dist={radar_params['target_dist']}m, target_amp={radar_params['target_amp']}")
+validate_no_jammer.py:66:    target_idx = radar_par['target_idx']
+validate_no_jammer.py:70:    info_baseline = evaluator.evaluate(np.abs(pc_orig), target_idx)
+validate_no_jammer.py:114:            info_filtered = evaluator.evaluate(np.abs(pc_filtered), target_idx)
+run_high_jsr_eval.py:133:            Tr=100e-6,
+run_high_jsr_eval.py:140:        before = evaluator.evaluate(original_profile, radar_par["target_idx"])
+run_high_jsr_eval.py:151:        after = evaluator.evaluate(filtered_profile, radar_par["target_idx"])
+run_high_jsr_eval.py:221:        handle.write("- Baseline: Pw=20us, Fs=50MHz, target_idx=1500, M=1\n\n")
+validate_phase1_environment.py:23:    for key in ('f0', 'Bw', 'Pw', 'Fs', 'Tr', 'target_dist'):
+validate_phase1_environment.py:29:    assert expected['N'] == 5000
+validate_phase1_environment.py:32:    assert expected['target_idx'] == 1500
+validate_phase1_environment.py:34:    assert env.radar_params['target_idx'] == expected['target_idx']
+validate_phase1_environment.py:35:    assert rl_env.radar_env.radar_params['N'] == 5000
+validate_phase1_environment.py:36:    assert rl_env.radar_env.radar_params['Pw'] == 20e-6
+validate_phase1_environment.py:37:    assert rl_env.radar_env.radar_params['Fs'] == 50e6
+validate_phase1_environment.py:43:    assert first['Srt_matrix'].shape == (1, 5000)
+validate_phase1_environment.py:53:    assert signal_a['Srt_matrix'].shape == (1, 5000)
+validate_phase1_environment.py:58:    assert state['signal'].shape == (2, 1024)
+validate_phase1_environment.py:59:    assert rl_env.current_radar_par['Srt_matrix'].shape == (1, 5000)
+validate_phase1_environment.py:61:    oracle_changed['target_idx'] = 1
+validate_phase1_environment.py:62:    oracle_changed['jam_info'] = {'jammer_type': 'different', 'target_idx': 2}
+validate_phase1_environment.py:70:    print(f"N={expected['N']} pulse_samples={expected['pulse_samples']} target_idx={expected['target_idx']}")
+CLAUDE.md:23:jammer = JammerClass(C=3e8, f0=15e6, T=20e-6, Tr=100e-6, B=5e6)
+CLAUDE.md:58:| target_dist | 6000 m |
+AGENTS.md:91:jammer = JammerClass(C=3e8, f0=15e6, T=20e-6, Tr=100e-6, B=5e6)
+AGENTS.md:126:| target_dist | 6000 m |
+unified_framework.py:50:    def evaluate(self, range_profile, target_idx, w1=0.5, w2=0.5):
+unified_framework.py:53:        start_idx, end_idx = max(0, target_idx - tol), min(len(range_profile), target_idx + tol + 1)
+unified_framework.py:86:        self.target_idx = self.radar_params['target_idx']
+unified_framework.py:109:            radar_par: 字典，包含 Srt_matrix, St_base, target_idx, jam_info
+unified_framework.py:119:            R_target=self.radar_params['target_dist'],
+unified_framework.py:139:        radar_par['target_idx'] = self.target_idx
+unified_framework.py:195:        radar_par['target_idx'] = self.target_idx
+unified_framework.py:323:        N = 5000  # 默认长度，实际会在环境中被裁剪
+unified_framework.py:345:            radar_params={'f0': 15e6, 'Bw': 5e6, ...}
+unified_framework.py:440:        target_idx = radar_par['target_idx']
+unified_framework.py:441:        info_orig = self.evaluator.evaluate(np.abs(pc_orig), target_idx)
+unified_framework.py:442:        info_filtered = self.evaluator.evaluate(np.abs(pc_filtered), target_idx)
+unified_framework.py:519:        target_dist = radar_par['target_dist']
+unified_framework.py:579:        plt.axvline(x=target_dist/1000, color='blue', linestyle='-.', 
+unified_framework.py:580:                   label=f'真实目标位置 ({target_dist/1000:.1f} km)')
+validate_algorithms.py:164:    target_idx = radar_par['target_idx']
+validate_algorithms.py:168:    info_orig = evaluator.evaluate(np.abs(pc_orig), target_idx)
+validate_algorithms.py:182:        info_filtered = evaluator.evaluate(np.abs(pc_filtered), target_idx)
+rl_framework/ppo_agent.py:46:    def __init__(self, in_channels=2, state_len=1024, num_jammers=9,
+configs/phase1_radar.py:5:``target_idx`` is the target pulse center in that delay-relative array.
+configs/phase1_radar.py:13:    'f0': 15e6,
+configs/phase1_radar.py:14:    'Bw': 5e6,
+configs/phase1_radar.py:15:    'Pw': 20e-6,
+configs/phase1_radar.py:16:    'Fs': 50e6,
+configs/phase1_radar.py:17:    'Tr': 100e-6,
+configs/phase1_radar.py:19:    'target_dist': 6000.0,
+configs/phase1_radar.py:35:    params['target_delay_s'] = 2.0 * params['target_dist'] / params['C']
+configs/phase1_radar.py:40:    params['target_idx'] = params['target_start_idx'] + round(
+jamming/NoiseConvolutionJamming.py:13:    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, Fs=None):
+jamming/NoiseConvolutionJamming.py:123:    R_list = [1000, 5000, 10000]  # 米
+rl_framework/README.md:121:| `raw_iq` | `(2, L)` | 原始 IQ 信号双通道，L=1024（可配） |
+rl_framework/README.md:122:| `range_profile` | `(1, L)` | 脉冲压缩后距离像幅度，L=1024（可配） |
+rl_framework/config.py:39:    target_dist = PHASE1_RADAR_CONFIG['target_dist']
+rl_framework/config.py:49:    state_len = 1024        # 固定状态长度 L
+anti_jamming/Frequency_agile.py:185:    Pw = 20e-6
+anti_jamming/Frequency_agile.py:187:    f0 = 15e6
+anti_jamming/Frequency_agile.py:193:    Nwid = int(100e-6 / Ts)
+anti_jamming/Frequency_agile.py:198:        'Rmin': 1000, 'Rmax': 15000, 'PulseNum': 1,
+anti_jamming/Frequency_agile.py:219:    target_idx = int(tau / Ts) + Npw // 2
+anti_jamming/Frequency_agile.py:244:        info_before = evaluator.evaluate(np.abs(pc_before), target_idx)
+anti_jamming/Frequency_agile.py:245:        info_after = evaluator.evaluate(np.abs(pc_after), target_idx)
+anti_jamming/Frequency_agile.py:276:    Pw = 20e-6
+anti_jamming/Frequency_agile.py:278:    f0 = 15e6
+anti_jamming/Frequency_agile.py:284:    Nwid = int(100e-6 / Ts)
+anti_jamming/Frequency_agile.py:289:        'Rmin': 1000, 'Rmax': 15000, 'PulseNum': 1,
+anti_jamming/Frequency_agile.py:308:    target_idx = int(tau / Ts) + Npw // 2
+rl_framework/utils.py:163:def compute_sinr_db(rx_signal, ref_signal, target_idx, ref_cells=20):
+rl_framework/utils.py:170:        target_idx  : 目标在接收窗中的索引
+rl_framework/utils.py:182:    start = max(0, target_idx - tol)
+rl_framework/utils.py:183:    end = min(N, target_idx + tol + 1)
+rl_framework/utils.py:203:        radar_par : 包含 'Srt_matrix', 'St_base', 'target_idx' 的字典
+rl_framework/utils.py:210:    target_idx = radar_par['target_idx']
+rl_framework/utils.py:211:    return compute_sinr_db(rx_signal, ref_signal, target_idx, ref_cells)
+anti_jamming/adapters.py:37:    adapted['f0'] = radar_par.get('f0', 15e6)
+anti_jamming/adapters.py:38:    adapted['Bw'] = radar_par.get('Bw', 5e6)
+anti_jamming/adapters.py:39:    adapted['Fs'] = radar_par.get('Fs', 2 * (radar_par.get('Bw', 5e6) + radar_par.get('f0', 15e6)))
+anti_jamming/adapters.py:61:    Fs = radar_par.get('Fs', 50e6)
+anti_jamming/adapters.py:62:    f0 = radar_par.get('f0', 15e6)
+anti_jamming/adapters.py:63:    bandwidth = radar_par.get('Bw', 5e6)
+anti_jamming/adapters.py:119:    adapted['target_idx'] = radar_par.get('target_idx', 0)
+anti_jamming/adapters.py:140:    Fs = radar_par.get('Fs', 50e6)
+anti_jamming/adapters.py:143:    Pw = radar_par.get('Pw', 20e-6)
+anti_jamming/adapters.py:146:    target_idx = radar_par.get('target_idx', N // 2)
+anti_jamming/adapters.py:148:    start = max(0, target_idx - Npw // 2)
+anti_jamming/adapters.py:195:    Fs = radar_par.get('Fs', 50e6)
+anti_jamming/adapters.py:198:    Pw = radar_par.get('Pw', 20e-6)
+anti_jamming/adapters.py:201:    target_idx = radar_par.get('target_idx', N // 2)
+anti_jamming/adapters.py:203:    start = max(0, target_idx - Npw // 2)
+anti_jamming/adapters.py:241:    处理流程不读取 ``target_idx``：先用已知发射波形的匹配滤波峰值估计
+anti_jamming/adapters.py:255:    Pw = radar_par.get('Pw', 20e-6)
+anti_jamming/adapters.py:256:    Fs = radar_par.get('Fs', 50e6)
+anti_jamming/adapters.py:280:            # 通过接收数据的匹配滤波峰值估计活动窗口，不使用环境给出的 target_idx。
+anti_jamming/adapters.py:327:    观测，不读取 ``target_idx``，也不把时域切片问题转换成频谱分段抑制。
+anti_jamming/adapters.py:337:    Fs = radar_par.get('Fs', 50e6)
+anti_jamming/adapters.py:338:    Pw = radar_par.get('Pw', 20e-6)
+anti_jamming/adapters.py:419:    Fs = radar_par.get('Fs', 50e6)
+anti_jamming/adapters.py:422:    Pw = radar_par.get('Pw', 20e-6)
+anti_jamming/adapters.py:425:    target_idx = radar_par.get('target_idx', N // 2)
+anti_jamming/adapters.py:429:    start = max(0, target_idx - Npw // 2)
+rl_framework/environment.py:56:            'target_dist': cfg.target_dist,
+rl_framework/environment.py:225:            target_idx = self.current_radar_par['target_idx']
+rl_framework/environment.py:240:            ax2.axvline(target_idx, color='r', ls='--', label='Target')
+README.md:96:jammer = JammerClass(C=3e8, f0=15e6, T=20e-6, Tr=100e-6, B=5e6)
+README.md:114:    radar_params={'f0': 15e6, 'Bw': 5e6, 'Pw': 20e-6, 'Fs': 50e6, 'target_dist': 6000},
+README.md:128:- **状态空间**: 原始 IQ 时域信号 (实部+虚部双通道, shape `(2, 1024)`) + 干扰类型 one-hot 向量
+README.md:137:输入信号 (B, 2, 1024) + one-hot (B, J)
+README.md:206:| target_dist | 6000 m | 目标距离 |
+jamming/AMNoiseGaiJam.py:14:    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, Fs=None, **kwargs):
+jamming/AMNoiseGaiJam.py:146:    R_list = [1000, 5000, 10000]  # 米
+rl_framework/总结报告.md:44:输入信号 (B, 2, 1024)          输入 one-hot (B, J)
+rl_framework/总结报告.md:132:jammer = JammerLoader.load('FMNoiseAimedJam', f0=15e6, B=5e6, T=10e-6, Tr=100e-6)
+rl_framework/总结报告.md:164:state = env.reset()           # {'signal': (2, 1024), 'jammer_onehot': (9,)}
+rl_framework/总结报告.md:202:5. **训练时间需求**：每步需要生成干扰信号 + 调用抗干扰算法 + 脉冲压缩，单步耗时较长（约 10-50ms），5000 回合可能需要数小时。
+anti_jamming/FastSlowTimeProcessor.py:91:    target_dist = radar_params['target_dist']
+anti_jamming/FastSlowTimeProcessor.py:95:    target_delay = target_dist * 2 / 3e8
+anti_jamming/FastSlowTimeProcessor.py:97:    target_idx = target_delay_idx + Npw // 2
+anti_jamming/FastSlowTimeProcessor.py:117:        t1 = np.linspace(2 * target_dist / C_jam, Tr_jam + 2 * target_dist / C_jam, N2)
+anti_jamming/FastSlowTimeProcessor.py:118:        td = t1 - 2 * target_dist / C_jam
+anti_jamming/FastSlowTimeProcessor.py:133:            R_target=target_dist,
+anti_jamming/FastSlowTimeProcessor.py:167:        info_before = evaluator.evaluate(profile_before, target_idx)
+anti_jamming/FastSlowTimeProcessor.py:168:        info_after = evaluator.evaluate(profile_after, target_idx)
+anti_jamming/FastSlowTimeProcessor.py:205:    target_dist = radar_params['target_dist']
+anti_jamming/FastSlowTimeProcessor.py:207:    target_delay = target_dist * 2 / 3e8
+anti_jamming/FastSlowTimeProcessor.py:209:    target_idx = target_delay_idx + Npw // 2
+anti_jamming/FastSlowTimeProcessor.py:233:        t1 = np.linspace(2 * target_dist / C_jam, Tr_jam + 2 * target_dist / C_jam, N2)
+anti_jamming/FastSlowTimeProcessor.py:234:        td = t1 - 2 * target_dist / C_jam
+anti_jamming/FastSlowTimeProcessor.py:244:            R_target=target_dist,
+jamming/FMNoiseSaopin.py:13:    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, Fs=None, **kwargs):
+jamming/FMNoiseSaopin.py:218:    R_list = [1000, 5000, 10000]  # 米
+jamming/NoiseProductJamming.py:13:    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, Fs=None):
+jamming/NoiseProductJamming.py:41:    def generate(self, R_target, JSR_dB=10, noise_var=0.1, bw=5e6, ord=6):
+jamming/NoiseProductJamming.py:132:    R_list = [1000, 5000, 10000]  # 米
+jamming/NoiseProductJamming.py:137:        J, X_t, jam_info = jammer.generate(R, JSR_dB=10, noise_var=0.1, bw=5e6, ord=6)
+anti_jamming/qpzh.py:13:    def __init__(self, C=3e8, f0=50e6, T=24e-6, Tr=100e-6, B=20e6):
+anti_jamming/qpzh.py:115:    R_list = [1000, 5000, 10000]  # 米
+jamming/FMZuse.py:13:    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, Fs=None, **kwargs):
+jamming/FMZuse.py:142:    R_list = [1000, 5000, 10000]  # 米
+anti_jamming/frft_filter.py:191:    target_dist = radar_params['target_dist']
+anti_jamming/frft_filter.py:193:    target_delay = target_dist * 2 / 3e8
+anti_jamming/frft_filter.py:195:    target_idx = target_delay_idx + Npw // 2
+anti_jamming/frft_filter.py:205:        R_target=target_dist,
+anti_jamming/frft_filter.py:227:        'target_idx': target_idx, 'Fs': Fs, 'Pw': Pw, 'M': M, 'N': N,
+jamming/ISDJ.py:13:    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, Fs=None, **kwargs):
+jamming/ISDJ.py:133:    R_list = [1000, 5000, 10000]  # 米
+jamming/__init__.py:5:    jammer = JammerClass(C=3e8, f0=15e6, T=20e-6, Tr=100e-6, B=5e6)
+jamming/FMNoiseAimedJam.py:14:    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, Fs=None, **kwargs):
+jamming/FMNoiseAimedJam.py:156:    R_list = [1000, 5000, 10000]  # 米
+jamming/RGPO.py:14:    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, N_pulses=16, Fs=None):
+anti_jamming/wln_filter.py:145:        target_idx = radar_par['target_idx']
+anti_jamming/wln_filter.py:146:        info_before = evaluator.evaluate(np.abs(pc_before), target_idx)
+anti_jamming/wln_filter.py:147:        info_after = evaluator.evaluate(np.abs(pc_after), target_idx)
+anti_jamming/JamSuppressionEvaluator.py:123:            'target_idx': idx_target
+jamming/SMSP.py:13:    def __init__(self, C=3e8, f0=15e6, T=24e-6, Tr=100e-6, B=5e6, Fs=None):
+jamming/SMSP.py:127:    R_list = [1000, 5000, 10000]  # 米
+anti_jamming/adapt_filter.py:28:        if 'target_idx' in radar_par:
+anti_jamming/adapt_filter.py:29:            offset = max(0, int(radar_par['target_idx']) - N_s // 2)
+anti_jamming/adapt_filter.py:111:        target_idx = radar_par['target_idx']
+anti_jamming/adapt_filter.py:112:        info_before = evaluator.evaluate(np.abs(pc_before), target_idx)
+anti_jamming/adapt_filter.py:113:        info_after = evaluator.evaluate(np.abs(pc_after), target_idx)
+test_sinr_by_state.py:106:    target_idx = radar_par['target_idx']
+test_sinr_by_state.py:110:    info_orig = evaluator.evaluate(np.abs(pc_orig), target_idx)
+test_sinr_by_state.py:123:        info_filtered = evaluator.evaluate(np.abs(pc_filtered), target_idx)
+ROADMAP.md:12:**关键修复**: target_idx 从 2500 修正为 1500（干扰器时间轴从 2R/C 开始，信号中心在 1.5·Pw·Fs）；JammerLoader.T 从 24μs 修正为 20μs 匹配 Pw。
+ROADMAP.md:78:> **注意**: 上述 RL 训练结果基于旧的 target_idx（2500），修正后基线 SINR 显著提高，需要重新训练。
+ROADMAP.md:83:- CPPO：1D-CNN(IQ 2×1024) → 247维 + one-hot 9维 = 256维
+ROADMAP.md:91:### target_idx 修复（2026-05-23 v2）
+ROADMAP.md:94:- 旧公式 `range_bin + Npw//2 = 2500` 错误地包含绝对时延，现已修正
+ROADMAP.md:100:- `JammerLoader.DEFAULT_RADAR_PARAMS` 添加 `Fs=50e6`
+ROADMAP.md:155:- [x] **018 高 JSR 场景算法评测**：在最新物理基线（Pw=20μs, Fs=50MHz, target_idx=1500）下评测 JSR=20/30dB，验证算法差异化表现（结果：`experiment_results/high_jsr_eval_20260710/`）
+ROADMAP.md:156:- [ ] **019 基于新基线重新训练 RL 模型**：废弃旧 target_idx=2500 训练结论，先以 JSR=20dB、单 seed、300 episodes 重训 CPPO vs stdPPO
+ROADMAP.md:169:- [ ] **修复 decode_action FDC f0**：`rl_framework/utils.py` 硬编码 f0=40e6，应为 15e6
+ROADMAP.md:173:- [ ] CNN 过度压缩修复（1024→2 太少）
+ROADMAP.md:180:- [x] **target_idx 修复**：从 2500 修正为 1500，基线 SINR 从 ~3-5 dB 修正为 ~10-11 dB
+experiment_results/high_jsr_eval_20260710_smoke/summary.md:6:- Baseline: Pw=20us, Fs=50MHz, target_idx=1500, M=1
+experiment_results/high_jsr_eval_20260710/summary.md:6:- Baseline: Pw=20us, Fs=50MHz, target_idx=1500, M=1
+anti_jamming/wave_agile.py:160:    Pw = 20e-6
+anti_jamming/wave_agile.py:168:    Nwid = int(100e-6 / Ts)
+anti_jamming/wave_agile.py:173:        'Rmin': 1000, 'Rmax': 15000, 'PulseNum': 1,
+anti_jamming/wave_agile.py:193:    target_idx = int(tau / Ts) + Npw // 2
+anti_jamming/wave_agile.py:217:        info_before = evaluator.evaluate(np.abs(pc_before), target_idx)
+anti_jamming/wave_agile.py:218:        info_after = evaluator.evaluate(np.abs(pc_after), target_idx)
+anti_jamming/wave_agile.py:249:    Pw = 20e-6
+anti_jamming/wave_agile.py:257:    Nwid = int(100e-6 / Ts)
+anti_jamming/wave_agile.py:262:        'Rmin': 1000, 'Rmax': 15000, 'PulseNum': 1,
+anti_jamming/wave_agile.py:281:    target_idx = int(tau / Ts) + Npw // 2
+anti_jamming/FrequencyDomainCanceller.py:163:        target_idx = radar_par['target_idx']
+anti_jamming/FrequencyDomainCanceller.py:164:        info_before = evaluator.evaluate(np.abs(pc_before), target_idx)
+anti_jamming/FrequencyDomainCanceller.py:165:        info_after = evaluator.evaluate(np.abs(pc_after), target_idx)
+docs/tasks/016-fix-antijam-for-markov.md:14:- `JammerLoader.DEFAULT_RADAR_PARAMS` 添加 `Fs=50e6`
+docs/tasks/phase1_master_plan.md:269:target_dist = 6000 m
+docs/tasks/phase1_master_plan.md:295:- 不允许通过修改物理参数迁就 `state_len=1024`；
+docs/tasks/phase1_master_plan.md:407:- 是否依赖 `target_idx`；
+docs/tasks/phase1_master_plan.md:510:- 不使用 `target_idx`；
+docs/tasks/phase1_master_plan.md:580:保留当前 `target_idx` 路径，仅作为上限。
+docs/tasks/phase1_master_plan.md:632:- `estimated_align` 不读取 `target_idx`；
+docs/tasks/phase1_master_plan.md:774:1. 不使用 `target_idx` 等仿真真值；
+docs/tasks/phase1_master_plan.md:1201:target_dist = 6000 m
+docs/tasks/phase1_master_plan.md:1227:- 不允许通过修改物理参数迁就 `state_len=1024`；
+docs/tasks/phase1_master_plan.md:1339:- 是否依赖 `target_idx`；
+docs/tasks/phase1_master_plan.md:1442:- 不使用 `target_idx`；
+docs/tasks/phase1_master_plan.md:1512:保留当前 `target_idx` 路径，仅作为上限。
+docs/tasks/phase1_master_plan.md:1564:- `estimated_align` 不读取 `target_idx`；
+docs/tasks/phase1_master_plan.md:1706:1. 不使用 `target_idx` 等仿真真值；
+docs/tasks/002-fix-frft-filter.md:8:1. **FrFT 阶数扫描用了短模板（1000点）而非全长信号（5000点）**→ 阶数偏差（1.07 vs 1.30）
+docs/tasks/031_unify_physical_environment.md:11:Tr=100us, M=1, target_dist=6000m,
+docs/tasks/031_unify_physical_environment.md:15:`N=round(Tr*Fs)=5000`，`state_len=1024` 仅用于 RL 输入变换。
+docs/tasks/031_unify_physical_environment.md:28:## target_idx 定义
+docs/tasks/031_unify_physical_environment.md:30:干扰器输出数组的时间原点是绝对目标延迟 `target_delay=2*target_dist/C`。目标信号位于该数组原点之后的 `[Pw,2Pw)`，因此数组内目标中心为 `round(1.5*Pw*Fs)=1500`。绝对 `target_delay` 与数组内 `target_idx` 分开保存，禁止把绝对延迟再次加到 delay-relative 数组索引。
+docs/tasks/031_unify_physical_environment.md:34:验证统一配置、完整接收 shape `(1,5000)`、RL state shape `(2,1024)`、确定性、无 oracle state transform，并回归运行 `validate_no_jammer.py`、`validate_algorithms.py`、`run_correctness_tests.py` 和配置一致性测试。保存原始输出到 `results/phase1/environment/`，提交 `phase1-031-unify-physical-environment`。
+docs/tasks/018-high-jsr-algorithm-eval.md:18:- `N=5000`
+docs/tasks/018-high-jsr-algorithm-eval.md:19:- `target_dist=6000m`
+docs/tasks/018-high-jsr-algorithm-eval.md:20:- `target_idx=1500`
+docs/tasks/018-high-jsr-algorithm-eval.md:53:- 固定使用最新物理基线，避免回退到旧 `Pw/Fs/target_idx`
+docs/tasks/019-retrain-rl-new-baseline.md:10:旧 CPPO/stdPPO 训练结果基于旧 `target_idx=2500`。最新基线已修正为 `target_idx=1500`，同时 `JammerLoader.T` 与 `Pw` 对齐到 20us，JSR=10dB 下匹配滤波后 SINR 已显著提高。因此旧训练曲线和 CPPO/stdPPO 差距不能作为当前结论。
+docs/tasks/019-retrain-rl-new-baseline.md:35:- `N=5000`
+docs/tasks/019-retrain-rl-new-baseline.md:36:- `target_dist=6000m`
+docs/tasks/019-retrain-rl-new-baseline.md:37:- `target_idx=1500`
+docs/tasks/017-fix-antijam-algorithms.md:173:`np.real(r)` 检测的是载波振荡过零（~2700次/5000采样点），不是 AM 包络过零。

@@ -1,0 +1,71 @@
+PHASE1_RADAR_CONFIG
+  C=300000000.0
+  f0=15000000.0
+  Bw=5000000.0
+  Pw=2e-05
+  Fs=50000000.0
+  Tr=0.0001
+  M=1
+  target_dist=6000.0
+  target_amp=1.0
+  noise_var=0.1
+  JSR_dB=10
+  N=5000
+  pulse_samples=1000
+  target_delay_s=4e-05
+  target_start_idx=1000
+  target_idx=1500
+RADAR_ENV_PARAMS
+  C=300000000.0
+  f0=15000000.0
+  Bw=5000000.0
+  Pw=2e-05
+  Fs=50000000.0
+  Tr=0.0001
+  M=1
+  target_dist=6000.0
+  target_amp=1.0
+  noise_var=0.1
+  JSR_dB=10
+  N=5000
+  pulse_samples=1000
+  target_delay_s=4e-05
+  target_start_idx=1000
+  target_idx=1500
+  jammer_amp=8.0
+JAMMER_LOADER_PARAMS
+  C=300000000.0
+  f0=15000000.0
+  T=2e-05
+  Tr=0.0001
+  B=5000000.0
+  Fs=50000000.0
+PHASE1_JAMMER_PARAMS
+  C=300000000.0
+  f0=15000000.0
+  T=2e-05
+  Tr=0.0001
+  B=5000000.0
+  Fs=50000000.0
+RL_CONFIG
+  f0=15000000.0
+  Bw=5000000.0
+  Pw=2e-05
+  Fs=50000000.0
+  Tr=0.0001
+  target_dist=6000.0
+  target_amp=1.0
+  JSR_dB=10
+  noise_var=0.1
+  state_len=1024
+RL_RADAR_PARAMS
+  f0=15000000.0
+  Bw=5000000.0
+  Pw=2e-05
+  Fs=50000000.0
+  Tr=0.0001
+  M=1
+  N=5000
+  target_dist=6000.0
+  target_idx=1500
+  target_delay_s=4e-05

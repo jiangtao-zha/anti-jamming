@@ -1,0 +1,35 @@
+/Users/jiangtao/.matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /var/folders/vp/7jm7nnsd5910cbd8pb9bw2880000gn/T/matplotlib-qb96u3gc because there was an issue with the default path (/Users/jiangtao/.matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+Matplotlib is building the font cache; this may take a moment.
+radar_shape= (1, 5000)
+state_shape= (2, 1024)
+onehot_shape= (9,)
+radar_N= 5000
+radar_Pw= 2e-05
+radar_Fs= 50000000.0
+PASS: RL reset uses full physical signal and independent fixed-length state transform

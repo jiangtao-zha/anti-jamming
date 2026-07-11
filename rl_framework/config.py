@@ -7,6 +7,7 @@ rl_framework/config.py
 import numpy as np
 
 from copy import deepcopy
+from configs.phase1_radar import PHASE1_RADAR_CONFIG
 
 
 # =====================================================================
@@ -27,18 +28,19 @@ DEFAULT_EXPERT_RULES = {
 
 class Config:
     # =================================================================
-    # 雷达参数（降低以缩短信号长度，保证 state_len <= 1024）
+    # Phase 1 physical parameters. state_len is only the neural-network input
+    # transform length; it must not change the physical receive window.
     # =================================================================
-    f0 = 15e6               # 载频 Hz
-    Bw = 5e6                # 带宽 Hz
-    Pw = 10e-6              # 脉宽 s
-    Fs = 25e6               # 采样率 Hz
-    Tr = 100e-6             # 脉冲重复周期 s
-    target_dist = 6000      # 目标距离 m
-    target_amp = 1.0        # 目标幅度
+    f0 = PHASE1_RADAR_CONFIG['f0']
+    Bw = PHASE1_RADAR_CONFIG['Bw']
+    Pw = PHASE1_RADAR_CONFIG['Pw']
+    Fs = PHASE1_RADAR_CONFIG['Fs']
+    Tr = PHASE1_RADAR_CONFIG['Tr']
+    target_dist = PHASE1_RADAR_CONFIG['target_dist']
+    target_amp = PHASE1_RADAR_CONFIG['target_amp']
     jammer_amp = 8.0        # 干扰幅度（仅用于部分干扰器初始化）
-    JSR_dB = 10             # 干信比 dB
-    noise_var = 0.1         # 噪声方差
+    JSR_dB = PHASE1_RADAR_CONFIG['JSR_dB']
+    noise_var = PHASE1_RADAR_CONFIG['noise_var']
 
     # =================================================================
     # 信号处理 / 状态空间

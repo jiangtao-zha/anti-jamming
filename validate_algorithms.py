@@ -24,6 +24,7 @@ from scipy import signal
 from unified_framework import (
     RadarEnvironment, UnifiedEvaluator, JammerLoader, AntiJammingProcessor
 )
+from configs.phase1_radar import get_phase1_radar_params
 
 # ============================================================
 # 测试配对配置 (按照指定的对应关系)
@@ -206,18 +207,10 @@ def run_pair_validation(pair_config, num_trials=10):
     Returns:
         dict: 包含统计结果
     """
-    radar_params = {
-        'f0': 15e6,
-        'Bw': 5e6,
-        'Pw': 20e-6,
-        'Fs': 50e6,
-        'M': 1,
-        'N': int(100e-6 * 50e6),
-        'target_dist': 6000,
-        'target_amp': 1.0,
+    radar_params = get_phase1_radar_params({
         'JSR_dB': pair_config['JSR_dB'],
         'noise_var': pair_config['noise_var'],
-    }
+    })
     
     trials = []
     for i in range(num_trials):
