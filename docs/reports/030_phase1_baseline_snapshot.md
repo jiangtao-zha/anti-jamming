@@ -8,6 +8,7 @@
 
 - 分支：`algorithm_design_0711`
 - HEAD：`917e261 022-step5-complete-algorithm-validation`
+- Task 030 提交：`c11892d phase1-030-baseline-snapshot`
 - 远端：`origin/algorithm_design_0711`，执行快照时与本地同步
 - Python：3.12.13
 - NumPy/SciPy/PyTorch：2.4.5 / 1.17.1 / 2.12.0
