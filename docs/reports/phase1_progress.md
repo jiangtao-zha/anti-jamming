@@ -46,4 +46,4 @@ Task 032：统一 Phase 1 干扰接口与 JSR 定义，已完成，等待审查�
 
 Task 030：`c11892d phase1-030-baseline-snapshot`
 Task 031：`da9deb4 phase1-031-unify-physical-environment`
-Task 032：待提交后回填。
+Task 032：`0136a1d phase1-032-unify-jammer-jsr`

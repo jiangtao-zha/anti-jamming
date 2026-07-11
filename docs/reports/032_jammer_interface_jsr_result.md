@@ -151,4 +151,4 @@ results/phase1/jammer_validation/<jammer>_seed42_jsr20.npz
 
 分支：`algorithm_design_0711`
 
-提交 SHA：提交完成后回填到本报告和 `phase1_progress.md`。
+提交 SHA：`0136a1d phase1-032-unify-jammer-jsr`
