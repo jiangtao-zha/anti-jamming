@@ -236,47 +236,81 @@ def frequency_agile_adapter(radar_par, **kwargs):
 # =====================================================================
 def frft_adapter(radar_par, mask_threshold=0.1, **kwargs):
     """
-    frft_anti_jamming 适配器。
-    在 FrFT 域用模板 FrFT 幅度构建软掩膜，保留信号分量。
-    mask_threshold 越低，保留越多能量（默认0.1）。
+    基于 chirp 阶数差异的局部 FrFT 抗干扰处理。
+
+    处理流程不读取 ``target_idx``：先用已知发射波形的匹配滤波峰值估计
+    当前记录中的活动窗口，再分别扫描模板和接收窗口的 FrFT 集中特征。
+    模板阶数用于定义目标 chirp 的保留区域，接收窗口的最佳阶数用于判断
+    是否存在不同调频率的强分量。最后只在估计的活动窗口内进行软掩膜，
+    记录之外的样本保持不变。
     """
     from anti_jamming.frft_filter import myfrft
+    from scipy import signal
 
     Srt_matrix = radar_par['Srt_matrix']
     St_base = radar_par['St_base']
     M, N = Srt_matrix.shape
 
-    Fs = radar_par.get('Fs', 50e6)
+    # 这些是雷达接收端可获得的波形参数，不是目标位置或干扰类型先验。
     Pw = radar_par.get('Pw', 20e-6)
-    Ts = 1.0 / Fs
-    Npw = int(Pw / Ts)
-    target_idx = radar_par.get('target_idx', N // 2)
+    Fs = radar_par.get('Fs', 50e6)
+    Npw = min(len(St_base), max(32, int(round(Pw * Fs))))
+    template = np.asarray(St_base[:Npw], dtype=complex)
+    order_min = float(kwargs.get('order_min', 0.75))
+    order_max = float(kwargs.get('order_max', 1.35))
+    order_steps = max(9, int(kwargs.get('order_steps', 25)))
+    a_vals = np.linspace(order_min, order_max, order_steps)
 
-    # 构建全长度零填充模板
-    template_full = np.zeros(N, dtype=complex)
-    start = max(0, target_idx - Npw // 2)
-    end = min(N, start + Npw)
-    template_full[start:end] = St_base[:end - start]
-
-    # 自动扫描最优 FrFT 阶数
-    a_vals = np.linspace(0.5, 1.5, 100)
-    peaks = [np.max(np.abs(myfrft(template_full, a))) for a in a_vals]
-    a_opt = a_vals[np.argmax(peaks)]
-
-    # 模板 FrFT 幅度构建软掩膜
-    X_template = myfrft(template_full, a_opt)
-    template_mag = np.abs(X_template)
-    template_norm = template_mag / np.max(template_mag)
-    # 软掩膜：在模板能量集中的区域增益接近1，其余区域按比例衰减
-    mask = np.clip(template_norm / mask_threshold, 0, 1)
+    def concentration(x, a):
+        X = myfrft(x, a)
+        energy = np.sum(np.abs(X) ** 2) + 1e-12
+        return float(np.max(np.abs(X)) ** 2 / energy)
 
     try:
-        X_filtered = np.zeros_like(Srt_matrix)
-        for n in range(M):
-            X_frft = myfrft(Srt_matrix[n], a_opt)
-            X_filtered[n] = myfrft(X_frft * mask, -a_opt)
-        return X_filtered, St_base
-    except Exception:
+        # 阶数由模板自身的 chirp 集中特征决定，和它在记录中的延迟无关。
+        template_scores = np.array([concentration(template, a) for a in a_vals])
+        a_target = float(a_vals[np.argmax(template_scores)])
+        X_template = myfrft(template, a_target)
+        template_mag = np.abs(X_template)
+        template_norm = template_mag / (np.max(template_mag) + 1e-12)
+
+        processed = np.array(Srt_matrix, copy=True)
+        for row in range(M):
+            rx = Srt_matrix[row]
+            # 通过接收数据的匹配滤波峰值估计活动窗口，不使用环境给出的 target_idx。
+            corr = signal.fftconvolve(rx, np.conj(template[::-1]), mode='full')
+            start = int(np.argmax(np.abs(corr)) - (Npw - 1))
+            start = max(0, min(N - Npw, start))
+            segment = rx[start:start + Npw]
+
+            receive_scores = np.array([concentration(segment, a) for a in a_vals])
+            a_receive = float(a_vals[np.argmax(receive_scores)])
+            separation = abs(a_receive - a_target)
+            target_concentration = concentration(segment, a_target)
+            receive_concentration = float(np.max(receive_scores))
+
+            # 接收段的最佳阶数与目标阶数分离时，保留目标阶数的集中区域；
+            # 否则仅做很轻的掩膜，避免把正常目标 chirp 过度削弱。
+            jammer_evidence = np.clip(
+                (separation - 0.04) / 0.20, 0.0, 1.0
+            )
+            concentration_evidence = np.clip(
+                (receive_concentration - target_concentration) / 0.20,
+                0.0,
+                1.0,
+            )
+            strength = max(0.05, jammer_evidence * concentration_evidence)
+            floor = np.clip(mask_threshold, 0.05, 1.0)
+            target_mask = np.clip(template_norm / floor, 0.0, 1.0)
+            mask = 1.0 - strength * (1.0 - target_mask)
+
+            X_receive = myfrft(segment, a_target)
+            filtered_segment = myfrft(X_receive * mask, -a_target)
+            processed[row, start:start + Npw] = filtered_segment
+
+        return processed, St_base
+    except (ValueError, FloatingPointError, IndexError):
+        # 对极短或病态输入保持统一接口，不吞掉一般编程错误。
         return Srt_matrix, St_base
 
 
