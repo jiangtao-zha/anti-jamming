@@ -185,4 +185,6 @@ Task 031 的 10 项验收条件满足。没有修改算法、JSR、reward、PPO 
 
 分支：`algorithm_design_0711`
 
-提交前已执行 `git diff --check`、`git diff --stat` 和相关文件 diff 检查。提交 SHA 在完成提交后回填到本报告和 `phase1_progress.md`。
+提交：`da9deb4 phase1-031-unify-physical-environment`
+
+提交前已执行 `git diff --check`、`git diff --stat` 和相关文件 diff 检查。
