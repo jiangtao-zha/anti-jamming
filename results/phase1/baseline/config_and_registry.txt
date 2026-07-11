@@ -1,0 +1,43 @@
+python: 3.12.13 (main, Mar  3 2026, 12:39:30) [Clang 21.0.0 (clang-2100.0.123.102)]
+platform: macOS-26.5.2-arm64-arm-64bit
+numpy: 2.4.5
+scipy: 1.17.1
+torch: 2.12.0
+RadarEnvironment.DEFAULT_RADAR_PARAMS:
+  f0=15000000.0
+  Bw=5000000.0
+  Pw=2e-05
+  Fs=50000000.0
+  M=1
+  N=5000
+  target_dist=6000
+  target_amp=1.0
+  jammer_amp=8.0
+JammerLoader.DEFAULT_RADAR_PARAMS:
+  C=300000000.0
+  f0=15000000.0
+  T=2e-05
+  Tr=0.0001
+  B=5000000.0
+  Fs=50000000.0
+JammerLoader supported names:
+  FMZuse, RGPO, ISDJ, SMSP, NoiseProductJamming, NoiseConvolutionJamming, FMNoiseSaopin, FMNoiseAimedJam, AMNoiseGaiJam, SliceCombineJam
+ANTIJAM_ADAPTERS: ['FastSlowTimeProcessor', 'FrequencyDomainCanceller', 'Frequency_agile', 'WLN', 'adapt_filter', 'frft_filter', 'qpzh', 'wave_agile']
+unified_framework default jammer list:
+  FMZuse, RGPO, ISDJ, SMSP, NoiseProductJamming, NoiseConvolutionJamming, FMNoiseSaopin, FMNoiseAimedJam, AMNoiseGaiJam
+unified_framework default antijam list:
+  WLN, FrequencyDomainCanceller, adapt_filter, frft_filter, qpzh, FastSlowTimeProcessor
+RL Config attributes:
+  f0=15000000.0
+  Bw=5000000.0
+  Pw=1e-05
+  Fs=25000000.0
+  Tr=0.0001
+  M='<missing>'
+  N='<missing>'
+  target_dist=6000
+  JSR_dB=10
+  noise_var=0.1
+  jammer_list=['FMNoiseAimedJam', 'FMZuse', 'AMNoiseGaiJam', 'FMNoiseSaopin', 'ISDJ', 'SMSP', 'NoiseProductJamming', 'NoiseConvolutionJamming', 'RGPO']
+  antijam_list=['WLN', 'FrequencyDomainCanceller', 'adapt_filter', 'frft_filter', 'qpzh', 'FastSlowTimeProcessor']
+  state_len=1024

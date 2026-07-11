@@ -1,0 +1,15 @@
+917e261 022-step5-complete-algorithm-validation
+17322a7 022-step4-reconstruct-time-domain-slices
+26bdbd1 022-step3-rewrite-frft
+d4e72aa 022-step2-rewrite-fdc
+bb27f65 022-step1-audit-adapt-filter
+1319a17 analysis: document algorithm design gaps
+0851d01 audit: record repository state baseline
+6cf9792 results: preserve high JSR evaluation summary
+785eb10 merge: preserve remote repository history
+df97c86 docs: add collaboration protocol and high JSR evaluation
+302d9e3 Initial commit
+75d6119 修复target_idx对齐和T/Pw一致性，重写4个抗干扰适配器
+77da099 算法修复与基线建立：采样率对齐、4算法Bug修复、全扫描基线
+185e79d 工程整理：修复CA-CFAR检测、重构文档体系、清理冗余文件
+2d04e27 std PPO 和专家策略初步完成，待调优

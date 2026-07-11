@@ -1,0 +1,544 @@
+/Users/jiangtao/.matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /var/folders/vp/7jm7nnsd5910cbd8pb9bw2880000gn/T/matplotlib-6_up910k because there was an issue with the default path (/Users/jiangtao/.matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+Matplotlib is building the font cache; this may take a moment.
+======================================================================
+  雷达抗干扰算法 — 针对性正确性测试
+  时间: 2026-07-11 22:50:44
+  每个配对运行 5 次，种子: [42, 123, 456, 789, 2024]
+======================================================================
+
+######################################################################
+  抗干扰算法: WLN
+  对应干扰: FMZuse
+######################################################################
+
+  --- WLN vs FMZuse ---
+    运行 1/5 (seed=42)... 
+=======================================================
+  测试: WLN vs FMZuse
+  处理前: 检测=True, SINR=11.37 dB
+  处理后: 检测=True, SINR=11.34 dB
+  SINR改善: -0.03 dB
+=======================================================
+DET: True->True, SINR: 11.4->11.3 dB (Δ-0.0)
+    运行 2/5 (seed=123)... 
+=======================================================
+  测试: WLN vs FMZuse
+  处理前: 检测=True, SINR=11.45 dB
+  处理后: 检测=True, SINR=11.37 dB
+  SINR改善: -0.07 dB
+=======================================================
+DET: True->True, SINR: 11.4->11.4 dB (Δ-0.1)
+    运行 3/5 (seed=456)... 
+=======================================================
+  测试: WLN vs FMZuse
+  处理前: 检测=True, SINR=11.43 dB
+  处理后: 检测=True, SINR=11.33 dB
+  SINR改善: -0.10 dB
+=======================================================
+DET: True->True, SINR: 11.4->11.3 dB (Δ-0.1)
+    运行 4/5 (seed=789)... 
+=======================================================
+  测试: WLN vs FMZuse
+  处理前: 检测=True, SINR=11.33 dB
+  处理后: 检测=True, SINR=11.32 dB
+  SINR改善: -0.01 dB
+=======================================================
+DET: True->True, SINR: 11.3->11.3 dB (Δ-0.0)
+    运行 5/5 (seed=2024)... 
+=======================================================
+  测试: WLN vs FMZuse
+  处理前: 检测=True, SINR=11.34 dB
+  处理后: 检测=True, SINR=11.32 dB
+  SINR改善: -0.02 dB
+=======================================================
+DET: True->True, SINR: 11.3->11.3 dB (Δ-0.0)
+
+    汇总: 检测率 100% -> 100%, SINR 11.38 -> 11.34 dB (Δ-0.05 dB)
+    判定: ✅ 通过 
+
+######################################################################
+  抗干扰算法: FrequencyDomainCanceller
+  对应干扰: AMNoiseGaiJam
+######################################################################
+
+  --- FrequencyDomainCanceller vs AMNoiseGaiJam ---
+    运行 1/5 (seed=42)... 
+=======================================================
+  测试: FrequencyDomainCanceller vs AMNoiseGaiJam
+  处理前: 检测=True, SINR=11.17 dB
+  处理后: 检测=True, SINR=11.22 dB
+  SINR改善: 0.05 dB
+=======================================================
+DET: True->True, SINR: 11.2->11.2 dB (Δ+0.0)
+    运行 2/5 (seed=123)... 
+=======================================================
+  测试: FrequencyDomainCanceller vs AMNoiseGaiJam
+  处理前: 检测=True, SINR=11.46 dB
+  处理后: 检测=True, SINR=11.51 dB
+  SINR改善: 0.05 dB
+=======================================================
+DET: True->True, SINR: 11.5->11.5 dB (Δ+0.0)
+    运行 3/5 (seed=456)... 
+=======================================================
+  测试: FrequencyDomainCanceller vs AMNoiseGaiJam
+  处理前: 检测=True, SINR=11.38 dB
+  处理后: 检测=True, SINR=11.37 dB
+  SINR改善: -0.01 dB
+=======================================================
+DET: True->True, SINR: 11.4->11.4 dB (Δ-0.0)
+    运行 4/5 (seed=789)... 
+=======================================================
+  测试: FrequencyDomainCanceller vs AMNoiseGaiJam
+  处理前: 检测=True, SINR=11.30 dB
+  处理后: 检测=True, SINR=11.37 dB
+  SINR改善: 0.06 dB
+=======================================================
+DET: True->True, SINR: 11.3->11.4 dB (Δ+0.1)
+    运行 5/5 (seed=2024)... 
+=======================================================
+  测试: FrequencyDomainCanceller vs AMNoiseGaiJam
+  处理前: 检测=True, SINR=11.48 dB
+  处理后: 检测=True, SINR=11.54 dB
+  SINR改善: 0.06 dB
+=======================================================
+DET: True->True, SINR: 11.5->11.5 dB (Δ+0.1)
+
+    汇总: 检测率 100% -> 100%, SINR 11.36 -> 11.40 dB (Δ+0.04 dB)
+    判定: ✅ 通过 
+
+######################################################################
+  抗干扰算法: adapt_filter
+  对应干扰: NoiseConvolutionJamming, NoiseProductJamming
+######################################################################
+
+  --- adapt_filter vs NoiseConvolutionJamming ---
+    运行 1/5 (seed=42)... 
+=======================================================
+  测试: adapt_filter vs NoiseConvolutionJamming
+  处理前: 检测=True, SINR=11.05 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 0.41 dB
+=======================================================
+
+=======================================================
+  测试: adapt_filter vs NoiseProductJamming
+  处理前: 检测=True, SINR=9.78 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 1.68 dB
+=======================================================
+DET: True->True, SINR: 11.1->11.5 dB (Δ+0.4)
+    运行 2/5 (seed=123)... 
+=======================================================
+  测试: adapt_filter vs NoiseConvolutionJamming
+  处理前: 检测=True, SINR=10.40 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 1.07 dB
+=======================================================
+
+=======================================================
+  测试: adapt_filter vs NoiseProductJamming
+  处理前: 检测=False, SINR=8.24 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 3.23 dB
+=======================================================
+DET: True->True, SINR: 10.4->11.5 dB (Δ+1.1)
+    运行 3/5 (seed=456)... 
+=======================================================
+  测试: adapt_filter vs NoiseConvolutionJamming
+  处理前: 检测=True, SINR=9.62 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 1.84 dB
+=======================================================
+
+=======================================================
+  测试: adapt_filter vs NoiseProductJamming
+  处理前: 检测=True, SINR=10.50 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 0.96 dB
+=======================================================
+DET: True->True, SINR: 9.6->11.5 dB (Δ+1.8)
+    运行 4/5 (seed=789)... 
+=======================================================
+  测试: adapt_filter vs NoiseConvolutionJamming
+  处理前: 检测=True, SINR=10.70 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 0.76 dB
+=======================================================
+
+=======================================================
+  测试: adapt_filter vs NoiseProductJamming
+  处理前: 检测=True, SINR=10.45 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 1.02 dB
+=======================================================
+DET: True->True, SINR: 10.7->11.5 dB (Δ+0.8)
+    运行 5/5 (seed=2024)... 
+=======================================================
+  测试: adapt_filter vs NoiseConvolutionJamming
+  处理前: 检测=True, SINR=10.58 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 0.88 dB
+=======================================================
+
+=======================================================
+  测试: adapt_filter vs NoiseProductJamming
+  处理前: 检测=True, SINR=10.67 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 0.79 dB
+=======================================================
+DET: True->True, SINR: 10.6->11.5 dB (Δ+0.9)
+
+    汇总: 检测率 100% -> 100%, SINR 10.47 -> 11.46 dB (Δ+0.99 dB)
+    判定: ✅ 通过 
+
+  --- adapt_filter vs NoiseProductJamming ---
+    运行 1/5 (seed=42)... 
+=======================================================
+  测试: adapt_filter vs NoiseConvolutionJamming
+  处理前: 检测=True, SINR=11.05 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 0.41 dB
+=======================================================
+
+=======================================================
+  测试: adapt_filter vs NoiseProductJamming
+  处理前: 检测=True, SINR=9.78 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 1.68 dB
+=======================================================
+DET: True->True, SINR: 9.8->11.5 dB (Δ+1.7)
+    运行 2/5 (seed=123)... 
+=======================================================
+  测试: adapt_filter vs NoiseConvolutionJamming
+  处理前: 检测=True, SINR=10.40 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 1.07 dB
+=======================================================
+
+=======================================================
+  测试: adapt_filter vs NoiseProductJamming
+  处理前: 检测=False, SINR=8.24 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 3.23 dB
+=======================================================
+DET: False->True, SINR: 8.2->11.5 dB (Δ+3.2)
+    运行 3/5 (seed=456)... 
+=======================================================
+  测试: adapt_filter vs NoiseConvolutionJamming
+  处理前: 检测=True, SINR=9.62 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 1.84 dB
+=======================================================
+
+=======================================================
+  测试: adapt_filter vs NoiseProductJamming
+  处理前: 检测=True, SINR=10.50 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 0.96 dB
+=======================================================
+DET: True->True, SINR: 10.5->11.5 dB (Δ+1.0)
+    运行 4/5 (seed=789)... 
+=======================================================
+  测试: adapt_filter vs NoiseConvolutionJamming
+  处理前: 检测=True, SINR=10.70 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 0.76 dB
+=======================================================
+
+=======================================================
+  测试: adapt_filter vs NoiseProductJamming
+  处理前: 检测=True, SINR=10.45 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 1.02 dB
+=======================================================
+DET: True->True, SINR: 10.4->11.5 dB (Δ+1.0)
+    运行 5/5 (seed=2024)... 
+=======================================================
+  测试: adapt_filter vs NoiseConvolutionJamming
+  处理前: 检测=True, SINR=10.58 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 0.88 dB
+=======================================================
+
+=======================================================
+  测试: adapt_filter vs NoiseProductJamming
+  处理前: 检测=True, SINR=10.67 dB
+  处理后: 检测=True, SINR=11.46 dB
+  SINR改善: 0.79 dB
+=======================================================
+DET: True->True, SINR: 10.7->11.5 dB (Δ+0.8)
+
+    汇总: 检测率 80% -> 100%, SINR 9.93 -> 11.46 dB (Δ+1.54 dB)
+    判定: ✅ 通过 
+
+######################################################################
+  抗干扰算法: FastSlowTimeProcessor
+  对应干扰: SliceCombineJam, SMSP, ISDJ
+######################################################################
+
+  --- FastSlowTimeProcessor vs SliceCombineJam ---
+    运行 1/5 (seed=42)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 2/5 (seed=123)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 3/5 (seed=456)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 4/5 (seed=789)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 5/5 (seed=2024)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+
+    汇总: 所有 5 次运行均失败
+    判定: ❌ 失败 所有运行均异常
+
+  --- FastSlowTimeProcessor vs SMSP ---
+    运行 1/5 (seed=42)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 2/5 (seed=123)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 3/5 (seed=456)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 4/5 (seed=789)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 5/5 (seed=2024)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+
+    汇总: 所有 5 次运行均失败
+    判定: ❌ 失败 所有运行均异常
+
+  --- FastSlowTimeProcessor vs ISDJ ---
+    运行 1/5 (seed=42)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 2/5 (seed=123)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 3/5 (seed=456)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 4/5 (seed=789)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    运行 5/5 (seed=2024)... [异常] TypeError: SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+
+    汇总: 所有 5 次运行均失败
+    判定: ❌ 失败 所有运行均异常
+
+######################################################################
+  抗干扰算法: Frequency_agile
+  对应干扰: FMNoiseSaopin
+######################################################################
+
+  --- Frequency_agile vs FMNoiseSaopin ---
+    运行 1/5 (seed=42)... 
+=======================================================
+  测试: Frequency_agile vs FMNoiseSaopin
+  处理前(LFM): 检测=False, SINR=7.61 dB
+  处理后(Costas): 检测=False, SINR=4.06 dB
+  SINR改善: -3.55 dB
+=======================================================
+
+=======================================================
+  测试: Frequency_agile vs ISDJ
+  处理前(LFM): 检测=False, SINR=6.91 dB
+  处理后(Costas): 检测=False, SINR=6.37 dB
+  SINR改善: -0.54 dB
+=======================================================
+DET: False->False, SINR: 7.6->4.1 dB (Δ-3.6)
+    运行 2/5 (seed=123)... 
+=======================================================
+  测试: Frequency_agile vs FMNoiseSaopin
+  处理前(LFM): 检测=False, SINR=6.25 dB
+  处理后(Costas): 检测=False, SINR=5.47 dB
+  SINR改善: -0.78 dB
+=======================================================
+
+=======================================================
+  测试: Frequency_agile vs ISDJ
+  处理前(LFM): 检测=False, SINR=5.88 dB
+  处理后(Costas): 检测=False, SINR=3.06 dB
+  SINR改善: -2.82 dB
+=======================================================
+DET: False->False, SINR: 6.3->5.5 dB (Δ-0.8)
+    运行 3/5 (seed=456)... 
+=======================================================
+  测试: Frequency_agile vs FMNoiseSaopin
+  处理前(LFM): 检测=False, SINR=3.13 dB
+  处理后(Costas): 检测=False, SINR=4.83 dB
+  SINR改善: 1.70 dB
+=======================================================
+
+=======================================================
+  测试: Frequency_agile vs ISDJ
+  处理前(LFM): 检测=False, SINR=5.06 dB
+  处理后(Costas): 检测=False, SINR=5.45 dB
+  SINR改善: 0.39 dB
+=======================================================
+DET: False->False, SINR: 3.1->4.8 dB (Δ+1.7)
+    运行 4/5 (seed=789)... 
+=======================================================
+  测试: Frequency_agile vs FMNoiseSaopin
+  处理前(LFM): 检测=False, SINR=5.04 dB
+  处理后(Costas): 检测=False, SINR=4.23 dB
+  SINR改善: -0.80 dB
+=======================================================
+
+=======================================================
+  测试: Frequency_agile vs ISDJ
+  处理前(LFM): 检测=False, SINR=6.63 dB
+  处理后(Costas): 检测=False, SINR=2.85 dB
+  SINR改善: -3.78 dB
+=======================================================
+DET: False->False, SINR: 5.0->4.2 dB (Δ-0.8)
+    运行 5/5 (seed=2024)... 
+=======================================================
+  测试: Frequency_agile vs FMNoiseSaopin
+  处理前(LFM): 检测=False, SINR=6.66 dB
+  处理后(Costas): 检测=False, SINR=5.64 dB
+  SINR改善: -1.01 dB
+=======================================================
+
+=======================================================
+  测试: Frequency_agile vs ISDJ
+  处理前(LFM): 检测=False, SINR=4.26 dB
+  处理后(Costas): 检测=False, SINR=4.12 dB
+  SINR改善: -0.14 dB
+=======================================================
+DET: False->False, SINR: 6.7->5.6 dB (Δ-1.0)
+
+    汇总: 检测率 0% -> 0%, SINR 5.74 -> 4.85 dB (Δ-0.89 dB)
+    判定: ✅ 通过 
+
+######################################################################
+  抗干扰算法: wave_agile
+  对应干扰: RGPO
+######################################################################
+
+  --- wave_agile vs RGPO ---
+    运行 1/5 (seed=42)... 
+=======================================================
+  测试: wave_agile vs RGPO
+  处理前(LFM): 检测=False, SINR=5.89 dB
+  处理后(WaveAgile): 检测=False, SINR=4.67 dB
+  SINR改善: -1.22 dB
+=======================================================
+DET: False->False, SINR: 5.9->4.7 dB (Δ-1.2)
+    运行 2/5 (seed=123)... 
+=======================================================
+  测试: wave_agile vs RGPO
+  处理前(LFM): 检测=False, SINR=7.12 dB
+  处理后(WaveAgile): 检测=False, SINR=4.58 dB
+  SINR改善: -2.54 dB
+=======================================================
+DET: False->False, SINR: 7.1->4.6 dB (Δ-2.5)
+    运行 3/5 (seed=456)... 
+=======================================================
+  测试: wave_agile vs RGPO
+  处理前(LFM): 检测=False, SINR=5.87 dB
+  处理后(WaveAgile): 检测=False, SINR=4.40 dB
+  SINR改善: -1.47 dB
+=======================================================
+DET: False->False, SINR: 5.9->4.4 dB (Δ-1.5)
+    运行 4/5 (seed=789)... 
+=======================================================
+  测试: wave_agile vs RGPO
+  处理前(LFM): 检测=False, SINR=5.89 dB
+  处理后(WaveAgile): 检测=False, SINR=0.12 dB
+  SINR改善: -5.77 dB
+=======================================================
+DET: False->False, SINR: 5.9->0.1 dB (Δ-5.8)
+    运行 5/5 (seed=2024)... 
+=======================================================
+  测试: wave_agile vs RGPO
+  处理前(LFM): 检测=False, SINR=4.40 dB
+  处理后(WaveAgile): 检测=False, SINR=0.69 dB
+  SINR改善: -3.71 dB
+=======================================================
+DET: False->False, SINR: 4.4->0.7 dB (Δ-3.7)
+
+    汇总: 检测率 0% -> 0%, SINR 5.83 -> 2.89 dB (Δ-2.94 dB)
+    判定: ⚠️ 警告 SINR恶化 -2.94 dB
+
+######################################################################
+  抗干扰算法: frft_filter
+  对应干扰: FMNoiseAimedJam
+######################################################################
+  [错误] 无法导入测试函数: module 'anti_jamming.frft_filter' has no attribute 'test_frft_filter'
+
+
+====================================================================================================
+  测试结果汇总表
+====================================================================================================
+抗干扰算法                        干扰样式                         检测率(前)     检测率(后)     SINR(前)      SINR(后)      改善dB       判定    
+----------------------------------------------------------------------------------------------------
+WLN                          FMZuse                       100%       100%       11.38        11.34        -0.05      ✅     
+FrequencyDomainCanceller     AMNoiseGaiJam                100%       100%       11.36        11.40        +0.04      ✅     
+adapt_filter                 NoiseConvolutionJamming      100%       100%       10.47        11.46        +0.99      ✅     
+adapt_filter                 NoiseProductJamming          80%        100%       9.93         11.46        +1.54      ✅     
+FastSlowTimeProcessor        SliceCombineJam              N/A        N/A        N/A          N/A          N/A        ❌     
+FastSlowTimeProcessor        SMSP                         N/A        N/A        N/A          N/A          N/A        ❌     
+FastSlowTimeProcessor        ISDJ                         N/A        N/A        N/A          N/A          N/A        ❌     
+Frequency_agile              FMNoiseSaopin                0%         0%         5.74         4.85         -0.89      ✅     
+wave_agile                   RGPO                         0%         0%         5.83         2.89         -2.94      ⚠️    
+frft_filter                  FMNoiseAimedJam              N/A        N/A        N/A          N/A          N/A        ❌     
+----------------------------------------------------------------------------------------------------
+
+  总计: 10 项 | ✅ 通过: 5 | ⚠️ 警告: 1 | ❌ 失败: 4
+
+======================================================================
+  需要诊断的案例: 5 项
+======================================================================
+
+##################################################
+  FastSlowTimeProcessor vs SliceCombineJam: FAIL
+  原因: 所有运行均异常
+  错误记录:
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+
+##################################################
+  FastSlowTimeProcessor vs SMSP: FAIL
+  原因: 所有运行均异常
+  错误记录:
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+
+##################################################
+  FastSlowTimeProcessor vs ISDJ: FAIL
+  原因: 所有运行均异常
+  错误记录:
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+    - SliceCombineJam.__init__() got an unexpected keyword argument 'Fs'
+
+##################################################
+  wave_agile vs RGPO: WARN
+  原因: SINR恶化 -2.94 dB
+  各次运行详情:
+    seed=42: DET False->False, SINR 5.9->4.7 dB (Δ-1.2)
+    seed=123: DET False->False, SINR 7.1->4.6 dB (Δ-2.5)
+    seed=456: DET False->False, SINR 5.9->4.4 dB (Δ-1.5)
+    seed=789: DET False->False, SINR 5.9->0.1 dB (Δ-5.8)
+    seed=2024: DET False->False, SINR 4.4->0.7 dB (Δ-3.7)
+
+##################################################
+  frft_filter vs FMNoiseAimedJam: FAIL
+  原因: 导入失败: module 'anti_jamming.frft_filter' has no attribute 'test_frft_filter'
+  错误记录:
+    - module 'anti_jamming.frft_filter' has no attribute 'test_frft_filter'

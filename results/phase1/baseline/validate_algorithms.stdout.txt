@@ -1,0 +1,150 @@
+/Users/jiangtao/.matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /var/folders/vp/7jm7nnsd5910cbd8pb9bw2880000gn/T/matplotlib-a1ivkrgq because there was an issue with the default path (/Users/jiangtao/.matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+Matplotlib is building the font cache; this may take a moment.
+================================================================================
+干扰-抗干扰配对正确性验证（覆盖指定对应关系）
+================================================================================
+
+────────────────────────────────────────────────────────────────────────────────
+测试配对: SliceCombineJam vs FastSlowTimeProcessor
+描述: 切片组合干扰 vs 快慢时间域联合处理
+JSR: 10 dB, noise_var: 0.1
+运行 10 次独立试验...
+  检测率 (前): 0%
+  检测率 (后): 0%
+  SINR 改善:   +0.01 ± 0.08 dB
+  结果:        PASS
+
+────────────────────────────────────────────────────────────────────────────────
+测试配对: SMSP vs FastSlowTimeProcessor
+描述: 频谱弥散干扰 vs 快慢时间域联合处理
+JSR: 10 dB, noise_var: 0.1
+运行 10 次独立试验...
+  检测率 (前): 100%
+  检测率 (后): 100%
+  SINR 改善:   -0.02 ± 0.00 dB
+  结果:        PASS
+
+────────────────────────────────────────────────────────────────────────────────
+测试配对: AMNoiseGaiJam vs FrequencyDomainCanceller
+描述: 噪声调幅干扰 vs 频域对消算法
+JSR: 10 dB, noise_var: 0.1
+运行 10 次独立试验...
+  检测率 (前): 100%
+  检测率 (后): 100%
+  SINR 改善:   +0.04 ± 0.05 dB
+  结果:        PASS
+
+────────────────────────────────────────────────────────────────────────────────
+测试配对: FMNoiseSaopin vs Frequency_agile
+描述: 扫频干扰 vs 频率捷变
+JSR: 10 dB, noise_var: 0.1
+运行 10 次独立试验...
+  检测率 (前): 100%
+  检测率 (后): 100%
+  SINR 改善:   -0.02 ± 0.01 dB
+  结果:        PASS
+
+────────────────────────────────────────────────────────────────────────────────
+测试配对: ISDJ vs FastSlowTimeProcessor
+描述: 间歇采样干扰 vs 快慢时间域联合处理
+JSR: 10 dB, noise_var: 0.1
+运行 10 次独立试验...
+  检测率 (前): 100%
+  检测率 (后): 100%
+  SINR 改善:   -0.02 ± 0.00 dB
+  结果:        PASS
+
+────────────────────────────────────────────────────────────────────────────────
+测试配对: FMZuse vs WLN
+描述: 噪声调频阻塞干扰 vs 宽窄限电路
+JSR: 10 dB, noise_var: 0.1
+运行 10 次独立试验...
+  检测率 (前): 100%
+  检测率 (后): 100%
+  SINR 改善:   -0.03 ± 0.04 dB
+  结果:        PASS
+
+────────────────────────────────────────────────────────────────────────────────
+测试配对: RGPO vs wave_agile
+描述: 距离欺骗干扰 vs 波形捷变抗干扰
+JSR: 10 dB, noise_var: 0.1
+运行 10 次独立试验...
+  检测率 (前): 100%
+  检测率 (后): 100%
+  SINR 改善:   +0.35 ± 0.04 dB
+  结果:        PASS
+
+────────────────────────────────────────────────────────────────────────────────
+测试配对: FMNoiseAimedJam vs frft_filter
+描述: 瞄频干扰 vs 分数阶傅里叶变换抗干扰
+JSR: 10 dB, noise_var: 0.1
+运行 10 次独立试验...
+  检测率 (前): 100%
+  检测率 (后): 100%
+  SINR 改善:   -0.28 ± 0.06 dB
+  结果:        PASS
+
+────────────────────────────────────────────────────────────────────────────────
+测试配对: NoiseConvolutionJamming vs adapt_filter
+描述: 噪声卷积干扰 vs 自相关滤波器
+JSR: 10 dB, noise_var: 0.1
+运行 10 次独立试验...
+  检测率 (前): 100%
+  检测率 (后): 100%
+  SINR 改善:   +1.41 ± 0.50 dB
+  结果:        PASS
+
+────────────────────────────────────────────────────────────────────────────────
+测试配对: NoiseProductJamming vs adapt_filter
+描述: 噪声乘积干扰 vs 自相关滤波器
+JSR: 10 dB, noise_var: 0.1
+运行 10 次独立试验...
+  检测率 (前): 100%
+  检测率 (后): 100%
+  SINR 改善:   +1.11 ± 0.48 dB
+  结果:        PASS
+
+================================================================================
+汇总结果
+================================================================================
+配对                                                 |   检测率前   |   检测率后   |         SINR改善         |   状态  
+--------------------------------------------------------------------------------
+SliceCombineJam vs FastSlowTimeProcessor           |    0%    |    0%    |    +0.01 ± 0.08 dB     |  PASS 
+SMSP vs FastSlowTimeProcessor                      |   100%   |   100%   |    -0.02 ± 0.00 dB     |  PASS 
+AMNoiseGaiJam vs FrequencyDomainCanceller          |   100%   |   100%   |    +0.04 ± 0.05 dB     |  PASS 
+FMNoiseSaopin vs Frequency_agile                   |   100%   |   100%   |    -0.02 ± 0.01 dB     |  PASS 
+ISDJ vs FastSlowTimeProcessor                      |   100%   |   100%   |    -0.02 ± 0.00 dB     |  PASS 
+FMZuse vs WLN                                      |   100%   |   100%   |    -0.03 ± 0.04 dB     |  PASS 
+RGPO vs wave_agile                                 |   100%   |   100%   |    +0.35 ± 0.04 dB     |  PASS 
+FMNoiseAimedJam vs frft_filter                     |   100%   |   100%   |    -0.28 ± 0.06 dB     |  PASS 
+NoiseConvolutionJamming vs adapt_filter            |   100%   |   100%   |    +1.41 ± 0.50 dB     |  PASS 
+NoiseProductJamming vs adapt_filter                |   100%   |   100%   |    +1.11 ± 0.48 dB     |  PASS 
+--------------------------------------------------------------------------------
+
+总结: 10/10 配对通过测试
