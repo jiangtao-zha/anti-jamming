@@ -24,6 +24,7 @@ import sys
 import os
 import matplotlib.pyplot as plt
 from configs.phase1_radar import get_phase1_jammer_params, get_phase1_radar_params
+from utils.jammer_interface import Phase1JammerAdapter
 
 # =====================================================================
 # 统一评价函数 (从 test_FMZuse_VS_wln_filter.py 复制并稍作修改)
@@ -114,12 +115,23 @@ class RadarEnvironment:
         # 生成目标信号
         St_base = self.generate_target_signal()
 
-        # 直接调用干扰器的标准 generate 方法
-        J_compound, X_t, jam_info = jammer.generate(
-            R_target=self.radar_params['target_dist'],
-            JSR_dB=self.radar_params.get('JSR_dB', 10),
-            noise_var=self.radar_params.get('noise_var', 0.1)
-        )
+        # Phase 1 adapters expose component-separated output. Keep the
+        # legacy branch for RGPO/ISDJ/SliceCombine until their tasks run.
+        if hasattr(jammer, 'generate_phase1'):
+            generated = jammer.generate_phase1(
+                target_signal=St_base,
+                config=self.radar_params,
+                jsr_db=self.radar_params.get('JSR_dB', 10),
+            )
+            J_compound = generated['received']
+            X_t = generated['range_axis']
+            jam_info = generated['metadata']
+        else:
+            J_compound, X_t, jam_info = jammer.generate(
+                R_target=self.radar_params['target_dist'],
+                JSR_dB=self.radar_params.get('JSR_dB', 10),
+                noise_var=self.radar_params.get('noise_var', 0.1)
+            )
 
         # 构建 Srt_matrix
         M = self.radar_params['M']
@@ -272,7 +284,7 @@ class JammerLoader:
         try:
             if jammer_type == 'FMZuse':
                 from jamming.FMZuse import FMZuse
-                return FMZuse(**init_params)
+                return Phase1JammerAdapter(jammer_type, FMZuse(**init_params))
             elif jammer_type == 'RGPO':
                 from jamming.RGPO import RGPO
                 return RGPO(**init_params)
@@ -281,22 +293,22 @@ class JammerLoader:
                 return ISDJ(**init_params)
             elif jammer_type == 'SMSP':
                 from jamming.SMSP import SMSP
-                return SMSP(**init_params)
+                return Phase1JammerAdapter(jammer_type, SMSP(**init_params))
             elif jammer_type == 'NoiseProductJamming':
                 from jamming.NoiseProductJamming import NoiseProductJamming
-                return NoiseProductJamming(**init_params)
+                return Phase1JammerAdapter(jammer_type, NoiseProductJamming(**init_params))
             elif jammer_type == 'NoiseConvolutionJamming':
                 from jamming.NoiseConvolutionJamming import NoiseConvolutionJamming
-                return NoiseConvolutionJamming(**init_params)
+                return Phase1JammerAdapter(jammer_type, NoiseConvolutionJamming(**init_params))
             elif jammer_type == 'FMNoiseSaopin':
                 from jamming.FMNoiseSaopin import FMNoiseSaopin
-                return FMNoiseSaopin(**init_params)
+                return Phase1JammerAdapter(jammer_type, FMNoiseSaopin(**init_params))
             elif jammer_type == 'FMNoiseAimedJam':
                 from jamming.FMNoiseAimedJam import FMNoiseAimedJam
-                return FMNoiseAimedJam(**init_params)
+                return Phase1JammerAdapter(jammer_type, FMNoiseAimedJam(**init_params))
             elif jammer_type == 'AMNoiseGaiJam':
                 from jamming.AMNoiseGaiJam import AMNoiseGaiJam
-                return AMNoiseGaiJam(**init_params)
+                return Phase1JammerAdapter(jammer_type, AMNoiseGaiJam(**init_params))
             elif jammer_type == 'SliceCombineJam':
                 from anti_jamming.qpzh import SliceCombineJam
                 return SliceCombineJam(**init_params)
