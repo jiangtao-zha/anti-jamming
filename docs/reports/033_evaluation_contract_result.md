@@ -144,4 +144,4 @@ evaluate_algorithm_output(
 
 分支：`algorithm_design_0711`
 
-Task 033 主提交和 SHA 记录提交将在完成后回填。
+Task 033 主提交：`d3933d3 phase1-033-evaluation-contract`

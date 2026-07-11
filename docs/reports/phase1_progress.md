@@ -51,4 +51,4 @@ Task 033：建立 Phase 1 抗干扰算法评价契约，已完成，等待审查
 Task 030：`c11892d phase1-030-baseline-snapshot`
 Task 031：`da9deb4 phase1-031-unify-physical-environment`
 Task 032：`0136a1d phase1-032-unify-jammer-jsr`
-Task 033：待提交后回填。
+Task 033：`d3933d3 phase1-033-evaluation-contract`
