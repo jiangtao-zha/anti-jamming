@@ -47,48 +47,58 @@ def wln_adapter(radar_par, par1=0.3, par2=6, **kwargs):
 # =====================================================================
 def fdc_adapter(radar_par, cancellation_strength=0.8, **kwargs):
     """
-    频域对消适配器。
-    用模板频谱估计干扰分量：干扰 ≈ max(接收频谱 - 模板频谱, 0)，
-    然后在频域减去干扰。对 AM 噪声等有明显载频特征的干扰有效。
+    AM 共轭对称频域对消适配器。
+
+    AM 干扰在已知载频下变换到基带后，实包络会在正负频率形成
+    共轭对称分量。这里估计该分量并做软抵消，而不是用模板频谱差值
+    作为通用频谱抑制。目标 LFM 的基带主能量区域被保护，只在预期
+    目标带宽之外执行强抵消。
+
     cancellation_strength 控制对消强度 (0=不对消, 1=完全对消)。
     """
     Srt_matrix = radar_par['Srt_matrix']
-    St_base = radar_par['St_base']
     M, N = Srt_matrix.shape
     Fs = radar_par.get('Fs', 50e6)
-
-    # 构建全长度模板
-    Pw = radar_par.get('Pw', 20e-6)
-    Ts = 1.0 / Fs
-    Npw = int(Pw / Ts)
-    target_idx = radar_par.get('target_idx', N // 2)
-    template_full = np.zeros(N, dtype=complex)
-    start = max(0, target_idx - Npw // 2)
-    end = min(N, start + Npw)
-    template_full[start:end] = St_base[:end - start]
-
-    # 模板频谱
-    T_fft = np.fft.fft(template_full)
-    t_mag = np.abs(T_fft)
+    f0 = radar_par.get('f0', 15e6)
+    bandwidth = radar_par.get('Bw', 5e6)
+    strength = float(np.clip(cancellation_strength, 0.0, 1.0))
+    t = np.arange(N, dtype=float) / Fs
+    freq = np.fft.fftfreq(N, d=1.0 / Fs)
+    # The known radar carrier is a receiver parameter, not a target-location
+    # oracle. The AM envelope is improper after demodulation, while circular
+    # complex noise and most FM signals have a much smaller pseudo-covariance.
+    baseband_carrier = np.exp(-1j * 2.0 * np.pi * f0 * t)
 
     processed = np.zeros_like(Srt_matrix)
     for i in range(M):
-        R_fft = np.fft.fft(Srt_matrix[i])
-        R_mag = np.abs(R_fft)
+        baseband = Srt_matrix[i] * baseband_carrier
+        spectrum = np.fft.fft(baseband)
 
-        # 估计干扰频谱：超出模板水平的部分视为干扰
-        interference_est = np.maximum(R_mag - t_mag, 0)
-        # 仅对干扰分量施加衰减，保留信号
-        gain = 1.0 - cancellation_strength * np.clip(
-            interference_est / (R_mag + 1e-12), 0, 1
+        # For z(t)=exp(j*phi)*real(a(t)), sum(z**2) estimates exp(j*2*phi).
+        # Normalize it to obtain a confidence that an AM-like component is
+        # present, then construct the phase-aligned conjugate-symmetric part.
+        pseudo_cov = np.sum(baseband ** 2)
+        covariance = np.sum(np.abs(baseband) ** 2) + 1e-12
+        improper_ratio = abs(pseudo_cov) / covariance
+        am_confidence = np.clip((improper_ratio - 0.05) / 0.35, 0.0, 1.0)
+        envelope_phase = 0.5 * np.angle(pseudo_cov) if abs(pseudo_cov) > 1e-12 else 0.0
+        symmetric = 0.5 * (
+            baseband + np.exp(2j * envelope_phase) * np.conj(baseband)
         )
-        # 在模板无能量的频段不完全压制（保留噪声基底）
-        signal_band = t_mag > 0.01 * np.max(t_mag)
-        gain[~signal_band] = np.maximum(gain[~signal_band], 0.1)
+        symmetric_spectrum = np.fft.fft(symmetric)
 
-        processed[i] = np.fft.ifft(R_fft * gain)
+        # The LFM target occupies approximately the known baseband bandwidth
+        # after carrier removal. Preserve that region and cancel AM energy
+        # mainly outside it, where the AM jammer has excess bandwidth.
+        target_band = np.abs(freq) <= 1.1 * bandwidth
+        protect_factor = np.where(target_band, 0.5, 1.0)
+        cancellation = strength * am_confidence * protect_factor
+        cleaned = spectrum - cancellation * symmetric_spectrum
 
-    return processed, St_base
+        cleaned_baseband = np.fft.ifft(cleaned)
+        processed[i] = cleaned_baseband * np.conj(baseband_carrier)
+
+    return processed, radar_par['St_base']
 
 
 # =====================================================================
