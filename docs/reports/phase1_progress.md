@@ -2,17 +2,18 @@
 
 ## Current Task
 
-Task 032：统一 Phase 1 干扰接口与 JSR 定义，已完成，等待审查。
+Task 033：建立 Phase 1 抗干扰算法评价契约，已完成，等待审查。
 
 ## Completed Tasks
 
 - Task 030：记录 Git 状态、物理参数、干扰/抗干扰注册表、RL 列表和现有测试输出。
 - Task 031：建立唯一配置源，统一完整物理信号长度和 RL state transform，并完成回归测试。
 - Task 032：建立 7 个 jammer 的公共 wrapper、统一 JSR 计算和 280 case 验证矩阵。
+- Task 033：建立统一评价 API、Identity 基线和 3360 case 算法适用矩阵。
 
 ## In Progress
 
-- 无。Task 033 尚未开始。
+- 无。Task 034 尚未开始。
 
 ## Pending
 
@@ -32,6 +33,8 @@ Task 032：统一 Phase 1 干扰接口与 JSR 定义，已完成，等待审查�
 - Task 031 correctness：5 通过、1 警告、4 失败，失败项与 Task 030 相同。
 - Task 032 JSR：7 jammer × 4 JSR × 10 seeds，280/280 PASS，最大误差约 0dB。
 - Task 032 回归：无干扰 9/9 PASS；算法配对 9/10 PASS；correctness 内部 4 通过、1 警告、5 失败。
+- Task 033 矩阵：3360/3360 接口 case 成功，168 summary rows，42 applicability rows。
+- Task 033 回归：无干扰 9/9 PASS；算法配对 9/10 PASS；correctness 内部 4 通过、1 警告、5 失败。
 
 ## Blocked Issues
 
@@ -41,9 +44,11 @@ Task 032：统一 Phase 1 干扰接口与 JSR 定义，已完成，等待审查�
 - 当前 `M=1` 不足以验证 FSTP 多脉冲能力。
 - `SliceCombineJam` loader 接口问题和 FrFT 测试入口问题保留，未在 Task 031 扩大范围修复。
 - 统一 JSR 后 `FMNoiseAimedJam/frft_filter` 出现性能回归，需由 Task 033 的测试契约统一处理，不能回退 JSR 定义。
+- `adapt_filter` 仍依赖内部 `target_idx`，已标记为公平矩阵 blocked/oracle-risk。
 
 ## Latest Commit
 
 Task 030：`c11892d phase1-030-baseline-snapshot`
 Task 031：`da9deb4 phase1-031-unify-physical-environment`
 Task 032：`0136a1d phase1-032-unify-jammer-jsr`
+Task 033：待提交后回填。

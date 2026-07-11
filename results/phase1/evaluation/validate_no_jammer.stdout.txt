@@ -1,0 +1,49 @@
+/Users/jiangtao/.matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /var/folders/vp/7jm7nnsd5910cbd8pb9bw2880000gn/T/matplotlib-6lhl6kj1 because there was an issue with the default path (/Users/jiangtao/.matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+
+Fontconfig error: No writable cache directories
+	/opt/homebrew/var/cache/fontconfig
+	/Users/jiangtao/.cache/fontconfig
+	/Users/jiangtao/.fontconfig
+Matplotlib is building the font cache; this may take a moment.
+======================================================================
+无干扰基准测试
+======================================================================
+雷达参数: f0=15MHz, Bw=5MHz, target_dist=6000.0m, target_amp=1.0
+噪声水平: noise_level=0.5
+----------------------------------------------------------------------
+
+算法                             |   检测   |  SINR(dB)  |   SINR变化   |    状态   
+----------------------------------------------------------------------
+None (基准)                      |   Y    |   11.59    |    0.00    |   PASS  
+WLN                            |   Y    |   11.39    |   -0.21    |   PASS  
+FrequencyDomainCanceller       |   Y    |   11.46    |   -0.14    |   PASS  
+adapt_filter                   |   Y    |   11.46    |   -0.13    |   PASS  
+wave_agile                     |   Y    |   11.95    |   +0.36    |   PASS  
+Frequency_agile                |   Y    |   11.36    |   -0.23    |   PASS  
+frft_filter                    |   Y    |   11.23    |   -0.36    |   PASS  
+qpzh                           |   Y    |   11.32    |   -0.27    |   PASS  
+FastSlowTimeProcessor          |   Y    |   11.35    |   -0.24    |   PASS  
+----------------------------------------------------------------------
+
+总结: 9/9 算法通过测试
