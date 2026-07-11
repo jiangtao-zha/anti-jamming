@@ -319,54 +319,64 @@ def frft_adapter(radar_par, mask_threshold=0.1, **kwargs):
 # =====================================================================
 def qpzh_adapter(radar_par, m=8, n=2, **kwargs):
     """
-    切片重组抗干扰适配器。
-    将频谱分为 m 段，在每段内比较接收信号与模板信号的能量比，
-    对干扰主导的段施加衰减，保留信号主导的段。
+    单脉冲切片识别与时域重构适配器。
+
+    通过接收匹配滤波峰值估计目标活动窗口，再把窗口划分为 ``m*n``
+    个短片段。每个片段用局部归一化相关系数判断是否仍符合已知 LFM
+    波形；低相干片段被重构为估计复幅度乘以模板。这里的延迟来自接收
+    观测，不读取 ``target_idx``，也不把时域切片问题转换成频谱分段抑制。
+
+    该适配器只处理单条观测。若环境提供多脉冲矩阵，各行独立处理，
+    不假设不存在的慢时间信息。
     """
     Srt_matrix = radar_par['Srt_matrix']
     St_base = radar_par['St_base']
     M, N = Srt_matrix.shape
+    from scipy import signal
+
     Fs = radar_par.get('Fs', 50e6)
-
-    # 构建全长度模板
     Pw = radar_par.get('Pw', 20e-6)
-    Ts = 1.0 / Fs
-    Npw = int(Pw / Ts)
-    target_idx = radar_par.get('target_idx', N // 2)
-    template_full = np.zeros(N, dtype=complex)
-    start = max(0, target_idx - Npw // 2)
-    end = min(N, start + Npw)
-    template_full[start:end] = St_base[:end - start]
+    Npw = min(len(St_base), max(32, int(round(Pw * Fs))))
+    template = np.asarray(St_base[:Npw], dtype=complex)
+    segment_count = max(1, int(m) * int(n))
+    coherence_threshold = float(kwargs.get('coherence_threshold', 0.75))
+    reconstruction_strength = float(
+        np.clip(kwargs.get('reconstruction_strength', 1.0), 0.0, 1.0)
+    )
 
-    # 模板频谱归一化幅度
-    T_fft = np.fft.fft(template_full)
-    t_mag = np.abs(T_fft)
-    t_max = np.max(t_mag) + 1e-12
+    processed = np.array(Srt_matrix, copy=True)
+    template_energy = np.vdot(template, template).real + 1e-12
+    for row in range(M):
+        rx = Srt_matrix[row]
+        corr = signal.fftconvolve(rx, np.conj(template[::-1]), mode='full')
+        start = int(np.argmax(np.abs(corr)) - (Npw - 1))
+        start = max(0, min(N - Npw, start))
+        segment = rx[start:start + Npw]
+        reconstructed = np.array(segment, copy=True)
+        global_gain = np.vdot(template, segment) / template_energy
 
-    # 将频谱分为 m 段
-    seg_len = N // m
+        edges = np.linspace(0, Npw, segment_count + 1, dtype=int)
+        for idx in range(segment_count):
+            left, right = edges[idx], edges[idx + 1]
+            if right <= left:
+                continue
+            ref = template[left:right]
+            observed = segment[left:right]
+            ref_energy = np.vdot(ref, ref).real
+            obs_energy = np.vdot(observed, observed).real
+            coherence = abs(np.vdot(ref, observed)) / (
+                np.sqrt(ref_energy * obs_energy) + 1e-12
+            )
+            if coherence < coherence_threshold:
+                # 用全窗口稳健复增益保持相位/幅度连续，避免把局部干扰
+                # 的复幅度直接带入重构结果。
+                rebuilt = global_gain * ref
+                reconstructed[left:right] = (
+                    (1.0 - reconstruction_strength) * observed
+                    + reconstruction_strength * rebuilt
+                )
 
-    processed = np.zeros_like(Srt_matrix)
-    for i in range(M):
-        rx = Srt_matrix[i]
-        R_fft = np.fft.fft(rx)
-        R_mag = np.abs(R_fft)
-
-        mask = np.ones(N, dtype=float)
-        for seg_idx in range(m):
-            s = seg_idx * seg_len
-            e = min((seg_idx + 1) * seg_len, N)
-            # 段内能量比较
-            t_seg_energy = np.sum(t_mag[s:e] ** 2)
-            r_seg_energy = np.sum(R_mag[s:e] ** 2)
-            t_level = t_seg_energy / (t_max ** 2 * seg_len + 1e-12)
-            # 如果该段模板能量低且接收能量高，说明有干扰
-            if t_level < 0.01 and r_seg_energy > 0:
-                # 按模板/接收比衰减
-                seg_scale = np.clip(t_mag[s:e] / (R_mag[s:e] + 1e-12), 0.05, 1.0)
-                mask[s:e] = seg_scale
-
-        processed[i] = np.fft.ifft(R_fft * mask)
+        processed[row, start:start + Npw] = reconstructed
 
     return processed, St_base
 

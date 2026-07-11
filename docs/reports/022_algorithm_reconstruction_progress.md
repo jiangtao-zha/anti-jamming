@@ -6,9 +6,9 @@ Goal 022 的目标是先修复单脉冲接收端抗干扰算法的理论一致�
 
 ## Current Phase
 
-**Phase 4：SliceCombine/ISDJ 时域结构处理准备**
+**Phase 5：综合算法矩阵验证与最终报告准备**
 
-Phase 0 记录系统已建立。Phase 1 adapt_filter 审查、Phase 2 FDC 重构和 Phase 3 FrFT 重构均已完成，当前准备处理切片/间歇采样干扰的时域结构。
+Phase 0 记录系统已建立。Phase 1 adapt_filter 审查、Phase 2 FDC 重构、Phase 3 FrFT 重构和 Phase 4 时域切片重构均已完成，当前进入综合矩阵验证与最终报告准备。
 
 ## Completed
 
@@ -16,11 +16,12 @@ Phase 0 记录系统已建立。Phase 1 adapt_filter 审查、Phase 2 FDC 重构
 - Phase 1：完成 adapt_filter 审查，确认 `target_idx`/理想模板 oracle 依赖，并完成三 seed 对照实验。
 - Phase 2：active FDC 改为基于基带 improper/AM 伪协方差特征、共轭对称分量估计和软抵消；不再使用 `target_idx` 或模板频谱差值。
 - Phase 3：FrFT 改为基于接收观测的活动窗口估计，同时扫描模板与接收窗口的 FrFT 集中特征；使用目标 chirp 阶数构建局部软掩膜，不再读取 `target_idx`。
+- Phase 4：`qpzh` 改为基于接收匹配峰估计活动窗口、局部相干度检测和时域模板重构；不再进行频谱分段抑制，也不读取 `target_idx`。
 - 已完成 Task 020 仓库状态审计和 Task 021 算法理论缺口分析。
 
 ## In Progress
 
-- 准备 SliceCombine/ISDJ 的时域切片检测与重构；Phase 4 尚未修改代码。
+- 准备综合算法矩阵验证，重点区分“接口/理论修复”和“性能优于 identity”；Phase 5 尚未修改代码。
 
 ## Pending
 
@@ -62,6 +63,16 @@ Phase 3：JSR=20dB、seed=[42,123,456,789,1024]，比较 identity、FrFT 和 ada
 - 该阶段未宣称性能优于 identity；现有结果说明阶数差异检测已经进入处理链，但掩膜设计仍需在 Phase 5 的矩阵验证中继续校准。
 - `validate_algorithms.py` 仍为 `10/10 PASS`，其中原有 FMNoiseAimedJam/FrFT 配对为 `-0.28 ± 0.06dB`；PASS 仅表示未触发宽松阈值。
 
+Phase 4：JSR=20dB、seed=[42,123,456]，比较 identity 与新的时域 `qpzh`。
+
+| 干扰 | identity SINR | 新 `qpzh` SINR | 差值 | 结论 |
+|---|---:|---:|---:|---|
+| `SMSP` | 7.605dB | 9.052dB | +1.448dB | 局部相干度切片重构产生正向收益 |
+| `ISDJ` | 9.613dB | 7.707dB | -1.906dB | 转发片段与目标模板相干，当前判别误重构 |
+
+- Phase 4 已完成代码层面的时域化，但不能宣称 ISDJ 已解决；当前环境把多次转发压在单条观测中，不能用该结果证明慢时间算法有效。
+- `SliceCombineJam` 仍存在统一 loader/参数接口问题，本阶段没有修改 jammer 构造函数或环境建模；其专用矩阵验证需单独修复接口后进行。
+
 ## Known Issues
 
 - 当前统一物理基线与 RL 默认 `Pw/Fs` 不一致。
@@ -70,4 +81,5 @@ Phase 3：JSR=20dB、seed=[42,123,456,789,1024]，比较 identity、FrFT 和 ada
 - Phase 2 已完成；后续不得把 FDC 与 FrFT 阶段混改。
 - 新 FDC 仍需在更高 JSR、不同 AM 带宽和非 AM 负控下扩展验证；当前 10 seed 结果只完成最小验收。
 - 新 FrFT 仍需改进目标保真与 SMSP 处理收益；当前结果只能证明无 `target_idx` 的可运行实现和接收阶数分析，不足以证明专用算法优于通用基线。
-- Phase 4 需要先明确 SliceCombine/ISDJ 的窗口检测误报、切片边界和重构误差指标，再进入代码修改。
+- 新 `qpzh` 的 ISDJ 误检/误重构仍未解决，需要在最终矩阵中记录局部相干度、重构片段比例和目标保真度。
+- Phase 5 需要覆盖所有 active 算法的无 oracle 检查、统一接口检查、identity 对照和现有验证脚本；完成后才能判断 Goal 022 是否可结束。
