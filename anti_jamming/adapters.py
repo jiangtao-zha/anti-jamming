@@ -101,6 +101,73 @@ def fdc_adapter(radar_par, cancellation_strength=0.8, **kwargs):
     return processed, radar_par['St_base']
 
 
+def calibrated_fdc_adapter(
+    radar_par,
+    cancellation_strength=0.6,
+    regularization=0.15,
+    **kwargs,
+):
+    """Estimate an AM component after removing a template-based target estimate.
+
+    This is the Task 034 candidate path.  The target delay is estimated from
+    the received IQ and the supplied radar template; no target index or
+    jammer metadata is consumed.  The residual is demodulated, its improper
+    (conjugate-symmetric) component is estimated, and only that estimate is
+    subtracted from the original signal.
+    """
+    from scipy.signal import fftconvolve
+
+    received = np.asarray(radar_par['Srt_matrix'])
+    template = np.asarray(radar_par['St_base'])
+    Fs = float(radar_par.get('Fs', 50e6))
+    f0 = float(radar_par.get('f0', 15e6))
+    strength = float(np.clip(cancellation_strength, 0.0, 1.0))
+    regularization = max(float(regularization), 1e-6)
+    M, N = received.shape
+    n = np.arange(N, dtype=float)
+    carrier = np.exp(-1j * 2.0 * np.pi * f0 * n / Fs)
+    template_energy = float(np.vdot(template, template).real) + 1e-12
+    processed = np.empty_like(received)
+
+    for pulse in range(M):
+        signal_in = received[pulse]
+        baseband = signal_in * carrier
+
+        # Locate the strongest template response from the input itself.  This
+        # is a receiver-side estimate and does not use target_idx.
+        matched = fftconvolve(signal_in, np.conj(template[::-1]), mode='same')
+        peak = int(np.argmax(np.abs(matched)))
+        start = peak - len(template) // 2
+        target_est = np.zeros(N, dtype=complex)
+        src_start = max(0, -start)
+        dst_start = max(0, start)
+        count = min(len(template) - src_start, N - dst_start)
+        if count > 0:
+            local_template = template[src_start:src_start + count]
+            local_input = signal_in[dst_start:dst_start + count]
+            coeff = np.vdot(local_template, local_input) / template_energy
+            target_est[dst_start:dst_start + count] = coeff * local_template
+
+        residual_bb = (signal_in - target_est) * carrier
+        pseudo_cov = np.vdot(residual_bb.conj(), residual_bb)
+        covariance = float(np.vdot(residual_bb, residual_bb).real) + 1e-12
+        improper_ratio = float(abs(pseudo_cov) / covariance)
+        confidence = float(np.clip((improper_ratio - 0.05) / 0.35, 0.0, 1.0))
+        phase = 0.5 * np.angle(pseudo_cov) if abs(pseudo_cov) > 1e-12 else 0.0
+
+        # The real-envelope component is the AM-specific estimate.  A
+        # regularized gain prevents low-confidence residual noise from being
+        # treated as a full-strength jammer estimate.
+        am_component_bb = 0.5 * (
+            residual_bb + np.exp(2j * phase) * np.conj(residual_bb)
+        )
+        gain = strength * confidence / (1.0 + regularization)
+        cleaned_bb = baseband - gain * am_component_bb
+        processed[pulse] = cleaned_bb * np.conj(carrier)
+
+    return processed, radar_par['St_base']
+
+
 # =====================================================================
 # 3. adapt_filter (自适应滤波器)
 # =====================================================================
@@ -461,6 +528,7 @@ def _apply_spectral_subtraction(Srt_matrix, radar_par):
 ANTIJAM_ADAPTERS = {
     'WLN': wln_adapter,
     'FrequencyDomainCanceller': fdc_adapter,
+    'FrequencyDomainCancellerCalibrated': calibrated_fdc_adapter,
     'adapt_filter': adapt_filter_adapter,
     'wave_agile': wave_agile_adapter,
     'Frequency_agile': frequency_agile_adapter,
