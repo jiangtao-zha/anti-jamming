@@ -1,0 +1,2 @@
+requested_pfa,measured_pfa,error,trials,length,valid_cells,min_reference_cells,max_reference_cells
+0.0001,0.00011171875,1.1718749999999997e-05,10000,256,2560000,20,40

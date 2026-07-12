@@ -2,7 +2,7 @@
 
 ## Current Task
 
-Task 033：建立 Phase 1 抗干扰算法评价契约，已完成，等待审查。
+Task 033-fix：校准 Phase 1 评价指标实现，已完成，等待审查。
 
 ## Completed Tasks
 
@@ -10,6 +10,7 @@ Task 033：建立 Phase 1 抗干扰算法评价契约，已完成，等待审查
 - Task 031：建立唯一配置源，统一完整物理信号长度和 RL state transform，并完成回归测试。
 - Task 032：建立 7 个 jammer 的公共 wrapper、统一 JSR 计算和 280 case 验证矩阵。
 - Task 033：建立统一评价 API、Identity 基线和 3360 case 算法适用矩阵。
+- Task 033-fix：修正 false peak/target loss 语义，改用边缘感知功率 CA-CFAR，增加 Pfa 验证、逐 JSR 矩阵和 CI。
 
 ## In Progress
 
@@ -35,6 +36,8 @@ Task 033：建立 Phase 1 抗干扰算法评价契约，已完成，等待审查
 - Task 032 回归：无干扰 9/9 PASS；算法配对 9/10 PASS；correctness 内部 4 通过、1 警告、5 失败。
 - Task 033 矩阵：3360/3360 接口 case 成功，168 summary rows，42 applicability rows。
 - Task 033 回归：无干扰 9/9 PASS；算法配对 9/10 PASS；correctness 内部 4 通过、1 警告、5 失败。
+- Task 033-fix CFAR：10000 trials，requested Pfa=1e-4，measured Pfa=1.1172e-4，reference cells=20..40。
+- Task 033-fix 矩阵：3360/3360 接口 case 成功，结果保存到 `results/phase1/evaluation_v2/`。
 
 ## Blocked Issues
 
@@ -45,6 +48,7 @@ Task 033：建立 Phase 1 抗干扰算法评价契约，已完成，等待审查
 - `SliceCombineJam` loader 接口问题和 FrFT 测试入口问题保留，未在 Task 031 扩大范围修复。
 - 统一 JSR 后 `FMNoiseAimedJam/frft_filter` 出现性能回归，需由 Task 033 的测试契约统一处理，不能回退 JSR 定义。
 - `adapt_filter` 仍依赖内部 `target_idx`，已标记为公平矩阵 blocked/oracle-risk。
+- Task 033-fix 未改变算法排序逻辑，只将结论拆为逐 JSR 并增加统计稳定性；`adapt_filter` oracle 风险继续保留。
 
 ## Latest Commit
 
@@ -52,3 +56,4 @@ Task 030：`c11892d phase1-030-baseline-snapshot`
 Task 031：`da9deb4 phase1-031-unify-physical-environment`
 Task 032：`0136a1d phase1-032-unify-jammer-jsr`
 Task 033：`d3933d3 phase1-033-evaluation-contract`
+Task 033-fix：待提交后回填。

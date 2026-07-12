@@ -32,15 +32,45 @@ def _local_template(target_signal, radar_config, length):
 
 
 def _ca_cfar(magnitude, guard_cells, reference_cells, pfa):
-    alpha = np.sqrt(-4.0 * np.log(pfa) / np.pi)
-    kernel_size = 1 + 2 * guard_cells + 2 * reference_cells
-    kernel = np.ones(kernel_size, dtype=float)
-    center = reference_cells
-    kernel[center:center + 2 * guard_cells + 1] = 0.0
-    kernel /= 2.0 * reference_cells
-    background = signal.correlate(magnitude, kernel, mode='same', method='fft')
-    threshold = alpha * background
-    return magnitude > threshold, threshold
+    """Power CA-CFAR with an edge-aware reference-cell count."""
+    power = np.asarray(magnitude, dtype=float) ** 2
+    length = power.size
+    indices = np.arange(length)
+    prefix = np.concatenate(([0.0], np.cumsum(power)))
+
+    left_end = indices - guard_cells - 1
+    left_start = np.maximum(0, left_end - reference_cells + 1)
+    left_valid = left_end >= 0
+    left_sum = np.zeros(length, dtype=float)
+    left_sum[left_valid] = (
+        prefix[left_end[left_valid] + 1] - prefix[left_start[left_valid]]
+    )
+    left_count = np.where(left_valid, left_end - left_start + 1, 0)
+
+    right_start = indices + guard_cells + 1
+    right_end = np.minimum(length - 1, right_start + reference_cells - 1)
+    right_valid = right_start < length
+    right_sum = np.zeros(length, dtype=float)
+    right_sum[right_valid] = (
+        prefix[right_end[right_valid] + 1] - prefix[right_start[right_valid]]
+    )
+    right_count = np.where(right_valid, right_end - right_start + 1, 0)
+
+    reference_count = left_count + right_count
+    reference_mean = np.divide(
+        left_sum + right_sum,
+        reference_count,
+        out=np.zeros(length, dtype=float),
+        where=reference_count > 0,
+    )
+    alpha = np.zeros(length, dtype=float)
+    valid = reference_count > 0
+    alpha[valid] = reference_count[valid] * (
+        np.power(pfa, -1.0 / reference_count[valid]) - 1.0
+    )
+    threshold_power = alpha * reference_mean
+    detections = (power > threshold_power) & valid
+    return detections, threshold_power, reference_count
 
 
 def _profile(received, target):
@@ -48,7 +78,10 @@ def _profile(received, target):
 
 
 def _peak_and_false_metrics(profile, reference_peak, guard_cells, reference_cells, pfa):
-    detections, threshold = _ca_cfar(profile, guard_cells, reference_cells, pfa)
+    detections, threshold_power, reference_count = _ca_cfar(
+        profile, guard_cells, reference_cells, pfa
+    )
+    threshold = np.sqrt(threshold_power)
     target_half_width = max(10, guard_cells + 2)
     left = max(0, reference_peak - target_half_width)
     right = min(profile.size, reference_peak + target_half_width + 1)
@@ -73,7 +106,7 @@ def _peak_and_false_metrics(profile, reference_peak, guard_cells, reference_cell
         'peak_index': peak_index,
         'peak_error': int(peak_error),
         'false_peak_count': false_peak_count,
-        'true_false_peak_ratio': (
+        'false_true_peak_ratio': (
             max_false_peak / (target_peak + 1e-12)
         ),
         'max_false_peak_db': (
@@ -82,6 +115,8 @@ def _peak_and_false_metrics(profile, reference_peak, guard_cells, reference_cell
         ),
         'target_peak': target_peak,
         'threshold': threshold,
+        'reference_cell_count_min': int(np.min(reference_count)),
+        'reference_cell_count_max': int(np.max(reference_count)),
     }
 
 
@@ -129,6 +164,9 @@ def evaluate_algorithm_output(
     right = min(before_profile.size, reference_peak + target_window + 1)
     before_target_power = np.max(before_profile[left:right]) ** 2
     after_target_power = np.max(after_profile[left:right]) ** 2
+    clean_profile = _profile(target, template)
+    clean_target_response = clean_profile[reference_peak]
+    processed_target_response = after_profile[reference_peak]
     background_mask = np.ones(before_profile.size, dtype=bool)
     background_mask[max(0, reference_peak - reference_cells):
                     min(before_profile.size, reference_peak + reference_cells + 1)] = False
@@ -136,8 +174,11 @@ def evaluate_algorithm_output(
     after_background_power = np.mean(after_profile[background_mask] ** 2) + 1e-12
     sinr_before = 10.0 * np.log10(before_target_power / before_background_power)
     sinr_after = 10.0 * np.log10(after_target_power / after_background_power)
-    target_peak_loss = 20.0 * np.log10(
+    target_window_change = 20.0 * np.log10(
         np.sqrt(after_target_power) / (np.sqrt(before_target_power) + 1e-12)
+    )
+    clean_target_loss = 20.0 * np.log10(
+        processed_target_response / (clean_target_response + 1e-12)
     )
     range_bin_m = float(radar_config['C']) / (2.0 * float(radar_config['Fs']))
     measured_runtime = (time.perf_counter() - started) * 1000.0
@@ -155,11 +196,12 @@ def evaluate_algorithm_output(
         'peak_error_after': after_metrics['peak_error'],
         'range_error_before_m': before_metrics['peak_error'] * range_bin_m,
         'range_error_after_m': after_metrics['peak_error'] * range_bin_m,
-        'target_peak_loss_db': float(target_peak_loss),
+        'target_window_peak_change_db': float(target_window_change),
+        'clean_target_response_loss_db': float(clean_target_loss),
         'false_peak_count_before': before_metrics['false_peak_count'],
         'false_peak_count_after': after_metrics['false_peak_count'],
-        'true_false_peak_ratio_before': before_metrics['true_false_peak_ratio'],
-        'true_false_peak_ratio_after': after_metrics['true_false_peak_ratio'],
+        'false_true_peak_ratio_before': before_metrics['false_true_peak_ratio'],
+        'false_true_peak_ratio_after': after_metrics['false_true_peak_ratio'],
         'max_false_peak_db_before': before_metrics['max_false_peak_db'],
         'max_false_peak_db_after': after_metrics['max_false_peak_db'],
         'runtime_ms': float(
@@ -169,4 +211,12 @@ def evaluate_algorithm_output(
             after.nbytes if memory_usage_bytes is None else memory_usage_bytes
         ),
         'reference_peak_index': reference_peak,
+        'cfar_reference_cells_min': min(
+            before_metrics['reference_cell_count_min'],
+            after_metrics['reference_cell_count_min'],
+        ),
+        'cfar_reference_cells_max': max(
+            before_metrics['reference_cell_count_max'],
+            after_metrics['reference_cell_count_max'],
+        ),
     }

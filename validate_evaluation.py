@@ -53,6 +53,18 @@ def _mean(rows, key):
     return float(np.mean(values)) if values else float('nan')
 
 
+def _std(rows, key):
+    values = [float(row[key]) for row in rows if row.get(key) not in ('', None)]
+    return float(np.std(values, ddof=1)) if len(values) > 1 else 0.0
+
+
+def _ci95(rows, key):
+    values = [float(row[key]) for row in rows if row.get(key) not in ('', None)]
+    if len(values) < 2:
+        return 0.0
+    return float(1.96 * np.std(values, ddof=1) / np.sqrt(len(values)))
+
+
 def _rate(rows, key):
     values = [bool(row[key]) for row in rows]
     return float(np.mean(values)) if values else float('nan')
@@ -65,14 +77,16 @@ def _conclusion(rows, algorithm):
     if not valid:
         return 'Interface FAIL'
     delta = _mean(valid, 'delta_sinr_db')
+    delta_ci = _ci95(valid, 'delta_sinr_db')
     pd_before = _rate(valid, 'detected_before')
     pd_after = _rate(valid, 'detected_after')
     false_before = _mean(valid, 'false_peak_count_before')
     false_after = _mean(valid, 'false_peak_count_after')
     error_before = _mean(valid, 'peak_error_before')
     error_after = _mean(valid, 'peak_error_after')
-    loss = _mean(valid, 'target_peak_loss_db')
-    if delta >= 0.2 and pd_after >= pd_before and loss >= -1.0:
+    loss = _mean(valid, 'clean_target_response_loss_db')
+    if (delta > 0.2 and delta - delta_ci >= 0.0
+            and pd_after >= pd_before and loss > -1.0):
         return 'Recommended'
     if (false_after < false_before or error_after < error_before) and pd_after >= pd_before:
         return 'Conditional'
@@ -176,11 +190,17 @@ def run_matrix(output_dir, seeds):
             'Pd_before': _rate(valid, 'detected_before') if valid else 0.0,
             'Pd_after': _rate(valid, 'detected_after') if valid else 0.0,
             'MeanDeltaSINR_dB': _mean(valid, 'delta_sinr_db') if valid else float('nan'),
+            'DeltaSINR_std_dB': _std(valid, 'delta_sinr_db') if valid else float('nan'),
+            'DeltaSINR_ci95_dB': _ci95(valid, 'delta_sinr_db') if valid else float('nan'),
             'MeanPeakError_before': _mean(valid, 'peak_error_before') if valid else float('nan'),
             'MeanPeakError_after': _mean(valid, 'peak_error_after') if valid else float('nan'),
             'MeanFalsePeak_before': _mean(valid, 'false_peak_count_before') if valid else float('nan'),
             'MeanFalsePeak_after': _mean(valid, 'false_peak_count_after') if valid else float('nan'),
-            'MeanTargetPeakLoss_dB': _mean(valid, 'target_peak_loss_db') if valid else float('nan'),
+            'MeanWindowPeakChange_dB': _mean(valid, 'target_window_peak_change_db') if valid else float('nan'),
+            'MeanCleanTargetLoss_dB': _mean(valid, 'clean_target_response_loss_db') if valid else float('nan'),
+            'CleanTargetLoss_std_dB': _std(valid, 'clean_target_response_loss_db') if valid else float('nan'),
+            'CleanTargetLoss_ci95_dB': _ci95(valid, 'clean_target_response_loss_db') if valid else float('nan'),
+            'Pd_after_ci95': _ci95(valid, 'detected_after') if valid else float('nan'),
             'MeanRuntime_ms': _mean(valid, 'runtime_ms') if valid else float('nan'),
             'Conclusion': _conclusion(valid, algorithm) if valid else 'Interface FAIL',
         })
@@ -202,11 +222,17 @@ def run_matrix(output_dir, seeds):
             'PeakError_after': _mean(valid, 'peak_error_after') if valid else float('nan'),
             'FalsePeak_before': _mean(valid, 'false_peak_count_before') if valid else float('nan'),
             'FalsePeak_after': _mean(valid, 'false_peak_count_after') if valid else float('nan'),
-            'TargetPeakLoss_dB': _mean(valid, 'target_peak_loss_db') if valid else float('nan'),
+            'DeltaSINR_std_dB': _std(valid, 'delta_sinr_db') if valid else float('nan'),
+            'DeltaSINR_ci95_dB': _ci95(valid, 'delta_sinr_db') if valid else float('nan'),
+            'WindowPeakChange_dB': _mean(valid, 'target_window_peak_change_db') if valid else float('nan'),
+            'CleanTargetLoss_dB': _mean(valid, 'clean_target_response_loss_db') if valid else float('nan'),
+            'CleanTargetLoss_ci95_dB': _ci95(valid, 'clean_target_response_loss_db') if valid else float('nan'),
+            'Pd_after_ci95': _ci95(valid, 'detected_after') if valid else float('nan'),
             'Conclusion': _conclusion(valid, algorithm) if valid else 'Interface FAIL',
         })
     _write_csv(output_dir / 'algorithm_matrix.csv', matrix)
     _write_csv(output_dir / 'algorithm_applicability_matrix.csv', matrix)
+    _write_csv(output_dir / 'algorithm_jsr_matrix.csv', summary)
     _write_csv(
         output_dir / 'identity_baseline.csv',
         [row for row in summary if row['Algorithm'] == 'Identity'],
