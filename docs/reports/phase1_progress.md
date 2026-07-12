@@ -60,4 +60,4 @@ Task 031：`da9deb4 phase1-031-unify-physical-environment`
 Task 032：`0136a1d phase1-032-unify-jammer-jsr`
 Task 033：`d3933d3 phase1-033-evaluation-contract`
 Task 033-fix：`6aef067 phase1-033-fix-evaluation-metrics`
-Task 033-fix2：待提交后回填。
+Task 033-fix2：`8d36689 phase1-033-fix2-target-preservation`

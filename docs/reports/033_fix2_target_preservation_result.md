@@ -117,4 +117,4 @@ results/phase1/evaluation_v3/identity_baseline.csv
 
 分支：`algorithm_design_0711`
 
-主提交：待提交后回填。
+主提交：`8d36689 phase1-033-fix2-target-preservation`
