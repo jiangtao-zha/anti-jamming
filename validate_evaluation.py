@@ -13,7 +13,7 @@ import numpy as np
 from anti_jamming.adapters import get_antijam_func
 from configs.phase1_radar import get_phase1_radar_params
 from unified_framework import JammerLoader, RadarEnvironment
-from utils.evaluation import evaluate_algorithm_output
+from utils.evaluation import evaluate_algorithm_output, evaluate_target_preservation
 
 
 JAMMERS = [
@@ -73,6 +73,8 @@ def _rate(rows, key):
 def _conclusion(rows, algorithm):
     if algorithm == 'Identity':
         return 'Baseline'
+    if algorithm == 'adapt_filter':
+        return 'Blocked oracle-risk'
     valid = [row for row in rows if row['interface_ok']]
     if not valid:
         return 'Interface FAIL'
@@ -84,7 +86,7 @@ def _conclusion(rows, algorithm):
     false_after = _mean(valid, 'false_peak_count_after')
     error_before = _mean(valid, 'peak_error_before')
     error_after = _mean(valid, 'peak_error_after')
-    loss = _mean(valid, 'clean_target_response_loss_db')
+    loss = _mean(valid, 'target_only_response_change_db')
     if (delta > 0.2 and delta - delta_ci >= 0.0
             and pd_after >= pd_before and loss > -1.0):
         return 'Recommended'
@@ -140,6 +142,19 @@ def run_matrix(output_dir, seeds):
                                 radar_par, **ALGORITHM_PARAMS[algorithm]
                             )
                             processed = np.asarray(processed)[0]
+
+                        target_only_par = dict(radar_par)
+                        target_only_par['Srt_matrix'] = generated['target'][np.newaxis, :]
+                        if algorithm == 'Identity':
+                            processed_target = generated['target'].copy()
+                        else:
+                            processed_target, _ = func(
+                                target_only_par, **ALGORITHM_PARAMS[algorithm]
+                            )
+                            processed_target = np.asarray(processed_target)[0]
+                        target_metrics = evaluate_target_preservation(
+                            generated['target'], processed_target, config
+                        )
                         runtime_ms = (time.perf_counter() - started) * 1000.0
                         _, peak_memory = tracemalloc.get_traced_memory()
                         metrics = evaluate_algorithm_output(
@@ -151,6 +166,7 @@ def run_matrix(output_dir, seeds):
                             memory_usage_bytes=peak_memory,
                         )
                         base.update(metrics)
+                        base.update(target_metrics)
                     except Exception as exc:
                         base.update({
                             'error': repr(exc),
@@ -197,9 +213,10 @@ def run_matrix(output_dir, seeds):
             'MeanFalsePeak_before': _mean(valid, 'false_peak_count_before') if valid else float('nan'),
             'MeanFalsePeak_after': _mean(valid, 'false_peak_count_after') if valid else float('nan'),
             'MeanWindowPeakChange_dB': _mean(valid, 'target_window_peak_change_db') if valid else float('nan'),
-            'MeanCleanTargetLoss_dB': _mean(valid, 'clean_target_response_loss_db') if valid else float('nan'),
-            'CleanTargetLoss_std_dB': _std(valid, 'clean_target_response_loss_db') if valid else float('nan'),
-            'CleanTargetLoss_ci95_dB': _ci95(valid, 'clean_target_response_loss_db') if valid else float('nan'),
+            'MeanReferenceResponseVsClean_dB': _mean(valid, 'processed_reference_response_vs_clean_db') if valid else float('nan'),
+            'MeanTargetOnlyResponseChange_dB': _mean(valid, 'target_only_response_change_db') if valid else float('nan'),
+            'TargetOnlyResponseChange_std_dB': _std(valid, 'target_only_response_change_db') if valid else float('nan'),
+            'TargetOnlyResponseChange_ci95_dB': _ci95(valid, 'target_only_response_change_db') if valid else float('nan'),
             'Pd_after_ci95': _ci95(valid, 'detected_after') if valid else float('nan'),
             'MeanRuntime_ms': _mean(valid, 'runtime_ms') if valid else float('nan'),
             'Conclusion': _conclusion(valid, algorithm) if valid else 'Interface FAIL',
@@ -225,8 +242,9 @@ def run_matrix(output_dir, seeds):
             'DeltaSINR_std_dB': _std(valid, 'delta_sinr_db') if valid else float('nan'),
             'DeltaSINR_ci95_dB': _ci95(valid, 'delta_sinr_db') if valid else float('nan'),
             'WindowPeakChange_dB': _mean(valid, 'target_window_peak_change_db') if valid else float('nan'),
-            'CleanTargetLoss_dB': _mean(valid, 'clean_target_response_loss_db') if valid else float('nan'),
-            'CleanTargetLoss_ci95_dB': _ci95(valid, 'clean_target_response_loss_db') if valid else float('nan'),
+            'ReferenceResponseVsClean_dB': _mean(valid, 'processed_reference_response_vs_clean_db') if valid else float('nan'),
+            'TargetOnlyResponseChange_dB': _mean(valid, 'target_only_response_change_db') if valid else float('nan'),
+            'TargetOnlyResponseChange_ci95_dB': _ci95(valid, 'target_only_response_change_db') if valid else float('nan'),
             'Pd_after_ci95': _ci95(valid, 'detected_after') if valid else float('nan'),
             'Conclusion': _conclusion(valid, algorithm) if valid else 'Interface FAIL',
         })

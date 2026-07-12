@@ -77,6 +77,26 @@ def _profile(received, target):
     return np.abs(signal.fftconvolve(received, np.conj(target[::-1]), mode='same'))
 
 
+def evaluate_target_preservation(target_signal, processed_target, radar_config):
+    """Measure algorithm response change on a clean target-only input."""
+    processed = np.asarray(processed_target, dtype=complex).reshape(-1)
+    if not np.all(np.isfinite(processed)):
+        raise ValueError('processed_target contains NaN/Inf')
+    clean = _full_target(target_signal, radar_config, processed.size)
+    template = _local_template(target_signal, radar_config, processed.size)
+    clean_profile = _profile(clean, template)
+    processed_profile = _profile(processed, template)
+    reference_peak = int(np.argmax(clean_profile))
+    clean_response = clean_profile[reference_peak]
+    processed_response = processed_profile[reference_peak]
+    return {
+        'target_only_response_change_db': float(20.0 * np.log10(
+            processed_response / (clean_response + 1e-12)
+        )),
+        'target_only_reference_peak_index': reference_peak,
+    }
+
+
 def _peak_and_false_metrics(profile, reference_peak, guard_cells, reference_cells, pfa):
     detections, threshold_power, reference_count = _ca_cfar(
         profile, guard_cells, reference_cells, pfa
@@ -197,7 +217,7 @@ def evaluate_algorithm_output(
         'range_error_before_m': before_metrics['peak_error'] * range_bin_m,
         'range_error_after_m': after_metrics['peak_error'] * range_bin_m,
         'target_window_peak_change_db': float(target_window_change),
-        'clean_target_response_loss_db': float(clean_target_loss),
+        'processed_reference_response_vs_clean_db': float(clean_target_loss),
         'false_peak_count_before': before_metrics['false_peak_count'],
         'false_peak_count_after': after_metrics['false_peak_count'],
         'false_true_peak_ratio_before': before_metrics['false_true_peak_ratio'],
