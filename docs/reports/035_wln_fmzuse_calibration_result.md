@@ -95,4 +95,4 @@ results/phase1/task035/
 ## 11. Git 信息
 
 - 分支：`algorithm_design_0711`
-- 主提交 SHA：待提交后回填
+- 主提交 SHA：`7de5855`

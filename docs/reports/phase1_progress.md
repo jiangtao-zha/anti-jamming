@@ -83,4 +83,4 @@ Task 034：`b6966ee phase1-034-fdc-am-calibration`
 Task 034-fix：`5f565ec phase1-034-fix-algorithm-test-contract`
 Task 034-fix2：`65ba5c9 phase1-034-fix2-fair-input-jammer-contract`
 Task 034-fix3：`9df3072 phase1-034-fix3-contract-failure-regression`
-Task 035：待主提交后回填
+Task 035：`7de5855 phase1-035-wln-fmzuse-calibration`
