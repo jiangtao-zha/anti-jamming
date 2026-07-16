@@ -1,0 +1,22 @@
+{
+  "branch": "algorithm_design_0711",
+  "baseline_commit": "fe5a2e1b89ab20ad1b039054a4094a2bc63df6f2",
+  "algorithm": "Current_WLN",
+  "parameters": {
+    "name": "Current_WLN",
+    "par1": 0.3,
+    "par2": 6
+  },
+  "jsrs_db": [
+    0.0,
+    10.0,
+    20.0,
+    30.0
+  ],
+  "seeds": [
+    1000,
+    1019,
+    20
+  ],
+  "contract": "Task 034-fix3"
+}

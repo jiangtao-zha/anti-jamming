@@ -1,0 +1,19 @@
+{
+  "final_status": "REJECTED",
+  "recommended_jsr_region": null,
+  "calibration_seeds": "1000..1019",
+  "heldout_fmzuse_seeds": "2000..2049",
+  "negative_control_seeds": "2000..2029",
+  "candidate": {
+    "name": "WLN_p10_o6",
+    "par1": 1.0,
+    "par2": 6,
+    "score": 0.13511042465279954
+  },
+  "formal_interface_failures": 0,
+  "formal_oracle_failures": 0,
+  "formal_jammer_contract_failures": 0,
+  "heldout_aggregate_rows": 12,
+  "negative_aggregate_rows": 45,
+  "reason": "negative specificity gap at all tested negative-control JSRs and replicated low-JSR harm"
+}

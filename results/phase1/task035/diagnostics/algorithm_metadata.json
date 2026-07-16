@@ -1,0 +1,16 @@
+{
+  "current": {
+    "par1": 0.3,
+    "par2": 6,
+    "gating": false
+  },
+  "candidate": {
+    "name": "WLN_p10_o6",
+    "par1": 1.0,
+    "par2": 6,
+    "score": 0.13511042465279954,
+    "gating": false
+  },
+  "oracle_input": "PASS",
+  "jammer_contract": "UNIFIED_JSR_PASS"
+}

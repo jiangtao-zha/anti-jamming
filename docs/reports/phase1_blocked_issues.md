@@ -37,3 +37,9 @@ Therefore:
 - 正式矩阵中 contract/oracle failure 计数为 0；故障注入 probe 已证明 `GENERATION_FAIL` 和 oracle leak 都返回非零退出码。
 - correctness 已真实调用 empty、错误 shape 和 NaN IQ，不能将静态 helper 结果当作边界通过证据。
 - NoJammer 不声明 requested/measured JSR，状态为 `NO_JAMMER_NOT_APPLICABLE`。
+
+## Task 035：WLN ↔ FMZuse
+
+- Current/Candidate WLN 的 FMZuse 正收益没有形成专用性；held-out 负控平均收益在 JSR=10/20/30 均高于 FMZuse，specificity gap 全部为负。
+- JSR=0 dB 的约 1 dB 负收益在 calibration 和 held-out 重复出现；当前 WLN 无 observable gating/bypass。
+- Task 035 最终状态为 `REJECTED`，WLN 不进入最终 RL candidate matrix；后续若重启，应单独设计并预注册 gating 与新的 held-out 集。

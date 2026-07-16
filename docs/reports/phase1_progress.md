@@ -2,9 +2,11 @@
 
 ## Current Task
 
-Task 034-fix3：Contract Failure 与回归证据已完成，等待审查。
+Task 035：WLN ↔ FMZuse 专用算法校准已完成，结论为 REJECTED，等待审查。
 
 主提交：`9df3072 phase1-034-fix3-contract-failure-regression`
+
+Task 035 结果：WLN 在 FMZuse JSR=10/20/30 有正收益，但 5 个负控平均收益更高，specificity gap 全部为负；JSR=0 仍约 -0.89 dB，未进入 RL candidate matrix。
 
 主提交：`65ba5c9 phase1-034-fix2-fair-input-jammer-contract`
 
@@ -20,6 +22,7 @@ Task 034-fix3：Contract Failure 与回归证据已完成，等待审查。
 - Task 034-fix：统一 Interface/Performance 状态、修复 SliceCombine/FrFT 入口、保存同 seed Identity 对照并修正退出码。
 - Task 034-fix2：移除算法输入中的 `target_dist` 等 oracle 字段，传播 unified/legacy Jammer Contract 状态，隔离性能矩阵与 correctness regression。
 - Task 034-fix3：收紧 contract/oracle failure 退出码，补齐真实 invalid-input 调用证据，修正 target preservation 聚合和 NoJammer JSR 状态。
+- Task 035：完成 Current WLN baseline、9 组 calibration、FMZuse held-out 和 5 类负控；未修改 WLN 结构，最终状态 REJECTED。
 
 ## In Progress
 
@@ -66,6 +69,7 @@ Task 034-fix3：Contract Failure 与回归证据已完成，等待审查。
 - Task 034-fix：性能状态已与接口状态分离；adapt_filter=BLOCKED_ORACLE，FSTP(M=1)=NOT_APPLICABLE_MULTIPULSE。
 - Task 034-fix2：400 性能 cases 接口全部通过；ISDJ/qpzh 为 `BLOCKED_JAMMER_CONTRACT`，SliceCombine/FSTP 保留 `NOT_APPLICABLE_MULTIPULSE` 并记录 `LEGACY_JSR_BLOCKED`；公平排名过滤 legacy 与 oracle 结果。
 - Task 034-fix3：正式性能和 correctness 均退出码 0；generation/oracle failure probes 均退出码 1；结果保存于 `results/phase1/task034_fix3/`。
+- Task 035：held-out 与负控 Interface/Jammer Contract/oracle 全部通过；结果和 specificity 证据保存于 `results/phase1/task035/`。
 
 ## Latest Commit
 
@@ -79,3 +83,4 @@ Task 034：`b6966ee phase1-034-fdc-am-calibration`
 Task 034-fix：`5f565ec phase1-034-fix-algorithm-test-contract`
 Task 034-fix2：`65ba5c9 phase1-034-fix2-fair-input-jammer-contract`
 Task 034-fix3：`9df3072 phase1-034-fix3-contract-failure-regression`
+Task 035：待主提交后回填
