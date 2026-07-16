@@ -1,0 +1,5 @@
+check,shape,complex,finite,requested_jsr_db,measured_jsr_db,jsr_status
+target,"(5000,)",True,True,10.0,,legacy/unified-JSR-blocked
+jammer,"(5000,)",True,True,10.0,,legacy/unified-JSR-blocked
+noise,"(5000,)",True,True,10.0,,legacy/unified-JSR-blocked
+received,"(5000,)",True,True,10.0,,legacy/unified-JSR-blocked

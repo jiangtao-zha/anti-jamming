@@ -1,0 +1,2 @@
+algorithm,input_shape,output_shape,complex_dtype,finite_output,input_unchanged,target_idx_passed,jammer_label_passed,exception
+frft_filter,"(1, 5000)","(1, 5000)",True,True,True,False,False,

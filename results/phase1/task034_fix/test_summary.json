@@ -1,0 +1,15 @@
+{
+  "interface_pass": 800,
+  "interface_fail": 0,
+  "performance_counts": {
+    "RECOMMENDED": 10,
+    "CONDITIONAL": 9,
+    "HARMFUL": 5,
+    "BLOCKED_ORACLE": 8,
+    "NOT_APPLICABLE_MULTIPULSE": 8
+  },
+  "generation_failures": 0,
+  "case_count": 400,
+  "expected_case_count": 400,
+  "exit_code": 0
+}

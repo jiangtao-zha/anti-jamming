@@ -139,3 +139,66 @@ class Phase1JammerAdapter:
             'target_dist': kwargs.get('R_target', 6000.0),
             'noise_var': kwargs.get('noise_var', 0.1),
         }
+
+
+class LegacyTupleJammerAdapter:
+    """Expose a legacy tuple-only jammer through the Phase 1 dict contract."""
+
+    def __init__(self, jammer_type, legacy_jammer):
+        self.jammer_type = jammer_type
+        self.legacy = legacy_jammer
+
+    def __getattr__(self, name):
+        return getattr(self.legacy, name)
+
+    def generate(self, target_signal=None, config=None, jsr_db=None, seed=None, **kwargs):
+        is_new_api = target_signal is not None or config is not None or jsr_db is not None
+        if not is_new_api:
+            return self.legacy.generate(**kwargs)
+        if target_signal is None or config is None or jsr_db is None:
+            raise TypeError('new interface requires target_signal, config, and jsr_db')
+
+        state = np.random.get_state()
+        if seed is not None:
+            np.random.seed(seed)
+        try:
+            raw_received, range_axis, legacy_info = self.legacy.generate(
+                R_target=config['target_dist'],
+                JSR_dB=jsr_db,
+                noise_var=config.get('noise_var', 0.1),
+            )
+        finally:
+            np.random.set_state(state)
+
+        raw_received = np.asarray(raw_received, dtype=complex)
+        target_input = np.asarray(target_signal, dtype=complex)
+        if target_input.size == raw_received.size:
+            target = target_input.copy()
+        else:
+            target = np.zeros(raw_received.size, dtype=complex)
+            start = int(config.get('target_start_idx', 0))
+            end = min(start + target_input.size, target.size)
+            if end > start:
+                target[start:end] = target_input[:end - start]
+
+        # The legacy model exposes only a composite tuple. Keep the residual
+        # as a legacy jammer estimate and explicitly mark unified JSR blocked.
+        jammer = raw_received - target
+        noise = np.zeros_like(raw_received)
+        metadata = dict(legacy_info) if isinstance(legacy_info, dict) else {}
+        metadata.update({
+            'jammer_type': self.jammer_type,
+            'interface_status': 'PASS',
+            'jsr_status': 'legacy/unified-JSR-blocked',
+            'legacy_components_available': False,
+        })
+        return {
+            'target': target,
+            'jammer': jammer,
+            'noise': noise,
+            'received': target + jammer + noise,
+            'requested_jsr_db': float(jsr_db),
+            'measured_jsr_db': None,
+            'range_axis': range_axis,
+            'metadata': metadata,
+        }

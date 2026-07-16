@@ -24,7 +24,7 @@ import sys
 import os
 import matplotlib.pyplot as plt
 from configs.phase1_radar import get_phase1_jammer_params, get_phase1_radar_params
-from utils.jammer_interface import Phase1JammerAdapter
+from utils.jammer_interface import Phase1JammerAdapter, LegacyTupleJammerAdapter
 
 # =====================================================================
 # 统一评价函数 (从 test_FMZuse_VS_wln_filter.py 复制并稍作修改)
@@ -290,7 +290,10 @@ class JammerLoader:
                 return RGPO(**init_params)
             elif jammer_type == 'ISDJ':
                 from jamming.ISDJ import ISDJ
-                return ISDJ(**init_params)
+                return LegacyTupleJammerAdapter(
+                    jammer_type,
+                    ISDJ(**init_params),
+                )
             elif jammer_type == 'SMSP':
                 from jamming.SMSP import SMSP
                 return Phase1JammerAdapter(jammer_type, SMSP(**init_params))
@@ -311,7 +314,10 @@ class JammerLoader:
                 return Phase1JammerAdapter(jammer_type, AMNoiseGaiJam(**init_params))
             elif jammer_type == 'SliceCombineJam':
                 from anti_jamming.qpzh import SliceCombineJam
-                return SliceCombineJam(**init_params)
+                return LegacyTupleJammerAdapter(
+                    jammer_type,
+                    SliceCombineJam(**init_params),
+                )
             else:
                 raise ValueError(f"未知的干扰类型: {jammer_type}")
         except ImportError as e:

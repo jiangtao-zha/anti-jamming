@@ -10,7 +10,7 @@ class SliceCombineJam:
     对应 MATLAB 脚本：切片组合干扰。
     """
 
-    def __init__(self, C=3e8, f0=50e6, T=24e-6, Tr=100e-6, B=20e6):
+    def __init__(self, C=3e8, f0=50e6, T=24e-6, Tr=100e-6, B=20e6, Fs=None):
         """
         参数:
             C  : 光速 (m/s)
@@ -18,6 +18,7 @@ class SliceCombineJam:
             T  : 脉宽/采样时间 (s)
             Tr : 脉冲重复周期 (s)
             B  : 雷达信号带宽 (Hz)
+            Fs : 可选系统采样率，仅用于统一接口参数映射
         """
         self.C = C
         self.f0 = f0
@@ -27,7 +28,7 @@ class SliceCombineJam:
         self.K = B / T
 
         # 系统采样率
-        self.Fs = 2 * (B + f0)
+        self.Fs = float(Fs) if Fs is not None else 2 * (B + f0)
         self.Ts = 1 / self.Fs
         self.Nsys = round(T / self.Ts)          # 脉内点数
 

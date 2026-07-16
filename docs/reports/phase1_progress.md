@@ -2,7 +2,7 @@
 
 ## Current Task
 
-Task 034：FDC 与 AMNoiseGaiJam 专用校准已完成，等待审查。
+Task 034-fix：统一算法测试契约与验证入口已完成，等待审查。
 
 ## Completed Tasks
 
@@ -13,6 +13,7 @@ Task 034：FDC 与 AMNoiseGaiJam 专用校准已完成，等待审查。
 - Task 033-fix：修正 false peak/target loss 语义，改用边缘感知功率 CA-CFAR，增加 Pfa 验证、逐 JSR 矩阵和 CI。
 - Task 033-fix2：增加 target-only response preservation 分支，保留污染参考响应诊断字段，生成 evaluation_v3。
 - Task 034：新增 Current/New FDC 对照、AM 参数搜索和非 AM 负测试；JSR=0/10/20 通过，JSR=30 高方差退化已记录。
+- Task 034-fix：统一 Interface/Performance 状态、修复 SliceCombine/FrFT 入口、保存同 seed Identity 对照并修正退出码。
 
 ## In Progress
 
@@ -42,6 +43,7 @@ Task 034：FDC 与 AMNoiseGaiJam 专用校准已完成，等待审查。
 - Task 033-fix 矩阵：3360/3360 接口 case 成功，结果保存到 `results/phase1/evaluation_v2/`。
 - Task 033-fix2 矩阵：3360/3360 接口 case 成功，结果保存到 `results/phase1/evaluation_v3/`。
 - Task 034 FDC：AM 240 cases、非 AM 720 cases、15 组参数搜索，结果保存到 `results/phase1/fdc/`。
+- Task 034-fix：400 algorithm cases、400 Identity 对照，Interface 800/800 PASS，结果保存到 `results/phase1/task034_fix/`。
 
 ## Blocked Issues
 
@@ -55,6 +57,7 @@ Task 034：FDC 与 AMNoiseGaiJam 专用校准已完成，等待审查。
 - Task 033-fix 未改变算法排序逻辑，只将结论拆为逐 JSR 并增加统计稳定性；`adapt_filter` oracle 风险继续保留。
 - Task 033-fix2：Recommended 改用 `target_only_response_change_db`，`adapt_filter` 继续标记 oracle-risk。
 - Task 034：New FDC 在 AM JSR=0/10/20 dB 形成收益，JSR=30 dB 退化；暂不作为全 JSR 稳定算法进入 RL。
+- Task 034-fix：性能状态已与接口状态分离；adapt_filter=BLOCKED_ORACLE，FSTP(M=1)=NOT_APPLICABLE_MULTIPULSE。
 
 ## Latest Commit
 
@@ -65,3 +68,4 @@ Task 033：`d3933d3 phase1-033-evaluation-contract`
 Task 033-fix：`6aef067 phase1-033-fix-evaluation-metrics`
 Task 033-fix2：`8d36689 phase1-033-fix2-target-preservation`
 Task 034：`b6966ee phase1-034-fdc-am-calibration`
+Task 034-fix：待提交后回填。
