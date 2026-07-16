@@ -29,6 +29,17 @@ PAIR_MATRIX = [
     ('FMZuse', 'WLN', 'WLN', {'par1': 0.3, 'par2': 6}),
 ]
 
+FORBIDDEN_ALGORITHM_KEYS = frozenset({
+    'target_idx', 'target_start_idx', 'target_dist', 'target_range',
+    'jammer_type', 'jam_info', 'true_jammer_signal', 'jammer_signal',
+    'requested_jsr_db', 'measured_jsr_db', 'jsr_status',
+})
+
+PHASE1_JAMMERS = (
+    'FMZuse', 'FMNoiseAimedJam', 'FMNoiseSaopin', 'AMNoiseGaiJam',
+    'SMSP', 'NoiseProductJamming', 'NoiseConvolutionJamming',
+)
+
 
 def _write_csv(path, rows):
     rows = list(rows)
@@ -48,11 +59,19 @@ def _write_csv(path, rows):
 
 
 def _whitelist_radar_par(config, received, template):
-    allowed = ('C', 'f0', 'Bw', 'Pw', 'Fs', 'Tr', 'M', 'N', 'target_dist')
+    allowed = ('C', 'f0', 'Bw', 'Pw', 'Fs', 'Tr', 'M', 'N')
     radar_par = {key: config[key] for key in allowed if key in config}
     radar_par['Srt_matrix'] = np.asarray(received, dtype=complex)[None, :]
     radar_par['St_base'] = np.asarray(template, dtype=complex).copy()
     return radar_par
+
+
+def _audit_algorithm_input(radar_par):
+    forbidden = sorted(FORBIDDEN_ALGORITHM_KEYS.intersection(radar_par))
+    return {
+        'forbidden_keys_present': ','.join(forbidden),
+        'oracle_input_status': 'PASS' if not forbidden else 'FAIL',
+    }
 
 
 def _interface_error(exc):
@@ -81,6 +100,19 @@ def _validate_output(output, expected_shape, input_before, input_after):
 
 
 def _call_algorithm(algorithm_name, adapter_name, radar_par, params, target_only=False):
+    audit = _audit_algorithm_input(radar_par)
+    if audit['oracle_input_status'] != 'PASS':
+        return {
+            'algorithm': algorithm_name,
+            'target_only': target_only,
+            'interface_status': 'FAIL',
+            'failure_reason': 'ORACLE_INPUT_LEAK',
+            **audit,
+            'runtime_ms': 0.0,
+            'memory_usage_bytes': 0,
+            'output': None,
+            'processed_template': None,
+        }
     input_before = np.array(radar_par['Srt_matrix'], copy=True)
     started = time.perf_counter()
     tracemalloc.start()
@@ -101,6 +133,7 @@ def _call_algorithm(algorithm_name, adapter_name, radar_par, params, target_only
         check['memory_usage_bytes'] = int(peak_memory)
         check['algorithm'] = algorithm_name
         check['target_only'] = target_only
+        check.update(audit)
         check['output'] = output
         check['processed_template'] = template
         return check
@@ -115,6 +148,7 @@ def _call_algorithm(algorithm_name, adapter_name, radar_par, params, target_only
             'output': None,
             'processed_template': None,
         }
+        result.update(audit)
         result.update(_interface_error(exc))
         return result
     finally:
@@ -125,6 +159,24 @@ def _generate_case(jammer_name, config, seed):
     np.random.seed(seed)
     env = RadarEnvironment(config)
     template = env.generate_target_signal()
+    if jammer_name == 'NoJammer':
+        radar = env.generate_without_jammer(noise_level=np.sqrt(config.get('noise_var', 0.1)))
+        pulse = int(config['pulse_samples'])
+        target = np.zeros(int(config['N']), dtype=complex)
+        start = int(config['target_start_idx'])
+        target[start:start + pulse] = template[:min(pulse, target.size - start)]
+        received = np.asarray(radar['Srt_matrix'][0], dtype=complex)
+        return {
+            'target': target,
+            'jammer': np.zeros_like(target),
+            'noise': received - target,
+            'received': received,
+            'requested_jsr_db': float(config['JSR_dB']),
+            'measured_jsr_db': float(config['JSR_dB']),
+            'jsr_status': 'unified/pass',
+            'legacy_components_available': True,
+            'metadata': {'jammer_type': 'NoJammer'},
+        }, template, received, target
     jammer = JammerLoader.load(jammer_name)
     generated = jammer.generate(
         target_signal=template,
@@ -137,6 +189,46 @@ def _generate_case(jammer_name, config, seed):
     if received.shape != target.shape:
         raise ValueError(f'generated target/received shape mismatch: {target.shape} vs {received.shape}')
     return generated, template, received, target
+
+
+def _jammer_contract(generated, requested_jsr_db):
+    metadata = generated.get('metadata') or {}
+    requested = generated.get('requested_jsr_db', requested_jsr_db)
+    measured = generated.get('measured_jsr_db')
+    legacy = generated.get('legacy_components_available', metadata.get('legacy_components_available', True))
+    jsr_status = generated.get('jsr_status', metadata.get('jsr_status', ''))
+    try:
+        requested = float(requested)
+    except (TypeError, ValueError):
+        requested = None
+    try:
+        measured = float(measured)
+    except (TypeError, ValueError):
+        measured = None
+    error = measured - requested if measured is not None and requested is not None and np.isfinite(measured) else None
+    if 'legacy' in str(jsr_status).lower() or not legacy or measured is None:
+        status = 'LEGACY_JSR_BLOCKED'
+        comparable = False
+    elif (
+        not np.isfinite(requested)
+        or not np.isfinite(measured)
+        or error is None
+        or abs(error) > 0.1
+    ):
+        status = 'GENERATION_FAIL'
+        comparable = False
+    else:
+        status = 'UNIFIED_JSR_PASS'
+        comparable = True
+    return {
+        'jammer_contract_status': status,
+        'jammer_comparable': comparable,
+        'requested_jsr_db': requested,
+        'measured_jsr_db': measured,
+        'jsr_error_db': error,
+        'jsr_status': jsr_status or ('unified/pass' if comparable else ''),
+        'legacy_components_available': bool(legacy),
+    }
 
 
 def _case_row(base, result, role):
@@ -163,13 +255,15 @@ def _std(values):
     return float(np.std(values, ddof=1)) if len(values) > 1 else 0.0
 
 
-def _performance_status(algorithm, jammer, valid_rows, identity_rows, interface_pass):
+def _performance_status(algorithm, jammer, valid_rows, identity_rows, interface_pass, jammer_contract_status, radar_config):
     if not interface_pass:
         return 'INTERFACE_FAIL'
     if algorithm == 'adapt_filter':
         return 'BLOCKED_ORACLE'
-    if algorithm == 'FSTP':
+    if algorithm == 'FSTP' and int(radar_config.get('M', 1)) < 2:
         return 'NOT_APPLICABLE_MULTIPULSE'
+    if jammer_contract_status != 'UNIFIED_JSR_PASS':
+        return 'BLOCKED_JAMMER_CONTRACT'
     if not valid_rows:
         return 'INTERFACE_FAIL'
 
@@ -178,11 +272,14 @@ def _performance_status(algorithm, jammer, valid_rows, identity_rows, interface_
     pd_before = _mean([row['detected_before'] for row in identity_rows])
     pd_after = _mean([row['detected_after'] for row in valid_rows])
     target_change = _mean([row['target_only_response_change_db'] for row in valid_rows])
+    target_erased = any(row.get('target_preservation_status') == 'TARGET_ERASED' for row in valid_rows)
     false_before = _mean([row['false_peak_count_before'] for row in identity_rows])
     false_after = _mean([row['false_peak_count_after'] for row in valid_rows])
     error_before = _mean([row['peak_error_before'] for row in identity_rows])
     error_after = _mean([row['peak_error_after'] for row in valid_rows])
 
+    if target_erased:
+        return 'HARMFUL'
     if delta > 0.2 and delta - delta_ci >= 0 and pd_after >= pd_before and target_change > -1.0:
         return 'RECOMMENDED'
     if (false_after < false_before or error_after < error_before) and pd_after >= pd_before:
@@ -214,6 +311,7 @@ def run_contract_matrix(output_dir, jsrs=(0.0, 10.0, 20.0, 30.0), seeds=range(42
                 }
                 try:
                     generated, template, received, target = _generate_case(jammer_name, config, seed)
+                    base.update(_jammer_contract(generated, jsr_db))
                     identity = {
                         'interface_status': 'PASS',
                         'output_shape': str(tuple(received[None, :].shape)),
@@ -265,6 +363,11 @@ def run_contract_matrix(output_dir, jsrs=(0.0, 10.0, 20.0, 30.0), seeds=range(42
                         algorithm_metrics.update({
                             'jammer': jammer_name, 'algorithm': algorithm_name,
                             'jsr_db': jsr_db, 'seed': seed,
+                            **{key: base.get(key) for key in (
+                                'jammer_contract_status', 'jammer_comparable',
+                                'requested_jsr_db', 'measured_jsr_db', 'jsr_error_db',
+                                'jsr_status', 'legacy_components_available',
+                            )},
                             'detected_identity': identity_metrics['detected_before'],
                             'detected_algorithm': algorithm_metrics['detected_after'],
                             'sinr_identity_db': identity_metrics['sinr_before_db'],
@@ -276,6 +379,8 @@ def run_contract_matrix(output_dir, jsrs=(0.0, 10.0, 20.0, 30.0), seeds=range(42
                             'false_peak_algorithm': algorithm_metrics['false_peak_count_after'],
                             'interface_status': 'PASS',
                             'target_only_response_change_db': algorithm_metrics['target_only_response_change_db'],
+                            'oracle_input_status': result.get('oracle_input_status', 'FAIL'),
+                            'forbidden_keys_present': result.get('forbidden_keys_present', ''),
                         })
                         # Re-evaluate algorithm output using the required identity baseline.
                         case_metrics.append(algorithm_metrics)
@@ -284,16 +389,23 @@ def run_contract_matrix(output_dir, jsrs=(0.0, 10.0, 20.0, 30.0), seeds=range(42
                             'jammer': jammer_name, 'algorithm': algorithm_name,
                             'jsr_db': jsr_db, 'seed': seed,
                             'interface_status': 'FAIL',
+                            **base,
                         })
                 except Exception as exc:
                     failure = dict(base)
-                    failure.update({'interface_status': 'FAIL', 'role': 'generation', **_interface_error(exc)})
+                    failure.update({
+                        'interface_status': 'FAIL', 'role': 'generation',
+                        'jammer_contract_status': 'GENERATION_FAIL',
+                        'jammer_comparable': False,
+                        **_interface_error(exc),
+                    })
                     raw_interface.append(failure)
                     generation_failures.append(failure)
                     case_metrics.append({
                         'jammer': jammer_name, 'algorithm': algorithm_name,
                         'jsr_db': jsr_db, 'seed': seed,
                         'interface_status': 'FAIL',
+                        **base,
                     })
 
     grouped = defaultdict(list)
@@ -312,12 +424,33 @@ def run_contract_matrix(output_dir, jsrs=(0.0, 10.0, 20.0, 30.0), seeds=range(42
         valid = [row for row in rows if row.get('interface_status') == 'PASS']
         identity_rows = [row for row in valid]
         interface_pass = len(interfaces) == len(list(seeds)) and all(row.get('interface_status') == 'PASS' for row in interfaces)
-        status = _performance_status(algorithm, jammer, valid, identity_rows, interface_pass)
+        statuses = {row.get('jammer_contract_status') for row in rows}
+        contract_status = next(iter(statuses)) if len(statuses) == 1 else 'GENERATION_FAIL'
+        radar_config = get_phase1_radar_params({'JSR_dB': jsr_db})
+        status = _performance_status(
+            algorithm, jammer, valid, identity_rows, interface_pass,
+            contract_status, radar_config,
+        )
+        jammer_comparable = contract_status == 'UNIFIED_JSR_PASS'
+        fair_eligible = jammer_comparable and status in {
+            'RECOMMENDED', 'CONDITIONAL', 'NEUTRAL', 'HARMFUL'
+        }
         performance.append({
             'jammer': jammer, 'algorithm': algorithm, 'jsr_db': jsr_db,
             'trials': len(list(seeds)),
             'interface_status': 'PASS' if interface_pass else 'FAIL',
             'performance_status': status,
+            'jammer_contract_status': contract_status,
+            'jammer_comparable': jammer_comparable,
+            'fair_ranking_eligible': fair_eligible,
+            'exploratory_only': not jammer_comparable,
+            'requested_jsr_db': _mean([row.get('requested_jsr_db') for row in rows]),
+            'measured_jsr_db': _mean([row.get('measured_jsr_db') for row in rows]),
+            'jsr_error_db': _mean([row.get('jsr_error_db') for row in rows]),
+            'jsr_status': ','.join(sorted({str(row.get('jsr_status', '')) for row in rows})),
+            'legacy_components_available': all(row.get('legacy_components_available', False) for row in rows),
+            'oracle_input_status': ','.join(sorted({str(row.get('oracle_input_status', '')) for row in valid})),
+            'forbidden_keys_present': ','.join(sorted({str(row.get('forbidden_keys_present', '')) for row in valid if row.get('forbidden_keys_present')})),
             'delta_sinr_mean_db': _mean([row.get('delta_sinr_db') for row in valid]),
             'delta_sinr_std_db': _std([row.get('delta_sinr_db') for row in valid]),
             'delta_sinr_ci95_db': _ci95([row.get('delta_sinr_db') for row in valid]),
@@ -327,6 +460,7 @@ def run_contract_matrix(output_dir, jsrs=(0.0, 10.0, 20.0, 30.0), seeds=range(42
             'pd_algorithm': _mean([row.get('detected_algorithm') for row in valid]),
             'target_only_response_change_mean_db': _mean([row.get('target_only_response_change_db') for row in valid]),
             'target_only_response_change_ci95_db': _ci95([row.get('target_only_response_change_db') for row in valid]),
+            'target_preservation_status': 'TARGET_ERASED' if any(row.get('target_preservation_status') == 'TARGET_ERASED' for row in valid) else 'TARGET_PRESERVED',
             'peak_error_identity_mean': _mean([row.get('peak_error_identity') for row in valid]),
             'peak_error_algorithm_mean': _mean([row.get('peak_error_algorithm') for row in valid]),
             'false_peak_identity_mean': _mean([row.get('false_peak_identity') for row in valid]),
@@ -339,6 +473,8 @@ def run_contract_matrix(output_dir, jsrs=(0.0, 10.0, 20.0, 30.0), seeds=range(42
     _write_csv(output_dir / 'interface_results.csv', raw_interface)
     _write_csv(output_dir / 'performance_results.csv', performance)
     _write_csv(output_dir / 'combined_results.csv', combined)
+    _write_csv(output_dir / 'jammer_contract_results.csv', performance)
+    _write_csv(output_dir / 'fair_ranking_results.csv', [row for row in performance if row['fair_ranking_eligible']])
 
     interface_counts = Counter(row.get('interface_status') for row in raw_interface)
     performance_counts = Counter(row.get('performance_status') for row in performance)
@@ -350,9 +486,121 @@ def run_contract_matrix(output_dir, jsrs=(0.0, 10.0, 20.0, 30.0), seeds=range(42
         'case_count': len(case_metrics),
         'expected_case_count': len(PAIR_MATRIX) * len(tuple(jsrs)) * len(tuple(seeds)),
         'exit_code': 1 if interface_counts.get('FAIL', 0) or generation_failures else 0,
+        'jammer_contract_counts': dict(Counter(row.get('jammer_contract_status') for row in performance)),
+        'fair_ranking_eligible_count': sum(row['fair_ranking_eligible'] for row in performance),
+        'forbidden_input_failures': sum(row.get('oracle_input_status') == 'FAIL' for row in raw_interface),
     }
     (output_dir / 'test_summary.json').parent.mkdir(parents=True, exist_ok=True)
     (output_dir / 'test_summary.json').write_text(json.dumps(summary, indent=2, ensure_ascii=False))
+    return summary
+
+
+def run_correctness_regression(output_dir):
+    """Run fast loader/adapter/regression checks without performance ranking."""
+    output_dir = Path(output_dir)
+    loader_rows = []
+    adapter_rows = []
+    no_jammer_rows = []
+    boundary_rows = []
+    config = get_phase1_radar_params({'JSR_dB': 10.0})
+
+    loader_names = PHASE1_JAMMERS + ('ISDJ', 'SliceCombineJam', 'NoJammer')
+    for name in loader_names:
+        row = {'jammer': name, 'status': 'PASS'}
+        try:
+            generated, template, received, target = _generate_case(name, config, 42)
+            contract = _jammer_contract(generated, 10.0)
+            row.update(contract)
+            row.update({
+                'received_shape': str(received.shape),
+                'target_shape': str(target.shape),
+                'finite': bool(np.all(np.isfinite(received))),
+            })
+            if received.shape != target.shape or not row['finite']:
+                row.update({'status': 'FAIL', 'failure_reason': 'SHAPE_OR_FINITE'})
+        except Exception as exc:
+            row.update({'status': 'FAIL', 'failure_reason': 'LOADER_SMOKE', **_interface_error(exc)})
+        loader_rows.append(row)
+
+    for jammer_name, algorithm_name, adapter_name, params in PAIR_MATRIX:
+        row = {'algorithm': algorithm_name, 'adapter': adapter_name, 'status': 'PASS'}
+        try:
+            generated, template, received, target = _generate_case(jammer_name, config, 42)
+            radar_par = _whitelist_radar_par(config, received, template)
+            result = _call_algorithm(algorithm_name, adapter_name, radar_par, params)
+            target_par = _whitelist_radar_par(config, target, template)
+            target_result = _call_algorithm(algorithm_name, adapter_name, target_par, params, target_only=True)
+            row.update({
+                'interface_status': result.get('interface_status'),
+                'target_only_interface_status': target_result.get('interface_status'),
+                'oracle_input_status': result.get('oracle_input_status'),
+                'forbidden_keys_present': result.get('forbidden_keys_present', ''),
+                'target_only_response_change_db': None,
+            })
+            if result.get('interface_status') != 'PASS' or target_result.get('interface_status') != 'PASS':
+                row.update({'status': 'FAIL', 'failure_reason': 'ADAPTER_SMOKE'})
+            elif result.get('oracle_input_status') != 'PASS' or target_result.get('oracle_input_status') != 'PASS':
+                row.update({'status': 'FAIL', 'failure_reason': 'ORACLE_INPUT_LEAK'})
+            else:
+                row['target_only_response_change_db'] = evaluate_target_preservation(
+                    target, target_result['output'][0], config,
+                )['target_only_response_change_db']
+        except Exception as exc:
+            row.update({'status': 'FAIL', 'failure_reason': 'ADAPTER_SMOKE', **_interface_error(exc)})
+        adapter_rows.append(row)
+
+    try:
+        generated, template, received, target = _generate_case('NoJammer', config, 42)
+        for _, algorithm_name, adapter_name, params in PAIR_MATRIX:
+            row = {'algorithm': algorithm_name, 'status': 'PASS'}
+            radar_par = _whitelist_radar_par(config, received, template)
+            result = _call_algorithm(algorithm_name, adapter_name, radar_par, params)
+            row.update({
+                'interface_status': result.get('interface_status'),
+                'target_only_response_change_db': None,
+            })
+            if result.get('interface_status') != 'PASS':
+                row.update({'status': 'FAIL', 'failure_reason': 'NO_JAMMER_INTERFACE'})
+            else:
+                row['target_only_response_change_db'] = evaluate_target_preservation(
+                    target, result['output'][0], config,
+                )['target_only_response_change_db']
+            no_jammer_rows.append(row)
+    except Exception as exc:
+        no_jammer_rows.append({'algorithm': 'all', 'status': 'FAIL', **_interface_error(exc)})
+
+    invalid_output = _validate_output(
+        np.array([np.nan + 0j]), (2,), np.zeros(2, dtype=complex), np.zeros(2, dtype=complex)
+    )
+    invalid_param_result = _call_algorithm(
+        'FDC', 'FrequencyDomainCanceller',
+        _whitelist_radar_par(config, received, template),
+        {'cancellation_strength': float('nan')},
+    )
+    boundary_rows.extend([
+        {'case': 'forbidden_key_audit', 'status': 'PASS' if _audit_algorithm_input({'target_dist': 1})['oracle_input_status'] == 'FAIL' else 'FAIL'},
+        {'case': 'nan_or_shape_rejected', 'status': 'PASS' if invalid_output['interface_status'] == 'FAIL' else 'FAIL'},
+        {'case': 'invalid_parameter_rejected', 'status': 'PASS' if invalid_param_result['interface_status'] == 'FAIL' else 'FAIL'},
+        {'case': 'FSTP_M1_status', 'status': 'PASS' if _performance_status(
+            'FSTP', 'SMSP', [], [], True, 'UNIFIED_JSR_PASS', config
+        ) == 'NOT_APPLICABLE_MULTIPULSE' else 'FAIL'},
+    ])
+
+    _write_csv(output_dir / 'loader_smoke.csv', loader_rows)
+    _write_csv(output_dir / 'adapter_smoke.csv', adapter_rows)
+    _write_csv(output_dir / 'no_jammer_regression.csv', no_jammer_rows)
+    _write_csv(output_dir / 'parameter_boundary.csv', boundary_rows)
+    failures = sum(row.get('status') == 'FAIL' for rows in (loader_rows, adapter_rows, no_jammer_rows, boundary_rows) for row in rows)
+    summary = {
+        'loader_cases': len(loader_rows),
+        'adapter_cases': len(adapter_rows),
+        'no_jammer_cases': len(no_jammer_rows),
+        'boundary_cases': len(boundary_rows),
+        'failures': failures,
+        'exit_code': 1 if failures else 0,
+    }
+    output_dir.mkdir(parents=True, exist_ok=True)
+    (output_dir / 'correctness_summary.json').write_text(json.dumps(summary, indent=2, ensure_ascii=False))
     return summary
 
 
@@ -362,6 +610,6 @@ def print_summary(summary):
     print(f"FAIL: {summary['interface_fail']}")
     print('')
     print('Performance Summary')
-    for status in ('RECOMMENDED', 'CONDITIONAL', 'NEUTRAL', 'HARMFUL', 'BLOCKED_ORACLE', 'NOT_APPLICABLE_MULTIPULSE', 'INTERFACE_FAIL'):
+    for status in ('RECOMMENDED', 'CONDITIONAL', 'NEUTRAL', 'HARMFUL', 'BLOCKED_ORACLE', 'BLOCKED_JAMMER_CONTRACT', 'NOT_APPLICABLE_MULTIPULSE', 'INTERFACE_FAIL'):
         print(f"{status}: {summary['performance_counts'].get(status, 0)}")
     print(f"Process Exit Code: {summary['exit_code']}")

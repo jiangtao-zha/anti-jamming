@@ -89,6 +89,8 @@ class Phase1JammerAdapter:
             'jammer_type': self.jammer_type,
             'requested_jsr_db': float(jsr_db),
             'measured_jsr_db': measured_jsr,
+            'jsr_status': 'unified/pass',
+            'legacy_components_available': True,
             'target_power': calculate_power(target),
             'jammer_power': calculate_power(scaled_jammer),
             'noise_power': calculate_power(noise),
@@ -106,6 +108,8 @@ class Phase1JammerAdapter:
             'received': received,
             'requested_jsr_db': float(jsr_db),
             'measured_jsr_db': measured_jsr,
+            'jsr_status': 'unified/pass',
+            'legacy_components_available': True,
             'range_axis': range_axis,
             'metadata': metadata,
         }
@@ -199,6 +203,8 @@ class LegacyTupleJammerAdapter:
             'received': target + jammer + noise,
             'requested_jsr_db': float(jsr_db),
             'measured_jsr_db': None,
+            'jsr_status': 'legacy/unified-JSR-blocked',
+            'legacy_components_available': False,
             'range_axis': range_axis,
             'metadata': metadata,
         }

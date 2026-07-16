@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
-"""Compatibility entry point for the unified Phase 1 contract runner."""
+"""Run fast correctness regression checks, without performance ranking."""
 
 import sys
 from pathlib import Path
 
-from utils.test_contract import print_summary, run_contract_matrix
+from utils.test_contract import run_correctness_regression
 
 
 def run_all_tests():
-    """Run the same contract as validate_algorithms.py for traceability."""
-    summary = run_contract_matrix(Path('results/phase1/task034_fix'))
-    print_summary(summary)
+    """Run loader, adapter, no-jammer and boundary regression checks."""
+    summary = run_correctness_regression(
+        Path('results/phase1/task034_fix2/correctness_regression')
+    )
+    print(f"Loader cases: {summary['loader_cases']}")
+    print(f"Adapter cases: {summary['adapter_cases']}")
+    print(f"No-jammer cases: {summary['no_jammer_cases']}")
+    print(f"Failures: {summary['failures']}")
+    print(f"Process Exit Code: {summary['exit_code']}")
     return summary
 
 

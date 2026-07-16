@@ -89,10 +89,19 @@ def evaluate_target_preservation(target_signal, processed_target, radar_config):
     reference_peak = int(np.argmax(clean_profile))
     clean_response = clean_profile[reference_peak]
     processed_response = processed_profile[reference_peak]
+    epsilon = 1e-12
+    if processed_response <= epsilon:
+        response_change = float('-inf')
+        preservation_status = 'TARGET_ERASED'
+        response_is_finite = False
+    else:
+        response_change = float(20.0 * np.log10(processed_response / (clean_response + epsilon)))
+        preservation_status = 'TARGET_PRESERVED' if response_change > -1.0 else 'TARGET_ATTENUATED'
+        response_is_finite = bool(np.isfinite(response_change))
     return {
-        'target_only_response_change_db': float(20.0 * np.log10(
-            processed_response / (clean_response + 1e-12)
-        )),
+        'target_only_response_change_db': response_change,
+        'target_only_response_change_is_finite': response_is_finite,
+        'target_preservation_status': preservation_status,
         'target_only_reference_peak_index': reference_peak,
     }
 
