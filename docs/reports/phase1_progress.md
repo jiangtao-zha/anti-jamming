@@ -68,4 +68,4 @@ Task 033：`d3933d3 phase1-033-evaluation-contract`
 Task 033-fix：`6aef067 phase1-033-fix-evaluation-metrics`
 Task 033-fix2：`8d36689 phase1-033-fix2-target-preservation`
 Task 034：`b6966ee phase1-034-fdc-am-calibration`
-Task 034-fix：待提交后回填。
+Task 034-fix：`5f565ec phase1-034-fix-algorithm-test-contract`

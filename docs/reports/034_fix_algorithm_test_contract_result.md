@@ -168,4 +168,4 @@ SliceCombine smoke：四个输出均为 `(5000,)` complex、无 NaN/Inf；JSR �
 
 分支：`algorithm_design_0711`
 
-主提交：待提交后回填。
+主提交：`5f565ec phase1-034-fix-algorithm-test-contract`
