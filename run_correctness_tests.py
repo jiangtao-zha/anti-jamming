@@ -10,7 +10,7 @@ from utils.test_contract import run_correctness_regression
 def run_all_tests():
     """Run loader, adapter, no-jammer and boundary regression checks."""
     summary = run_correctness_regression(
-        Path('results/phase1/task034_fix2/correctness_regression')
+        Path('results/phase1/task034_fix3/correctness_regression')
     )
     print(f"Loader cases: {summary['loader_cases']}")
     print(f"Adapter cases: {summary['adapter_cases']}")

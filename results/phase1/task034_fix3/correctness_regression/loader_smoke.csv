@@ -1,0 +1,11 @@
+jammer,status,jammer_contract_status,jammer_comparable,requested_jsr_db,measured_jsr_db,jsr_error_db,jsr_status,legacy_components_available,received_shape,target_shape,finite
+FMZuse,PASS,UNIFIED_JSR_PASS,True,10.0,10.0,0.0,unified/pass,True,"(5000,)","(5000,)",True
+FMNoiseAimedJam,PASS,UNIFIED_JSR_PASS,True,10.0,10.0,0.0,unified/pass,True,"(5000,)","(5000,)",True
+FMNoiseSaopin,PASS,UNIFIED_JSR_PASS,True,10.0,10.0,0.0,unified/pass,True,"(5000,)","(5000,)",True
+AMNoiseGaiJam,PASS,UNIFIED_JSR_PASS,True,10.0,9.999999999999998,-1.7763568394002505e-15,unified/pass,True,"(5000,)","(5000,)",True
+SMSP,PASS,UNIFIED_JSR_PASS,True,10.0,10.0,0.0,unified/pass,True,"(5000,)","(5000,)",True
+NoiseProductJamming,PASS,UNIFIED_JSR_PASS,True,10.0,10.0,0.0,unified/pass,True,"(5000,)","(5000,)",True
+NoiseConvolutionJamming,PASS,UNIFIED_JSR_PASS,True,10.0,10.0,0.0,unified/pass,True,"(5000,)","(5000,)",True
+ISDJ,PASS,LEGACY_JSR_BLOCKED,False,10.0,,,legacy/unified-JSR-blocked,False,"(5000,)","(5000,)",True
+SliceCombineJam,PASS,LEGACY_JSR_BLOCKED,False,10.0,,,legacy/unified-JSR-blocked,False,"(5000,)","(5000,)",True
+NoJammer,PASS,NO_JAMMER_NOT_APPLICABLE,False,,,,no-jammer/not-applicable,False,"(5000,)","(5000,)",True

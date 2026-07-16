@@ -1,0 +1,11 @@
+jammer,algorithm,adapter,jsr_db,seed,oracle_target_idx_passed,oracle_jammer_type_passed,oracle_true_jammer_signal_passed,interface_status,role,jammer_contract_status,jammer_comparable,exception_type,exception_message,traceback_summary
+AMNoiseGaiJam,FDC,FrequencyDomainCanceller,10.0,42,False,False,False,FAIL,generation,GENERATION_FAIL,False,RuntimeError,injected generation failure,RuntimeError: injected generation failure
+FMNoiseAimedJam,FrFT,frft_filter,10.0,42,False,False,False,FAIL,generation,GENERATION_FAIL,False,RuntimeError,injected generation failure,RuntimeError: injected generation failure
+FMNoiseSaopin,FrFT,frft_filter,10.0,42,False,False,False,FAIL,generation,GENERATION_FAIL,False,RuntimeError,injected generation failure,RuntimeError: injected generation failure
+SMSP,qpzh,qpzh,10.0,42,False,False,False,FAIL,generation,GENERATION_FAIL,False,RuntimeError,injected generation failure,RuntimeError: injected generation failure
+ISDJ,qpzh,qpzh,10.0,42,False,False,False,FAIL,generation,GENERATION_FAIL,False,RuntimeError,injected generation failure,RuntimeError: injected generation failure
+SliceCombineJam,FSTP,FastSlowTimeProcessor,10.0,42,False,False,False,FAIL,generation,GENERATION_FAIL,False,RuntimeError,injected generation failure,RuntimeError: injected generation failure
+SMSP,FSTP,FastSlowTimeProcessor,10.0,42,False,False,False,FAIL,generation,GENERATION_FAIL,False,RuntimeError,injected generation failure,RuntimeError: injected generation failure
+NoiseProductJamming,adapt_filter,adapt_filter,10.0,42,False,False,False,FAIL,generation,GENERATION_FAIL,False,RuntimeError,injected generation failure,RuntimeError: injected generation failure
+NoiseConvolutionJamming,adapt_filter,adapt_filter,10.0,42,False,False,False,FAIL,generation,GENERATION_FAIL,False,RuntimeError,injected generation failure,RuntimeError: injected generation failure
+FMZuse,WLN,WLN,10.0,42,False,False,False,FAIL,generation,GENERATION_FAIL,False,RuntimeError,injected generation failure,RuntimeError: injected generation failure

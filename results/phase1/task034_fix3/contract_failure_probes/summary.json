@@ -1,0 +1,45 @@
+{
+  "generation_failure_probe": {
+    "interface_pass": 0,
+    "interface_fail": 10,
+    "performance_counts": {
+      "INTERFACE_FAIL": 10
+    },
+    "generation_failures": 10,
+    "case_count": 10,
+    "expected_case_count": 10,
+    "interface_failures": 0,
+    "generation_exceptions": 10,
+    "contract_generation_failures": 10,
+    "oracle_input_failures": 0,
+    "correctness_failures": 0,
+    "exit_code": 1,
+    "jammer_contract_counts": {
+      "GENERATION_FAIL": 10
+    },
+    "fair_ranking_eligible_count": 0,
+    "forbidden_input_failures": 0
+  },
+  "oracle_failure_probe": {
+    "interface_pass": 10,
+    "interface_fail": 10,
+    "performance_counts": {
+      "INTERFACE_FAIL": 10
+    },
+    "generation_failures": 0,
+    "case_count": 10,
+    "expected_case_count": 10,
+    "interface_failures": 10,
+    "generation_exceptions": 0,
+    "contract_generation_failures": 0,
+    "oracle_input_failures": 10,
+    "correctness_failures": 0,
+    "exit_code": 1,
+    "jammer_contract_counts": {
+      "UNIFIED_JSR_PASS": 8,
+      "LEGACY_JSR_BLOCKED": 2
+    },
+    "fair_ranking_eligible_count": 0,
+    "forbidden_input_failures": 20
+  }
+}

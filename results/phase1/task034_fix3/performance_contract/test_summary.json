@@ -1,0 +1,27 @@
+{
+  "interface_pass": 800,
+  "interface_fail": 0,
+  "performance_counts": {
+    "RECOMMENDED": 8,
+    "CONDITIONAL": 9,
+    "HARMFUL": 3,
+    "BLOCKED_JAMMER_CONTRACT": 4,
+    "BLOCKED_ORACLE": 8,
+    "NOT_APPLICABLE_MULTIPULSE": 8
+  },
+  "generation_failures": 0,
+  "case_count": 400,
+  "expected_case_count": 400,
+  "interface_failures": 0,
+  "generation_exceptions": 0,
+  "contract_generation_failures": 0,
+  "oracle_input_failures": 0,
+  "correctness_failures": 0,
+  "exit_code": 0,
+  "jammer_contract_counts": {
+    "UNIFIED_JSR_PASS": 32,
+    "LEGACY_JSR_BLOCKED": 8
+  },
+  "fair_ranking_eligible_count": 20,
+  "forbidden_input_failures": 0
+}

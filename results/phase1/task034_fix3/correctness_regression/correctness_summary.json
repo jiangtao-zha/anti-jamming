@@ -1,0 +1,10 @@
+{
+  "loader_cases": 10,
+  "adapter_cases": 10,
+  "no_jammer_cases": 10,
+  "boundary_cases": 33,
+  "boundary_call_attempts": 30,
+  "correctness_failures": 0,
+  "failures": 0,
+  "exit_code": 0
+}

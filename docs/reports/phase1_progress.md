@@ -2,7 +2,7 @@
 
 ## Current Task
 
-Task 034-fix2：公平输入与 Jammer Contract 状态传播已完成，等待审查。
+Task 034-fix3：Contract Failure 与回归证据已完成，等待审查。
 
 主提交：`65ba5c9 phase1-034-fix2-fair-input-jammer-contract`
 
@@ -17,6 +17,7 @@ Task 034-fix2：公平输入与 Jammer Contract 状态传播已完成，等待�
 - Task 034：新增 Current/New FDC 对照、AM 参数搜索和非 AM 负测试；JSR=0/10/20 通过，JSR=30 高方差退化已记录。
 - Task 034-fix：统一 Interface/Performance 状态、修复 SliceCombine/FrFT 入口、保存同 seed Identity 对照并修正退出码。
 - Task 034-fix2：移除算法输入中的 `target_dist` 等 oracle 字段，传播 unified/legacy Jammer Contract 状态，隔离性能矩阵与 correctness regression。
+- Task 034-fix3：收紧 contract/oracle failure 退出码，补齐真实 invalid-input 调用证据，修正 target preservation 聚合和 NoJammer JSR 状态。
 
 ## In Progress
 
@@ -62,6 +63,7 @@ Task 034-fix2：公平输入与 Jammer Contract 状态传播已完成，等待�
 - Task 034：New FDC 在 AM JSR=0/10/20 dB 形成收益，JSR=30 dB 退化；暂不作为全 JSR 稳定算法进入 RL。
 - Task 034-fix：性能状态已与接口状态分离；adapt_filter=BLOCKED_ORACLE，FSTP(M=1)=NOT_APPLICABLE_MULTIPULSE。
 - Task 034-fix2：400 性能 cases 接口全部通过；ISDJ/qpzh 为 `BLOCKED_JAMMER_CONTRACT`，SliceCombine/FSTP 保留 `NOT_APPLICABLE_MULTIPULSE` 并记录 `LEGACY_JSR_BLOCKED`；公平排名过滤 legacy 与 oracle 结果。
+- Task 034-fix3：正式性能和 correctness 均退出码 0；generation/oracle failure probes 均退出码 1；结果保存于 `results/phase1/task034_fix3/`。
 
 ## Latest Commit
 

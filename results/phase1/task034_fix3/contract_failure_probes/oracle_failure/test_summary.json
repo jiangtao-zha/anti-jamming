@@ -1,0 +1,22 @@
+{
+  "interface_pass": 10,
+  "interface_fail": 10,
+  "performance_counts": {
+    "INTERFACE_FAIL": 10
+  },
+  "generation_failures": 0,
+  "case_count": 10,
+  "expected_case_count": 10,
+  "interface_failures": 10,
+  "generation_exceptions": 0,
+  "contract_generation_failures": 0,
+  "oracle_input_failures": 10,
+  "correctness_failures": 0,
+  "exit_code": 1,
+  "jammer_contract_counts": {
+    "UNIFIED_JSR_PASS": 8,
+    "LEGACY_JSR_BLOCKED": 2
+  },
+  "fair_ranking_eligible_count": 0,
+  "forbidden_input_failures": 20
+}

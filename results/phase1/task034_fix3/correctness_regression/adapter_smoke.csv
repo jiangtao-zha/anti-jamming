@@ -1,0 +1,11 @@
+algorithm,adapter,status,interface_status,target_only_interface_status,oracle_input_status,forbidden_keys_present,target_only_response_change_db
+FDC,FrequencyDomainCanceller,PASS,PASS,PASS,PASS,,-8.678947198979587e-15
+FrFT,frft_filter,PASS,PASS,PASS,PASS,,-0.3374184101833674
+FrFT,frft_filter,PASS,PASS,PASS,PASS,,-0.3374184101833674
+qpzh,qpzh,PASS,PASS,PASS,PASS,,-8.678947198979587e-15
+qpzh,qpzh,PASS,PASS,PASS,PASS,,-8.678947198979587e-15
+FSTP,FastSlowTimeProcessor,PASS,PASS,PASS,PASS,,-8.678947198979587e-15
+FSTP,FastSlowTimeProcessor,PASS,PASS,PASS,PASS,,-1.892767006375671e-05
+adapt_filter,adapt_filter,PASS,PASS,PASS,PASS,,-inf
+adapt_filter,adapt_filter,PASS,PASS,PASS,PASS,,-inf
+WLN,WLN,PASS,PASS,PASS,PASS,,1.7542552869168084
