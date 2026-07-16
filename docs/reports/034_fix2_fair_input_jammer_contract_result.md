@@ -82,4 +82,4 @@ results/phase1/task034_fix2/
 ## 11. Git 信息
 
 - 分支：`algorithm_design_0711`
-- 主提交 SHA：待主提交完成后回填
+- 主提交 SHA：`65ba5c9`

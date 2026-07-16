@@ -4,6 +4,8 @@
 
 Task 034-fix2：公平输入与 Jammer Contract 状态传播已完成，等待审查。
 
+主提交：`65ba5c9 phase1-034-fix2-fair-input-jammer-contract`
+
 ## Completed Tasks
 
 - Task 030：记录 Git 状态、物理参数、干扰/抗干扰注册表、RL 列表和现有测试输出。
@@ -71,3 +73,4 @@ Task 033-fix：`6aef067 phase1-033-fix-evaluation-metrics`
 Task 033-fix2：`8d36689 phase1-033-fix2-target-preservation`
 Task 034：`b6966ee phase1-034-fdc-am-calibration`
 Task 034-fix：`5f565ec phase1-034-fix-algorithm-test-contract`
+Task 034-fix2：`65ba5c9 phase1-034-fix2-fair-input-jammer-contract`
