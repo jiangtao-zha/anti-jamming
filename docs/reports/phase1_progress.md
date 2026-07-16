@@ -4,6 +4,8 @@
 
 Task 034-fix3：Contract Failure 与回归证据已完成，等待审查。
 
+主提交：`9df3072 phase1-034-fix3-contract-failure-regression`
+
 主提交：`65ba5c9 phase1-034-fix2-fair-input-jammer-contract`
 
 ## Completed Tasks
@@ -76,3 +78,4 @@ Task 033-fix2：`8d36689 phase1-033-fix2-target-preservation`
 Task 034：`b6966ee phase1-034-fdc-am-calibration`
 Task 034-fix：`5f565ec phase1-034-fix-algorithm-test-contract`
 Task 034-fix2：`65ba5c9 phase1-034-fix2-fair-input-jammer-contract`
+Task 034-fix3：`9df3072 phase1-034-fix3-contract-failure-regression`

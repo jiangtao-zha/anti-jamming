@@ -45,4 +45,4 @@ NoJammer loader row 为 `NO_JAMMER_NOT_APPLICABLE`，没有指定 JSR。正式�
 ## 6. Git 信息
 
 - 分支：`algorithm_design_0711`
-- 主提交 SHA：待提交后回填
+- 主提交 SHA：`9df3072`
