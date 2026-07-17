@@ -1,0 +1,12 @@
+{
+  "task": "036",
+  "stage": "stage0",
+  "status": "COMPLETED",
+  "baseline_metadata": "baseline_metadata.json",
+  "baseline_head": "4c6823616ab2dba82feebf1575e7d08a42ecfc4a",
+  "oracle_baseline": "adapt_filter",
+  "oracle_status": "BLOCKED_ORACLE",
+  "fair_status": "NOT_IMPLEMENTED_AT_FREEZE",
+  "identity_available": true,
+  "next_stage": "stage1"
+}

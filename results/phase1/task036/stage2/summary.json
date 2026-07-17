@@ -1,0 +1,13 @@
+{
+  "task": "036",
+  "stage": "stage2",
+  "status": "COMPLETED",
+  "diagnostic_summary": "oracle_dependency_summary.json",
+  "per_trial_rows": 38400,
+  "seed_range": [5000, 5019],
+  "target_positions": [500, 1250, 2500, 3750, 4500],
+  "active_core_spot_check_rows": 64,
+  "active_core_spot_check_max_normalized_difference": 7.774810687041954e-15,
+  "decision": "ORACLE_DEPENDENCE_CONFIRMED",
+  "next_stage": "stage3"
+}

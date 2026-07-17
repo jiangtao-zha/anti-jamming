@@ -39,6 +39,7 @@ y = (r @ sᴴ) / (s sᴴ + par1) @ s
 - [aggregate_by_target_position.csv](/Users/jiangtao/anti_jamming/results/phase1/task036/stage2/aggregate_by_target_position.csv)
 - [active_core_equivalence_spot_check.csv](/Users/jiangtao/anti_jamming/results/phase1/task036/stage2/active_core_equivalence_spot_check.csv)
 - [oracle_dependency_summary.json](/Users/jiangtao/anti_jamming/results/phase1/task036/stage2/oracle_dependency_summary.json)
+- [summary.json](/Users/jiangtao/anti_jamming/results/phase1/task036/stage2/summary.json)
 
 ## Stage 2 决策门
 

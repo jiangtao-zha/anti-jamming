@@ -40,6 +40,7 @@ y = r Ps
 ## 证据文件
 
 - [baseline_metadata.json](/Users/jiangtao/anti_jamming/results/phase1/task036/stage0/baseline_metadata.json)
+- [summary.json](/Users/jiangtao/anti_jamming/results/phase1/task036/stage0/summary.json)
 - [git_status.txt](/Users/jiangtao/anti_jamming/results/phase1/task036/stage0/git_status.txt)
 - [file_hashes.txt](/Users/jiangtao/anti_jamming/results/phase1/task036/stage0/file_hashes.txt)
 - [task034 performance results](/Users/jiangtao/anti_jamming/results/phase1/task034_fix3/performance_contract/performance_results.csv)
