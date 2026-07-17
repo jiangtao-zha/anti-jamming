@@ -5,7 +5,7 @@
     "stage0": {
       "status": "COMPLETED",
       "start_commit": "4c6823616ab2dba82feebf1575e7d08a42ecfc4a",
-      "result_commit": null,
+      "result_commit": "9853ded",
       "report": "docs/reports/036_stage0_baseline_freeze.md",
       "result_dir": "results/phase1/task036/stage0",
       "exit_code": 0,
