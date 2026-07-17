@@ -12,7 +12,9 @@
     "stage6": "47efff3",
     "stage7": "c0bdbcd",
     "stage8": "4eda312",
-    "stage8_record": "4dad3e9"
+    "stage8_record": "4dad3e9",
+    "regression_record": "2831fff",
+    "final_metadata": "e6538f6"
   },
   "fair_candidate": null,
   "rl_action_space_modified": false,
