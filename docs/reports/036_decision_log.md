@@ -23,3 +23,11 @@
 - Decision: `ORACLE_DEPENDENCE_CONFIRMED`.
 - Evidence: `results/phase1/task036/stage2/` and `docs/reports/036_stage2_sensitivity_analysis.md`.
 - Next gate: design at least three observable-only alternatives in Stage 3; do not tune the legacy oracle implementation.
+
+## Stage 3 — 2026-07-18
+
+- Status: `COMPLETED`
+- Result commit: pending until the Stage 3 design artifact commit is created.
+- Decision: `OPEN_FOR_ISOLATED_PROTOTYPES_A_AND_B`; C remains exploratory and D remains the formal rejection option.
+- Evidence: `results/phase1/task036/stage3/` and `docs/reports/036_stage3_fair_design.md`.
+- Next gate: implement only isolated A/B prototypes with fit/apply separation and mandatory Identity fallback.

@@ -1,0 +1,7 @@
+Task 036 Stage 3 observable-only fair design
+Date: 2026-07-18 Asia/Shanghai
+
+Design candidates: A, B, C; formal rejection option D retained.
+Selected for isolated Stage 4 prototypes: A, B.
+Not selected due M=1 covariance/numerical risk: C.
+Legacy oracle baseline remains excluded from fair ranking.

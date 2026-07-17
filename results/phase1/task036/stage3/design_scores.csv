@@ -1,0 +1,5 @@
+design_id,Fairness,Target_protection,Jammer_separability,Position_robustness,Implementation_risk,Numerical_stability,Runtime,Interpretability,weighted_gate_score,minimum_gate,reason
+A,5,4,3,3,3,4,4,5,3.85,3.0,Best practical path; still requires confidence gating and Identity fallback
+B,5,4,3,4,3,3,3,4,3.65,3.0,Independent selection path; higher runtime but more position tolerance
+C,5,3,4,5,5,2,2,3,2.85,3.0,Promising position-independent theory but M=1 covariance support and numerical risk fail prototype gate
+D,5,5,0,5,1,5,5,5,3.10,not_applicable,Valid decision path but not a fair algorithm; retained only as upper bound plus Identity fallback

@@ -1,0 +1,13 @@
+{
+  "task": "036",
+  "stage": "stage3",
+  "status": "COMPLETED",
+  "selected_for_stage4": ["A", "B"],
+  "not_selected": ["C"],
+  "formal_rejection_option_retained": "D",
+  "selection_reason": "A and B have observable inputs, explicit confidence/Identity fallback, target-template protection, and an implementable fit/apply split. C is recorded as a valid research direction but is not selected because the frozen M=1 setup provides weak covariance support and the numerical risk is too high for this task's isolated prototype gate.",
+  "fair_input_for_all_selected": ["C", "f0", "Bw", "Pw", "Fs", "Tr", "M", "N", "Srt_matrix", "St_base"],
+  "forbidden_inputs_for_all_selected": ["target_idx", "target_start_idx", "target_dist", "target_range", "jammer_type", "jam_info", "true_jammer_signal", "measured_jsr", "requested_jsr", "evaluation_truth"],
+  "fallback": "Identity when candidate confidence, condition number, finite checks, or position stability gate fails",
+  "next_stage": "stage4"
+}

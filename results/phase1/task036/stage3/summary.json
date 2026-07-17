@@ -1,0 +1,19 @@
+{
+  "task": "036",
+  "stage": "stage3",
+  "status": "COMPLETED",
+  "candidate_count": 4,
+  "fair_design_count": 3,
+  "selected_designs": ["A", "B"],
+  "stage4_gate": "OPEN_FOR_ISOLATED_PROTOTYPES_A_AND_B",
+  "legacy_oracle_status": "RETAINED_AND_EXCLUDED_FROM_FAIR_RANKING",
+  "current_adapt_filter_status": "ORACLE_UPPER_BOUND_ONLY_PENDING_FINAL_HELDOUT_DECISION",
+  "design_constraints": [
+    "No target index or derived target position enters fit/apply",
+    "No jammer label or jammer signal enters fit/apply",
+    "Fit and apply are separate",
+    "Identity fallback is mandatory on low confidence or numerical failure",
+    "No RL/action-space changes in Task 036"
+  ],
+  "next_stage": "stage4"
+}
