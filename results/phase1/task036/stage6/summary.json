@@ -1,0 +1,44 @@
+{
+  "task": "036",
+  "stage": "stage6",
+  "status": "COMPLETED",
+  "mode": "rejection_confirmation_only",
+  "jammers": [
+    "NoiseProductJamming",
+    "NoiseConvolutionJamming",
+    "NoJammer",
+    "AMNoiseGaiJam",
+    "FMNoiseAimedJam",
+    "FMNoiseSaopin",
+    "SMSP",
+    "FMZuse"
+  ],
+  "jsrs_db": [
+    0.0,
+    10.0,
+    20.0,
+    30.0
+  ],
+  "seeds": [
+    8000,
+    8049
+  ],
+  "seed_count": 50,
+  "target_positions": [
+    500,
+    1250,
+    2500,
+    3750,
+    4500
+  ],
+  "candidate_id": "A_k3_c0.05_r0.001",
+  "candidate_file_sha256": "8239f488543210984c1b87b554e10ada3d1dff73f63f105a83d36534a214be50",
+  "candidate_source_commit": "b623a01",
+  "fair_positive_conditions": 11,
+  "fair_target_erased_count": 0,
+  "fair_no_jammer_target_only_mean_db": -8.685885305585357e-06,
+  "fair_position_spread_db": 12.556768807905888,
+  "decision_signal_only": "ORACLE_UPPER_BOUND_ONLY",
+  "heldout_after_tuning": false,
+  "next_stage": "stage7"
+}

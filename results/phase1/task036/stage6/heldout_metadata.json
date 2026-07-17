@@ -1,0 +1,24 @@
+{
+  "mode": "rejection_confirmation_only",
+  "candidate": {
+    "candidate_id": "A_k3_c0.05_r0.001",
+    "design": "A",
+    "top_k": 3,
+    "confidence_threshold": 0.05,
+    "regularization": 0.001
+  },
+  "candidate_file_sha256": "8239f488543210984c1b87b554e10ada3d1dff73f63f105a83d36534a214be50",
+  "candidate_source_commit": "b623a01",
+  "seeds": [
+    8000,
+    8049
+  ],
+  "target_positions": [
+    500,
+    1250,
+    2500,
+    3750,
+    4500
+  ],
+  "no_post_heldout_tuning": true
+}

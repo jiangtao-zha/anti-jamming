@@ -1,0 +1,8 @@
+task 036 stage6 COMPLETED
+mode rejection_confirmation_only
+candidate A_k3_c0.05_r0.001
+seeds 8000..8049; target_positions 500,1250,2500,3750,4500
+oracle_target_preservation_evaluation independent pure-target reference with cache
+fair_target_erased_count 0
+fair_position_spread_db 12.556768807905888
+decision_signal_only ORACLE_UPPER_BOUND_ONLY

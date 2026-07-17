@@ -48,3 +48,12 @@
 - Frozen rejection-confirmation prototype: `A_k3_c0.05_r0.001`; it is not a fair candidate.
 - Evidence: `results/phase1/task036/stage5/` and `docs/reports/036_stage5_calibration_result.md`.
 - Next gate: run held-out seeds only for Identity, Oracle upper bound, and the frozen unqualified prototype.
+
+## Stage 6 — 2026-07-18
+
+- Status: `COMPLETED`; rejection-confirmation mode only.
+- Result commit: pending Stage 6 commit; candidate source remains `b623a01` and candidate SHA is frozen in `results/phase1/task036/stage6/summary.json`.
+- Decision: `ORACLE_UPPER_BOUND_ONLY`.
+- Evidence: `results/phase1/task036/stage6/` and `docs/reports/036_stage6_heldout_result.md`.
+- Key gate result: Fair target-only protection passed (`TARGET_ERASED=0`, NoJammer change approximately zero), but high-JSR target-jammer performance and position robustness failed; position spread is `12.5568dB`.
+- Next gate: record final integration decision without registering the Fair prototype in RL.
