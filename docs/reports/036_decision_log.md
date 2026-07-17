@@ -65,3 +65,10 @@
 - Decision: `ORACLE_UPPER_BOUND_ONLY`; legacy `adapt_filter` retained as Oracle baseline, Fair prototype not registered and not candidate-matrix eligible.
 - Evidence: `results/phase1/task036/stage7/` and `docs/reports/036_stage7_final_decision.md`.
 - Next gate: complete Stage 8 final summary, reproducibility entry point, and repository progress/blocked-issue records.
+
+## Stage 8 — 2026-07-18
+
+- Status: `COMPLETED`; final summary, reproducibility entry point, progress update and blocked-issue update written.
+- Result commit: `4eda312` (`phase1-036-adapt-filter-fairness-decision`); the Stage 8 record commit follows this metadata update.
+- Decision: `ORACLE_UPPER_BOUND_ONLY`; Task 037 was not started.
+- Evidence: `docs/reports/036_adapt_filter_fairness_result.md`, `docs/reports/036_stage8_completion.md`, `results/phase1/task036/`.

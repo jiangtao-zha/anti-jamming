@@ -85,7 +85,7 @@
     "stage8": {
       "status": "COMPLETED",
       "start_commit": "421c3ea",
-      "result_commit": "PENDING_STAGE8_COMMIT",
+      "result_commit": "4eda312",
       "report": "docs/reports/036_stage8_completion.md",
       "result_dir": "results/phase1/task036/stage8",
       "exit_code": 0,
