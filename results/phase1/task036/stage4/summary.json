@@ -1,0 +1,17 @@
+{
+  "task": "036",
+  "stage": "stage4",
+  "status": "COMPLETED",
+  "case_count": 600,
+  "row_count": 2400,
+  "interface_failures": 0,
+  "oracle_input_failures": 0,
+  "fair_prototype_rows": 1200,
+  "target_erased_fair_rows": 0,
+  "fair_prototypes": [
+    "adapt_filter_fair",
+    "adapt_filter_fair_multihypothesis"
+  ],
+  "decision_gate_pending": true,
+  "next_stage": "stage5"
+}

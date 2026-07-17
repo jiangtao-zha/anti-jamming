@@ -1,0 +1,10 @@
+Task 036 Stage 4 isolated fair prototype smoke matrix
+Date: 2026-07-18 Asia/Shanghai
+
+Matrix: 5 jammers × 4 JSR × 10 seeds × 3 target centers = 600 cases.
+Rows: Identity, oracle upper bound, fair prototype A, fair prototype B = 2400 rows.
+Interface failures: 0
+Oracle-input failures: 0
+Fair TARGET_ERASED rows: 0
+Fair prototypes: adapt_filter_fair, adapt_filter_fair_multihypothesis
+Decision gate: PASS; proceed to calibration.

@@ -42,7 +42,16 @@
       "decision": "OPEN_FOR_ISOLATED_PROTOTYPES_A_AND_B",
       "next_stage": "stage4"
     },
-    "stage4": {"status": "NOT_STARTED", "next_stage": "stage5"},
+    "stage4": {
+      "status": "COMPLETED",
+      "start_commit": "f731047",
+      "result_commit": null,
+      "report": "docs/reports/036_stage4_prototype_result.md",
+      "result_dir": "results/phase1/task036/stage4",
+      "exit_code": 0,
+      "decision": "PROTOTYPE_GATE_PASS_A_AND_B",
+      "next_stage": "stage5"
+    },
     "stage5": {"status": "NOT_STARTED", "next_stage": "stage6"},
     "stage6": {"status": "NOT_STARTED", "next_stage": "stage7"},
     "stage7": {"status": "NOT_STARTED", "next_stage": "stage8"},

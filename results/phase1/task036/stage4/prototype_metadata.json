@@ -1,0 +1,59 @@
+{
+  "task": "036",
+  "stage": "stage4",
+  "prototypes": [
+    "adapt_filter_fair",
+    "adapt_filter_fair_multihypothesis"
+  ],
+  "fair_input_keys": [
+    "C",
+    "f0",
+    "Bw",
+    "Pw",
+    "Fs",
+    "Tr",
+    "M",
+    "N",
+    "Srt_matrix",
+    "St_base"
+  ],
+  "forbidden_keys": [
+    "jam_info",
+    "jammer_signal",
+    "jammer_type",
+    "jsr_status",
+    "measured_jsr_db",
+    "requested_jsr_db",
+    "target_dist",
+    "target_idx",
+    "target_range",
+    "target_start_idx",
+    "true_jammer_signal"
+  ],
+  "smoke_matrix": {
+    "jammers": [
+      "NoiseProductJamming",
+      "NoiseConvolutionJamming",
+      "NoJammer",
+      "AMNoiseGaiJam",
+      "FMNoiseAimedJam"
+    ],
+    "jsrs_db": [
+      0.0,
+      10.0,
+      20.0,
+      30.0
+    ],
+    "seeds": [
+      6000,
+      6009
+    ],
+    "target_centers": [
+      500,
+      1500,
+      3500
+    ]
+  },
+  "oracle_role": "legacy current adapt_filter with true target_idx; upper bound only",
+  "fallback": "Identity on low confidence or numerical failure"
+}

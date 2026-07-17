@@ -1,0 +1,1 @@
+The run emitted two NumPy Mean-of-empty-slice warnings from aggregate groups whose target response was non-finite after an oracle diagnostic projection. Fair prototype interface and target-preservation rows remained valid; the warnings did not change the exit code.
