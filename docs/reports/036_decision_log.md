@@ -27,7 +27,7 @@
 ## Stage 3 — 2026-07-18
 
 - Status: `COMPLETED`
-- Result commit: pending until the Stage 3 design artifact commit is created.
+- Result commit: `d2bb5a8` (`phase1-036-stage3-fair-design`).
 - Decision: `OPEN_FOR_ISOLATED_PROTOTYPES_A_AND_B`; C remains exploratory and D remains the formal rejection option.
 - Evidence: `results/phase1/task036/stage3/` and `docs/reports/036_stage3_fair_design.md`.
 - Next gate: implement only isolated A/B prototypes with fit/apply separation and mandatory Identity fallback.

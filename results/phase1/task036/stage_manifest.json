@@ -35,7 +35,7 @@
     "stage3": {
       "status": "COMPLETED",
       "start_commit": "fd5a547",
-      "result_commit": null,
+      "result_commit": "d2bb5a8",
       "report": "docs/reports/036_stage3_fair_design.md",
       "result_dir": "results/phase1/task036/stage3",
       "exit_code": 0,
