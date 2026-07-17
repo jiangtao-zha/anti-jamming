@@ -52,7 +52,7 @@
 ## Stage 6 — 2026-07-18
 
 - Status: `COMPLETED`; rejection-confirmation mode only.
-- Result commit: pending Stage 6 commit; candidate source remains `b623a01` and candidate SHA is frozen in `results/phase1/task036/stage6/summary.json`.
+- Result commit: `47efff3` (`phase1-036-stage6-heldout-evaluation`); candidate source remains `b623a01` and candidate SHA is frozen in `results/phase1/task036/stage6/summary.json`.
 - Decision: `ORACLE_UPPER_BOUND_ONLY`.
 - Evidence: `results/phase1/task036/stage6/` and `docs/reports/036_stage6_heldout_result.md`.
 - Key gate result: Fair target-only protection passed (`TARGET_ERASED=0`, NoJammer change approximately zero), but high-JSR target-jammer performance and position robustness failed; position spread is `12.5568dB`.

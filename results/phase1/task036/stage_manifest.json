@@ -65,7 +65,7 @@
     "stage6": {
       "status": "COMPLETED",
       "start_commit": "6ae7616",
-      "result_commit": "PENDING_STAGE6_COMMIT",
+      "result_commit": "47efff3",
       "report": "docs/reports/036_stage6_heldout_result.md",
       "result_dir": "results/phase1/task036/stage6",
       "exit_code": 0,
