@@ -1,0 +1,1 @@
+The combined repository search output was truncated by the interactive display; the authoritative distilled inventory and classifications are stored in dependency_inventory.csv and oracle_classification.csv. No audit command error was observed.

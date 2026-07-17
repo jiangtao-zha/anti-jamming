@@ -1,0 +1,24 @@
+{
+  "task": "036",
+  "stage": "stage1",
+  "status": "COMPLETED",
+  "decision_gate": "C_CURRENT_ALGORITHM_REQUIRES_TARGET_ALIGNMENT_ORACLE",
+  "current_algorithm_oracle_dependency": "CONFIRMED_BY_STATIC_AUDIT",
+  "hard_oracle": ["true target_idx"],
+  "hidden_assumption": ["missing target_idx silently becomes 0"],
+  "observable_inputs": ["Srt_matrix"],
+  "known_system_parameters": ["C", "f0", "Bw", "Pw", "Fs", "Tr", "M", "N", "St_base"],
+  "unused_legacy_fields": ["par2"],
+  "algorithm_type": "rank_one_projection_onto_aligned_known_target_template",
+  "not_a_jammer_subspace_estimator": true,
+  "fair_contract_status": "blocked_for_current_implementation",
+  "rl_action_status": "adapt_filter remains in registry; removal is deferred per Task 036 boundary",
+  "code_modified": false,
+  "next_stage": "stage2",
+  "evidence": [
+    "results/phase1/task036/stage1/dependency_inventory.csv",
+    "results/phase1/task036/stage1/oracle_classification.csv",
+    "results/phase1/task036/stage1/call_graph.md",
+    "results/phase1/task036/stage1/math_model.md"
+  ]
+}

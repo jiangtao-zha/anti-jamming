@@ -1,0 +1,15 @@
+component,source_location,role,enters_algorithm,source_kind,notes
+St_base,anti_jamming/adapters.py:184; configs/phase1_radar.py:11-43,known transmitted LFM template,yes,KNOWN_SYSTEM_PARAMETER,Allowed by fair-input policy; adapter maps to core key St1
+Srt_matrix,anti_jamming/adapters.py:185; utils/test_contract.py:61-66,received IQ matrix,yes,OBSERVABLE,Allowed received observation; shape is (M,N)
+C/f0/Bw/Pw/Fs/Tr/M/N,utils/test_contract.py:61-65,public radar configuration,yes,KNOWN_SYSTEM_PARAMETER,Whitelist fields passed to every contract algorithm
+par1,anti_jamming/adapters.py:174-188; rl_framework/utils.py:246-248,regularization/scaling parameter,yes,CONFIG_OR_ACTION_PARAMETER,Does not identify target position; current range includes negative values
+par2,anti_jamming/adapters.py:174-188; anti_jamming/adapt_filter.py:11-12,legacy spare parameter,no,UNUSED_LEGACY_FIELD,Accepted by interface but not used in core output
+target_idx,anti_jamming/adapters.py:186; anti_jamming/adapt_filter.py:28-31,target-template alignment index,yes,HARD_ORACLE_WHEN_TRUE,Adapter injects radar_par.get(target_idx,0); core uses it to place the template
+missing-target_idx fallback,anti_jamming/adapters.py:186,implicit alignment at index 0,yes,SOFT_ORACLE_HIDDEN_ASSUMPTION,When contract whitelist removes truth, default 0 is silently used and misaligns the actual pulse
+target_start_idx,configs/phase1_radar.py:39; utils/test_contract.py:32-35,environment-derived target start,not directly,ORACLE_FORBIDDEN_INPUT,Not passed by fair whitelist; used by environment/evaluation to generate truth
+target_dist,configs/phase1_radar.py:19,physical target range used by generation,not directly,ORACLE_FORBIDDEN_INPUT,Not read by current adapt_filter core, but forbidden in fair algorithm input
+jam_info/jammer label,unified_framework.py:152; utils/test_contract.py:32-36,jammer metadata, no,HARD_ORACLE_FORBIDDEN,Not passed by fair contract; not read by current core
+true jammer signal,utils/test_contract.py:32-36,component-separated truth, no,HARD_ORACLE_FORBIDDEN,Not passed to adapter
+requested/measured JSR,utils/test_contract.py:32-36,generated/evaluation metadata, no,HARD_ORACLE_FORBIDDEN,Not passed to adapter
+evaluation target_idx,anti_jamming/adapt_filter.py:111-113; unified_framework.py:458-460,metric reference only,no,ORACLE_EVALUATION_ONLY,Used by legacy helper/evaluator after processing; must never enter fair fit/apply
+RL full radar_par,rl_framework/environment.py:162-166; unified_framework.py:147-153,full environment record,yes indirectly,ORACLE_RISK_PATH,RL still retains adapt_filter in action registry and passes full record to adapter; Task 036 does not alter RL

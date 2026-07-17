@@ -1,0 +1,14 @@
+field,classification,evidence,impact,status
+Srt_matrix,OBSERVABLE,utils/test_contract.py:61-66,received IQ is legitimate fit input,ALLOWED
+St_base,KNOWN_SYSTEM_PARAMETER,anti_jamming/adapters.py:184,known transmitted template is legitimate fit input,ALLOWED
+C/f0/Bw/Pw/Fs/Tr/M/N,KNOWN_SYSTEM_PARAMETER,utils/test_contract.py:61-65,public radar configuration,ALLOWED
+par1,KNOWN_CONFIGURATION,anti_jamming/adapters.py:174-188,regularization/action parameter,ALLOWED
+par2,UNUSED_LEGACY_FIELD,anti_jamming/adapt_filter.py:11-12,no effect on output,REMOVE_FROM_DESIGN
+true target_idx,HARD_ORACLE,anti_jamming/adapters.py:186; configs/phase1_radar.py:40-42,exact simulator target center controls template placement,BLOCKED
+missing target_idx default 0,SOFT_ORACLE_HIDDEN_ASSUMPTION,anti_jamming/adapters.py:186; anti_jamming/adapt_filter.py:27-31,silent fixed-position assumption when truth is absent,BLOCKED
+target_dist/target_start_idx,ORACLE_FORBIDDEN_INPUT,utils/test_contract.py:32-35,environment truth/derived location,FORBIDDEN
+jammer_type/jam_info,HARD_ORACLE_FORBIDDEN,utils/test_contract.py:32-36,jammer identity is unavailable at receiver,FORBIDDEN
+true jammer signal,HARD_ORACLE_FORBIDDEN,utils/test_contract.py:32-36,component truth unavailable at receiver,FORBIDDEN
+requested/measured JSR,HARD_ORACLE_FORBIDDEN,utils/test_contract.py:32-36,requested/evaluation metadata unavailable to algorithm,FORBIDDEN
+evaluation target_idx,ORACLE_EVALUATION_ONLY,anti_jamming/adapt_filter.py:111-113,legacy metric helper uses truth after algorithm call,NOT_ALGORITHM_INPUT
+RL action registry,HARD_ORACLE_RISK,rl_framework/config.py:71-78; rl_framework/environment.py:162-166,adapt_filter remains selectable and receives full environment record,NOT_CHANGED_BY_TASK036
