@@ -1,6 +1,6 @@
 {
   "task": "036",
-  "status": "COMPLETED",
+  "status": "COMPLETED_LOCAL_PUSH_BLOCKED",
   "final_decision": "ORACLE_UPPER_BOUND_ONLY",
   "stage_commits": {
     "stage0": "9853ded",
