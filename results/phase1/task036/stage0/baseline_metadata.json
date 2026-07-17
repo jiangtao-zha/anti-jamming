@@ -1,0 +1,66 @@
+{
+  "task": "036",
+  "stage": "stage0",
+  "status": "COMPLETED",
+  "date": "2026-07-18",
+  "timezone": "Asia/Shanghai",
+  "branch": "algorithm_design_0711",
+  "start_head": "4c6823616ab2dba82feebf1575e7d08a42ecfc4a",
+  "working_tree_untracked_preserved": [
+    ".codex/",
+    "docs/tasks/phase1_master_plan.md"
+  ],
+  "radar_defaults": {
+    "C": 300000000.0,
+    "f0": 15000000.0,
+    "Bw": 5000000.0,
+    "Pw": 0.00002,
+    "Fs": 50000000.0,
+    "Tr": 0.0001,
+    "M": 1,
+    "N": 5000,
+    "pulse_samples": 1000,
+    "target_dist": 6000.0,
+    "target_start_idx": 1000,
+    "target_idx": 1500,
+    "JSR_dB": 10
+  },
+  "identity": {
+    "status": "AVAILABLE",
+    "definition": "return Srt_matrix and St_base without processing"
+  },
+  "oracle_adapt_filter": {
+    "status": "RETAINED_LEGACY_ORACLE_BASELINE",
+    "adapter": "anti_jamming.adapters.adapt_filter_adapter",
+    "core": "anti_jamming.adapt_filter.adapt_filter",
+    "default_par1": 0.0,
+    "default_par2": null,
+    "adapter_behavior": "always constructs target_idx from radar_par.get('target_idx', 0)",
+    "core_behavior": "pads St1 to Srt_temp length using offset=max(0, target_idx-N_s//2), forms Ps=s^H(s s^H+par1)^-1s, returns Srt_temp@Ps",
+    "fair_status": "BLOCKED_ORACLE",
+    "rl_eligible": false
+  },
+  "fair_adapt_filter": {
+    "status": "NOT_IMPLEMENTED_AT_FREEZE"
+  },
+  "task034_fix3_reference": {
+    "source": "results/phase1/task034_fix3/performance_contract/performance_results.csv",
+    "algorithm": "adapt_filter",
+    "rows": 8,
+    "fair_ranking_eligible_rows": 0,
+    "performance_status": "BLOCKED_ORACLE",
+    "target_preservation_status": "TARGET_ERASED",
+    "delta_sinr_mean_db_range": [-50.7985291122355, -30.732596294707502],
+    "pd_algorithm": 0.0,
+    "oracle_input_failures": 0,
+    "interpretation": "The contract removed target_idx from fair algorithm input; the adapter's fallback target_idx=0 misaligns the template and the projected output erases the target. These rows are diagnostic evidence only."
+  },
+  "file_hashes": {
+    "anti_jamming/adapt_filter.py": "19a4ede113428d7ad0528f133a2274cf38480075241c7a2b365f9ee8bbcdba34",
+    "anti_jamming/adapters.py": "424b019a3bd43a7929e4ae695a22d1527851942fc06eac331ddaf68c8c8e264b"
+  },
+  "fair_input_policy": {
+    "forbidden": ["target_idx", "target_start_idx", "target_dist", "target_range", "jammer_type", "jammer label", "true jammer signal", "jam_info", "measured JSR", "requested JSR", "evaluation truth"],
+    "allowed": ["C", "f0", "Bw", "Pw", "Fs", "Tr", "M", "N", "Srt_matrix", "St_base"]
+  }
+}

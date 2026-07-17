@@ -1,0 +1,24 @@
+{
+  "task": "036",
+  "branch": "algorithm_design_0711",
+  "stages": {
+    "stage0": {
+      "status": "COMPLETED",
+      "start_commit": "4c6823616ab2dba82feebf1575e7d08a42ecfc4a",
+      "result_commit": null,
+      "report": "docs/reports/036_stage0_baseline_freeze.md",
+      "result_dir": "results/phase1/task036/stage0",
+      "exit_code": 0,
+      "decision": "BASELINE_FROZEN; ORACLE_BASELINE_RETAINED; FAIR_NOT_IMPLEMENTED",
+      "next_stage": "stage1"
+    },
+    "stage1": {"status": "NOT_STARTED", "next_stage": "stage2"},
+    "stage2": {"status": "NOT_STARTED", "next_stage": "stage3"},
+    "stage3": {"status": "NOT_STARTED", "next_stage": "stage4"},
+    "stage4": {"status": "NOT_STARTED", "next_stage": "stage5"},
+    "stage5": {"status": "NOT_STARTED", "next_stage": "stage6"},
+    "stage6": {"status": "NOT_STARTED", "next_stage": "stage7"},
+    "stage7": {"status": "NOT_STARTED", "next_stage": "stage8"},
+    "stage8": {"status": "NOT_STARTED", "next_stage": null}
+  }
+}

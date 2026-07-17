@@ -1,0 +1,1 @@
+No stderr output during Stage 0 metadata collection.

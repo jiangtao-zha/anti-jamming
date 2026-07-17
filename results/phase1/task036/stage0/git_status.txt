@@ -1,0 +1,21 @@
+## git status --short
+?? .codex/
+?? docs/tasks/phase1_master_plan.md
+
+## git branch --show-current
+algorithm_design_0711
+
+## git rev-parse HEAD
+4c6823616ab2dba82feebf1575e7d08a42ecfc4a
+
+## git log --oneline -10
+4c68236 phase1-035-record-commit
+7de5855 phase1-035-wln-fmzuse-calibration
+fe5a2e1 phase1-034-fix3-record-commit
+9df3072 phase1-034-fix3-contract-failure-regression
+6a3d4c8 phase1-034-fix2-record-commit
+65ba5c9 phase1-034-fix2-fair-input-jammer-contract
+5df4f8e phase1-034-fix-record-commit
+5f565ec phase1-034-fix-algorithm-test-contract
+90c365e phase1-034-record-commit
+b6966ee phase1-034-fdc-am-calibration

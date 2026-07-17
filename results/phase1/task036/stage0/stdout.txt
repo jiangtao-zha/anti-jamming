@@ -1,0 +1,12 @@
+Task 036 Stage 0 baseline freeze
+Date: 2026-07-18 Asia/Shanghai
+
+Commands recorded:
+- git status --short
+- git branch --show-current
+- git rev-parse HEAD
+- git log --oneline -10
+- shasum -a 256 anti_jamming/adapt_filter.py
+- shasum -a 256 anti_jamming/adapters.py
+
+No algorithm, jammer, evaluation contract, RL, PPO, reward, state, or action-space files were modified in Stage 0.
