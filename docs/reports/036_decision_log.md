@@ -43,7 +43,7 @@
 ## Stage 5 — 2026-07-18
 
 - Status: `COMPLETED`
-- Result commit: pending until the Stage 5 calibration artifact commit is created.
+- Result commit: `b623a01` (`phase1-036-stage5-calibration`).
 - Decision: `NO_CALIBRATION_QUALIFIED; REJECTION_CONFIRMATION_ONLY`.
 - Frozen rejection-confirmation prototype: `A_k3_c0.05_r0.001`; it is not a fair candidate.
 - Evidence: `results/phase1/task036/stage5/` and `docs/reports/036_stage5_calibration_result.md`.

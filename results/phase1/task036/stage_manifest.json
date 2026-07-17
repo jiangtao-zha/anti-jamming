@@ -55,7 +55,7 @@
     "stage5": {
       "status": "COMPLETED",
       "start_commit": "896c6e1",
-      "result_commit": null,
+      "result_commit": "b623a01",
       "report": "docs/reports/036_stage5_calibration_result.md",
       "result_dir": "results/phase1/task036/stage5",
       "exit_code": 0,
