@@ -61,7 +61,7 @@
 ## Stage 7 — 2026-07-18
 
 - Status: `COMPLETED`; integration decision recorded without RL/action-space changes.
-- Result commit: pending Stage 7 commit.
+- Result commit: `c0bdbcd` (`phase1-036-stage7-reject-fair-adapt-filter`).
 - Decision: `ORACLE_UPPER_BOUND_ONLY`; legacy `adapt_filter` retained as Oracle baseline, Fair prototype not registered and not candidate-matrix eligible.
 - Evidence: `results/phase1/task036/stage7/` and `docs/reports/036_stage7_final_decision.md`.
 - Next gate: complete Stage 8 final summary, reproducibility entry point, and repository progress/blocked-issue records.

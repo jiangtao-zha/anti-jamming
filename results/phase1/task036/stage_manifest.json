@@ -75,7 +75,7 @@
     "stage7": {
       "status": "COMPLETED",
       "start_commit": "e389085",
-      "result_commit": "PENDING_STAGE7_COMMIT",
+      "result_commit": "c0bdbcd",
       "report": "docs/reports/036_stage7_final_decision.md",
       "result_dir": "results/phase1/task036/stage7",
       "exit_code": 0,
