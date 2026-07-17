@@ -1,0 +1,11 @@
+Task 036 Stage 5 calibration
+Date: 2026-07-18 Asia/Shanghai
+
+Candidate grid: 16 total (8 A + 8 B), below the maximum of 40.
+Calibration: target jammers NPJ/NCJ; negative controls NoJammer/AMNoiseGaiJam/FMNoiseAimedJam/FMNoiseSaopin/SMSP; JSR 0/5/10/20/30; seeds 7000..7029; target centers 500/1250/2500/3750/4500.
+Raw rows: 84000; aggregate rows: 2800.
+Interface failures: 0
+Oracle-input failures: 0
+Calibration-qualified candidates: 0
+Held-out mode: rejection confirmation only.
+Frozen rejection-confirmation candidate: A_k3_c0.05_r0.001.

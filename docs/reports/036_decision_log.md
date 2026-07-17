@@ -39,3 +39,12 @@
 - Decision: `PROTOTYPE_GATE_PASS_A_AND_B`; both prototypes proceed to calibration.
 - Evidence: `results/phase1/task036/stage4/` and `docs/reports/036_stage4_prototype_result.md`.
 - Next gate: search at most 40 deduplicated calibration configurations; freeze any selected candidate before held-out.
+
+## Stage 5 — 2026-07-18
+
+- Status: `COMPLETED`
+- Result commit: pending until the Stage 5 calibration artifact commit is created.
+- Decision: `NO_CALIBRATION_QUALIFIED; REJECTION_CONFIRMATION_ONLY`.
+- Frozen rejection-confirmation prototype: `A_k3_c0.05_r0.001`; it is not a fair candidate.
+- Evidence: `results/phase1/task036/stage5/` and `docs/reports/036_stage5_calibration_result.md`.
+- Next gate: run held-out seeds only for Identity, Oracle upper bound, and the frozen unqualified prototype.

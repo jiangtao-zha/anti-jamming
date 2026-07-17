@@ -1,0 +1,159 @@
+{
+  "parameter_grid": [
+    {
+      "candidate_id": "A_k3_c0.05_r0.001",
+      "design": "A",
+      "top_k": 3,
+      "confidence_threshold": 0.05,
+      "regularization": 0.001
+    },
+    {
+      "candidate_id": "B_k3_c0.05_r0.001",
+      "design": "B",
+      "top_k": 3,
+      "confidence_threshold": 0.05,
+      "regularization": 0.001
+    },
+    {
+      "candidate_id": "A_k3_c0.05_r0.01",
+      "design": "A",
+      "top_k": 3,
+      "confidence_threshold": 0.05,
+      "regularization": 0.01
+    },
+    {
+      "candidate_id": "B_k3_c0.05_r0.01",
+      "design": "B",
+      "top_k": 3,
+      "confidence_threshold": 0.05,
+      "regularization": 0.01
+    },
+    {
+      "candidate_id": "A_k3_c0.12_r0.001",
+      "design": "A",
+      "top_k": 3,
+      "confidence_threshold": 0.12,
+      "regularization": 0.001
+    },
+    {
+      "candidate_id": "B_k3_c0.12_r0.001",
+      "design": "B",
+      "top_k": 3,
+      "confidence_threshold": 0.12,
+      "regularization": 0.001
+    },
+    {
+      "candidate_id": "A_k3_c0.12_r0.01",
+      "design": "A",
+      "top_k": 3,
+      "confidence_threshold": 0.12,
+      "regularization": 0.01
+    },
+    {
+      "candidate_id": "B_k3_c0.12_r0.01",
+      "design": "B",
+      "top_k": 3,
+      "confidence_threshold": 0.12,
+      "regularization": 0.01
+    },
+    {
+      "candidate_id": "A_k5_c0.05_r0.001",
+      "design": "A",
+      "top_k": 5,
+      "confidence_threshold": 0.05,
+      "regularization": 0.001
+    },
+    {
+      "candidate_id": "B_k5_c0.05_r0.001",
+      "design": "B",
+      "top_k": 5,
+      "confidence_threshold": 0.05,
+      "regularization": 0.001
+    },
+    {
+      "candidate_id": "A_k5_c0.05_r0.01",
+      "design": "A",
+      "top_k": 5,
+      "confidence_threshold": 0.05,
+      "regularization": 0.01
+    },
+    {
+      "candidate_id": "B_k5_c0.05_r0.01",
+      "design": "B",
+      "top_k": 5,
+      "confidence_threshold": 0.05,
+      "regularization": 0.01
+    },
+    {
+      "candidate_id": "A_k5_c0.12_r0.001",
+      "design": "A",
+      "top_k": 5,
+      "confidence_threshold": 0.12,
+      "regularization": 0.001
+    },
+    {
+      "candidate_id": "B_k5_c0.12_r0.001",
+      "design": "B",
+      "top_k": 5,
+      "confidence_threshold": 0.12,
+      "regularization": 0.001
+    },
+    {
+      "candidate_id": "A_k5_c0.12_r0.01",
+      "design": "A",
+      "top_k": 5,
+      "confidence_threshold": 0.12,
+      "regularization": 0.01
+    },
+    {
+      "candidate_id": "B_k5_c0.12_r0.01",
+      "design": "B",
+      "top_k": 5,
+      "confidence_threshold": 0.12,
+      "regularization": 0.01
+    }
+  ],
+  "target_jammers": [
+    "NoiseProductJamming",
+    "NoiseConvolutionJamming"
+  ],
+  "negative_controls": [
+    "NoJammer",
+    "AMNoiseGaiJam",
+    "FMNoiseAimedJam",
+    "FMNoiseSaopin",
+    "SMSP"
+  ],
+  "jsrs_db": [
+    0.0,
+    5.0,
+    10.0,
+    20.0,
+    30.0
+  ],
+  "seeds": [
+    7000,
+    7029
+  ],
+  "target_positions": [
+    500,
+    1250,
+    2500,
+    3750,
+    4500
+  ],
+  "maximum_candidate_count": 40,
+  "forbidden_keys": [
+    "jam_info",
+    "jammer_signal",
+    "jammer_type",
+    "jsr_status",
+    "measured_jsr_db",
+    "requested_jsr_db",
+    "target_dist",
+    "target_idx",
+    "target_range",
+    "target_start_idx",
+    "true_jammer_signal"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "task": "036",
+  "stage": "stage5",
+  "status": "COMPLETED",
+  "candidate_count": 16,
+  "raw_rows": 84000,
+  "aggregate_rows": 2800,
+  "interface_failures": 0,
+  "oracle_input_failures": 0,
+  "calibration_qualified_count": 0,
+  "selected_candidate_id": null,
+  "heldout_gate": "REJECTION_CONFIRMATION_ONLY",
+  "heldout_seed_range": [
+    8000,
+    8049
+  ],
+  "next_stage": "stage6"
+}

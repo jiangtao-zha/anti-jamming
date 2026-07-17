@@ -1,0 +1,1 @@
+No fatal stderr. Candidate rows with non-finite target metrics were excluded from finite means and retained in aggregate evidence; no calibration candidate met the qualification gate.

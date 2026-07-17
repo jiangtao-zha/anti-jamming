@@ -52,7 +52,16 @@
       "decision": "PROTOTYPE_GATE_PASS_A_AND_B",
       "next_stage": "stage5"
     },
-    "stage5": {"status": "NOT_STARTED", "next_stage": "stage6"},
+    "stage5": {
+      "status": "COMPLETED",
+      "start_commit": "896c6e1",
+      "result_commit": null,
+      "report": "docs/reports/036_stage5_calibration_result.md",
+      "result_dir": "results/phase1/task036/stage5",
+      "exit_code": 0,
+      "decision": "NO_CALIBRATION_QUALIFIED; REJECTION_CONFIRMATION_ONLY",
+      "next_stage": "stage6"
+    },
     "stage6": {"status": "NOT_STARTED", "next_stage": "stage7"},
     "stage7": {"status": "NOT_STARTED", "next_stage": "stage8"},
     "stage8": {"status": "NOT_STARTED", "next_stage": null}

@@ -1,0 +1,26 @@
+{
+  "selected_candidate": null,
+  "rejection_confirmation_candidate": {
+    "candidate_id": "A_k3_c0.05_r0.001",
+    "design": "A",
+    "top_k": 3,
+    "confidence_threshold": 0.05,
+    "regularization": 0.001,
+    "source": "first row of frozen candidate_ranking.csv after calibration; not selected as a fair candidate"
+  },
+  "all_candidates_frozen_for_heldout": true,
+  "candidate_count": 16,
+  "seed_range": [
+    7000,
+    7029
+  ],
+  "target_positions": [
+    500,
+    1250,
+    2500,
+    3750,
+    4500
+  ],
+  "heldout_allowed": false,
+  "heldout_mode": "rejection_confirmation_only"
+}
