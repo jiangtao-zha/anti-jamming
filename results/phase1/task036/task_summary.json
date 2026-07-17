@@ -20,6 +20,9 @@
   },
   "fair_candidate": null,
   "rl_action_space_modified": false,
+  "push_status": "BLOCKED_BY_TENANT_SECURITY_POLICY",
+  "push_attempt_local_sha": "a6a619aebcee4a7974fe19d8cc3d666730611ad5",
+  "remote_sha_at_verification": "4c6823616ab2dba82feebf1575e7d08a42ecfc4a",
   "reproducibility_entry": "scripts/run_adapt_filter_fairness.py --stage {audit,sensitivity,prototype,calibration,heldout,all}",
   "notes": [
     "legacy adapt_filter retained only as oracle upper bound",

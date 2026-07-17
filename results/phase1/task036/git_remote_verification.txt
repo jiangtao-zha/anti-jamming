@@ -1,0 +1,8 @@
+branch=algorithm_design_0711
+attempt_local_sha=a6a619aebcee4a7974fe19d8cc3d666730611ad5
+remote=git@github.com:jiangtao-zha/anti-jamming.git
+remote_ref=refs/heads/algorithm_design_0711
+remote_sha=4c6823616ab2dba82feebf1575e7d08a42ecfc4a
+push_status=BLOCKED_BY_TENANT_SECURITY_POLICY
+note=This file records the actual push attempt before later local-only record commits.
+verification_command=git ls-remote origin refs/heads/algorithm_design_0711

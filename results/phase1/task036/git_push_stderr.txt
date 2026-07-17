@@ -1,0 +1,1 @@
+Rejected: Pushing this branch would upload repo code and experiment artifacts to an external GitHub remote whose ownership/privacy is not verified as trusted. The agent did not retry or use a workaround.
