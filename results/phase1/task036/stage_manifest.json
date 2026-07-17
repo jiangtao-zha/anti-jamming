@@ -45,7 +45,7 @@
     "stage4": {
       "status": "COMPLETED",
       "start_commit": "f731047",
-      "result_commit": null,
+      "result_commit": "22cb399",
       "report": "docs/reports/036_stage4_prototype_result.md",
       "result_dir": "results/phase1/task036/stage4",
       "exit_code": 0,

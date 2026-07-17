@@ -35,7 +35,7 @@
 ## Stage 4 — 2026-07-18
 
 - Status: `COMPLETED`
-- Result commit: pending until the Stage 4 prototype artifact commit is created.
+- Result commit: `22cb399` (`phase1-036-stage4-fair-prototype`).
 - Decision: `PROTOTYPE_GATE_PASS_A_AND_B`; both prototypes proceed to calibration.
 - Evidence: `results/phase1/task036/stage4/` and `docs/reports/036_stage4_prototype_result.md`.
 - Next gate: search at most 40 deduplicated calibration configurations; freeze any selected candidate before held-out.
