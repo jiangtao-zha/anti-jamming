@@ -25,7 +25,7 @@
     "stage2": {
       "status": "COMPLETED",
       "start_commit": "cb06c4a",
-      "result_commit": null,
+      "result_commit": "0d9ea1e",
       "report": "docs/reports/036_stage2_sensitivity_analysis.md",
       "result_dir": "results/phase1/task036/stage2",
       "exit_code": 0,
