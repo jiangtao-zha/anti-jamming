@@ -11,7 +11,7 @@
 ## Stage 1 — 2026-07-18
 
 - Status: `COMPLETED`
-- Result commit: pending until the Stage 1 artifact commit is created.
+- Result commit: `8cc4662` (`phase1-036-stage1-oracle-audit`).
 - Decision: `C_CURRENT_ALGORITHM_REQUIRES_TARGET_ALIGNMENT_ORACLE`.
 - Evidence: `results/phase1/task036/stage1/` and `docs/reports/036_stage1_oracle_audit.md`.
 - Next gate: run fixed-IQ offset, missing-index, and multi-position sensitivity experiments in Stage 2.

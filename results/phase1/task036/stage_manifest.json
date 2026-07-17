@@ -15,7 +15,7 @@
     "stage1": {
       "status": "COMPLETED",
       "start_commit": "4e16d2e",
-      "result_commit": null,
+      "result_commit": "8cc4662",
       "report": "docs/reports/036_stage1_oracle_audit.md",
       "result_dir": "results/phase1/task036/stage1",
       "exit_code": 0,
