@@ -10,7 +10,9 @@
     "stage4": "22cb399",
     "stage5": "b623a01",
     "stage6": "47efff3",
-    "stage7": "c0bdbcd"
+    "stage7": "c0bdbcd",
+    "stage8": "4eda312",
+    "stage8_record": "4dad3e9"
   },
   "fair_candidate": null,
   "rl_action_space_modified": false,

@@ -53,4 +53,4 @@ Fair prototype 没有目标擦除，目标-only 保护和 Identity fallback 门�
 
 ## 10. 交付物与 Git
 
-阶段提交依次为：`9853ded`、`8cc4662`、`0d9ea1e`、`d2bb5a8`、`22cb399`、`b623a01`、`47efff3`、`e389085`、`c0bdbcd`、`421c3ea`；最终 Stage 8 commit 与最终 push 的远端 SHA 在 [git_remote_verification.txt](/Users/jiangtao/anti_jamming/results/phase1/task036/git_remote_verification.txt) 中记录。分支为 `algorithm_design_0711`。阶段清单、决策日志、stdout/stderr、原始 CSV/JSON 和复现实验入口均已保存。
+阶段提交依次为：`9853ded`、`8cc4662`、`0d9ea1e`、`d2bb5a8`、`22cb399`、`b623a01`、`47efff3`、`e389085`、`c0bdbcd`、`421c3ea`、`4eda312`、`4dad3e9`；最终 push 的远端 SHA 在 [git_remote_verification.txt](/Users/jiangtao/anti_jamming/results/phase1/task036/git_remote_verification.txt) 中记录。分支为 `algorithm_design_0711`。阶段清单、决策日志、stdout/stderr、原始 CSV/JSON 和复现实验入口均已保存。
