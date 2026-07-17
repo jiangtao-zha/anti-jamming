@@ -4,8 +4,10 @@
   "final_decision": "ORACLE_UPPER_BOUND_ONLY",
   "stage_commits": {
     "stage0": "9853ded",
+    "stage0_supplemental": "04b9654",
     "stage1": "8cc4662",
     "stage2": "0d9ea1e",
+    "stage2_supplemental": "04b9654",
     "stage3": "d2bb5a8",
     "stage4": "22cb399",
     "stage5": "b623a01",
