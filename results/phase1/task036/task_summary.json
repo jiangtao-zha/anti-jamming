@@ -1,0 +1,23 @@
+{
+  "task": "036",
+  "status": "COMPLETED",
+  "final_decision": "ORACLE_UPPER_BOUND_ONLY",
+  "stage_commits": {
+    "stage0": "9853ded",
+    "stage1": "8cc4662",
+    "stage2": "0d9ea1e",
+    "stage3": "d2bb5a8",
+    "stage4": "22cb399",
+    "stage5": "b623a01",
+    "stage6": "47efff3",
+    "stage7": "c0bdbcd"
+  },
+  "fair_candidate": null,
+  "rl_action_space_modified": false,
+  "reproducibility_entry": "scripts/run_adapt_filter_fairness.py --stage {audit,sensitivity,prototype,calibration,heldout,all}",
+  "notes": [
+    "legacy adapt_filter retained only as oracle upper bound",
+    "isolated fair prototype retained for research only",
+    "no long training started"
+  ]
+}

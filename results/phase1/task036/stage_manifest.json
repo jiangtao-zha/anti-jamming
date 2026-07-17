@@ -82,6 +82,15 @@
       "decision": "ORACLE_UPPER_BOUND_ONLY; FAIR_NOT_RL_ELIGIBLE",
       "next_stage": "stage8"
     },
-    "stage8": {"status": "NOT_STARTED", "next_stage": null}
+    "stage8": {
+      "status": "COMPLETED",
+      "start_commit": "421c3ea",
+      "result_commit": "PENDING_STAGE8_COMMIT",
+      "report": "docs/reports/036_stage8_completion.md",
+      "result_dir": "results/phase1/task036/stage8",
+      "exit_code": 0,
+      "decision": "ORACLE_UPPER_BOUND_ONLY; TASK_COMPLETE",
+      "next_stage": null
+    }
   }
 }

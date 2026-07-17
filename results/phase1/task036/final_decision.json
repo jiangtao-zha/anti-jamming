@@ -1,0 +1,16 @@
+{
+  "task": "036",
+  "final_decision": "ORACLE_UPPER_BOUND_ONLY",
+  "rl_eligible": false,
+  "fair_candidate": null,
+  "oracle_baseline": "adapt_filter",
+  "oracle_baseline_retained": true,
+  "fair_module": "anti_jamming/adapt_filter_fair.py",
+  "fair_registered": false,
+  "fallback": "Identity",
+  "supported_jammers": [],
+  "supported_jsr_region": [],
+  "rl_action_space_modified": false,
+  "candidate_matrix_eligible": false,
+  "reproducibility_entry": "scripts/run_adapt_filter_fairness.py"
+}

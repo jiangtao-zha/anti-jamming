@@ -43,3 +43,10 @@ Therefore:
 - Current/Candidate WLN 的 FMZuse 正收益没有形成专用性；held-out 负控平均收益在 JSR=10/20/30 均高于 FMZuse，specificity gap 全部为负。
 - JSR=0 dB 的约 1 dB 负收益在 calibration 和 held-out 重复出现；当前 WLN 无 observable gating/bypass。
 - Task 035 最终状态为 `REJECTED`，WLN 不进入最终 RL candidate matrix；后续若重启，应单独设计并预注册 gating 与新的 held-out 集。
+
+## Task 036：adapt_filter Fair candidate rejected
+
+- Stage 1–2 confirmed that the current `adapt_filter` requires target alignment `target_idx`; it remains `ORACLE_UPPER_BOUND_ONLY` and is not a fair comparison result.
+- All 16 calibration candidates failed the preregistered qualification gates, primarily position robustness and high-JSR target-jammer performance.
+- The frozen held-out rejection-confirmation prototype preserved the target-only response but failed high-JSR target-jammer performance and the `<5dB` position-spread gate; final status is `ORACLE_UPPER_BOUND_ONLY`.
+- No Fair implementation was registered in RL and no action-space change was made. A future registry removal/relabeling decision for the legacy Oracle action requires a separate reviewed task.
