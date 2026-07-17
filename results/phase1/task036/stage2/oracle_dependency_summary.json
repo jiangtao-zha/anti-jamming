@@ -1,0 +1,56 @@
+{
+  "task": "036",
+  "stage": "stage2",
+  "status": "COMPLETED",
+  "jammers": [
+    "NoiseProductJamming",
+    "NoiseConvolutionJamming",
+    "NoJammer",
+    "AMNoiseGaiJam",
+    "FMNoiseAimedJam",
+    "SMSP"
+  ],
+  "jsrs_db": [
+    0.0,
+    10.0,
+    20.0,
+    30.0
+  ],
+  "seeds": [
+    5000,
+    5019
+  ],
+  "seed_count": 20,
+  "target_centers": [
+    500,
+    1250,
+    2500,
+    3750,
+    4500
+  ],
+  "diagnostic_modes": [
+    "true",
+    "offset_-32",
+    "offset_-16",
+    "offset_-8",
+    "offset_-4",
+    "offset_-2",
+    "offset_-1",
+    "offset_+1",
+    "offset_+2",
+    "offset_+4",
+    "offset_+8",
+    "offset_+16",
+    "offset_+32",
+    "fixed_0",
+    "random",
+    "missing"
+  ],
+  "per_trial_rows": 38400,
+  "target_position_fixture": "zero_padded_translation_of_same_generated_IQ; used because current Phase 1 config derives a fixed target_idx=1500 and target_dist does not move the delay-relative output",
+  "oracle_input_policy": "true_target_idx_for_evaluation_only is held in runner variables; only diagnostic target-index variants inject target_idx into the legacy adapter",
+  "implementation_path": "algebraic_equivalent_to_active_core_for_full_matrix; active_core_equivalence_spot_check_saved_separately",
+  "active_core_spot_check_rows": 64,
+  "active_core_spot_check_max_normalized_difference": 7.774810687041954e-15,
+  "next_stage": "stage3"
+}

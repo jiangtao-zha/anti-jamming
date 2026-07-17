@@ -22,7 +22,16 @@
       "decision": "C_CURRENT_ALGORITHM_REQUIRES_TARGET_ALIGNMENT_ORACLE",
       "next_stage": "stage2"
     },
-    "stage2": {"status": "NOT_STARTED", "next_stage": "stage3"},
+    "stage2": {
+      "status": "COMPLETED",
+      "start_commit": "cb06c4a",
+      "result_commit": null,
+      "report": "docs/reports/036_stage2_sensitivity_analysis.md",
+      "result_dir": "results/phase1/task036/stage2",
+      "exit_code": 0,
+      "decision": "ORACLE_DEPENDENCE_CONFIRMED",
+      "next_stage": "stage3"
+    },
     "stage3": {"status": "NOT_STARTED", "next_stage": "stage4"},
     "stage4": {"status": "NOT_STARTED", "next_stage": "stage5"},
     "stage5": {"status": "NOT_STARTED", "next_stage": "stage6"},

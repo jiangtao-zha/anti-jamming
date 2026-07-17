@@ -1,0 +1,1 @@
+The evaluation contract emitted expected RuntimeWarning divide-by-zero messages when a diagnostic projection erased the target response. These cases are retained as TARGET_ERASED/-inf evidence in the CSV outputs; no exception was swallowed.

@@ -15,3 +15,11 @@
 - Decision: `C_CURRENT_ALGORITHM_REQUIRES_TARGET_ALIGNMENT_ORACLE`.
 - Evidence: `results/phase1/task036/stage1/` and `docs/reports/036_stage1_oracle_audit.md`.
 - Next gate: run fixed-IQ offset, missing-index, and multi-position sensitivity experiments in Stage 2.
+
+## Stage 2 — 2026-07-18
+
+- Status: `COMPLETED`
+- Result commit: pending until the Stage 2 artifact commit is created.
+- Decision: `ORACLE_DEPENDENCE_CONFIRMED`.
+- Evidence: `results/phase1/task036/stage2/` and `docs/reports/036_stage2_sensitivity_analysis.md`.
+- Next gate: design at least three observable-only alternatives in Stage 3; do not tune the legacy oracle implementation.

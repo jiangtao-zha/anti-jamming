@@ -1,0 +1,17 @@
+Task 036 Stage 2 target-index sensitivity
+Date: 2026-07-18 Asia/Shanghai
+
+Command:
+MPLCONFIGDIR=/tmp/task036-mpl .venv/bin/python scripts/task036_stage2_sensitivity.py --output-dir results/phase1/task036/stage2
+
+Completed matrix:
+- 6 jammer conditions
+- JSR 0/10/20/30 dB
+- seeds 5000..5019 (20 seeds)
+- target centers 500, 1250, 2500, 3750, 4500
+- 16 modes: true, +/-1, +/-2, +/-4, +/-8, +/-16, +/-32, fixed_0, random, missing
+- 38,400 per-trial rows
+- active-core equivalence spot check: 64 rows
+- maximum normalized active-vs-equivalent output difference: 7.774810687041954e-15
+
+Decision: ORACLE_DEPENDENCE_CONFIRMED.
