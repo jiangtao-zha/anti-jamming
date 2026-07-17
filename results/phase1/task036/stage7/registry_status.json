@@ -1,0 +1,14 @@
+{
+  "task": "036",
+  "decision": "ORACLE_UPPER_BOUND_ONLY",
+  "legacy_adapt_filter_present_in_registry": true,
+  "legacy_adapt_filter_status": "ORACLE_UPPER_BOUND_ONLY",
+  "fair_algorithm_registered": false,
+  "fair_algorithm_candidate_id": null,
+  "candidate_matrix_eligible": false,
+  "rl_action_space_modified": false,
+  "registry_changes_applied": false,
+  "future_registry_review_required": true,
+  "fallback": "Identity",
+  "reason": "No calibration-qualified or held-out-qualified fair candidate; current legacy path requires target_idx oracle alignment."
+}

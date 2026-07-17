@@ -72,7 +72,16 @@
       "decision": "ORACLE_UPPER_BOUND_ONLY; HELDOUT_REJECTION_CONFIRMED",
       "next_stage": "stage7"
     },
-    "stage7": {"status": "NOT_STARTED", "next_stage": "stage8"},
+    "stage7": {
+      "status": "COMPLETED",
+      "start_commit": "e389085",
+      "result_commit": "PENDING_STAGE7_COMMIT",
+      "report": "docs/reports/036_stage7_final_decision.md",
+      "result_dir": "results/phase1/task036/stage7",
+      "exit_code": 0,
+      "decision": "ORACLE_UPPER_BOUND_ONLY; FAIR_NOT_RL_ELIGIBLE",
+      "next_stage": "stage8"
+    },
     "stage8": {"status": "NOT_STARTED", "next_stage": null}
   }
 }

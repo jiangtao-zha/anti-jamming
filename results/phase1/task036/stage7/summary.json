@@ -1,0 +1,10 @@
+{
+  "task": "036",
+  "stage": "stage7",
+  "status": "COMPLETED",
+  "decision": "ORACLE_UPPER_BOUND_ONLY",
+  "fair_candidate_registered": false,
+  "oracle_baseline_retained": true,
+  "rl_action_space_modified": false,
+  "next_stage": "stage8"
+}

@@ -1,0 +1,7 @@
+task 036 stage7 COMPLETED
+decision ORACLE_UPPER_BOUND_ONLY
+fair_algorithm_registered false
+candidate_matrix_eligible false
+rl_action_space_modified false
+oracle_baseline_retained true
+fallback Identity

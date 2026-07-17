@@ -57,3 +57,11 @@
 - Evidence: `results/phase1/task036/stage6/` and `docs/reports/036_stage6_heldout_result.md`.
 - Key gate result: Fair target-only protection passed (`TARGET_ERASED=0`, NoJammer change approximately zero), but high-JSR target-jammer performance and position robustness failed; position spread is `12.5568dB`.
 - Next gate: record final integration decision without registering the Fair prototype in RL.
+
+## Stage 7 — 2026-07-18
+
+- Status: `COMPLETED`; integration decision recorded without RL/action-space changes.
+- Result commit: pending Stage 7 commit.
+- Decision: `ORACLE_UPPER_BOUND_ONLY`; legacy `adapt_filter` retained as Oracle baseline, Fair prototype not registered and not candidate-matrix eligible.
+- Evidence: `results/phase1/task036/stage7/` and `docs/reports/036_stage7_final_decision.md`.
+- Next gate: complete Stage 8 final summary, reproducibility entry point, and repository progress/blocked-issue records.

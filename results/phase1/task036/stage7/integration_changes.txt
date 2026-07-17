@@ -1,0 +1,8 @@
+Task 036 Stage 7 integration decision
+
+Applied code changes: none to jammer, evaluator, FDC, WLN, FrFT, qpzh, FSTP, RL/PPO, reward, state, or action space.
+Legacy anti_jamming/adapt_filter.py: retained as ORACLE_UPPER_BOUND / LEGACY BASELINE only.
+Fair prototype anti_jamming/adapt_filter_fair.py: retained as isolated research artifact; not registered in RL.
+RL registry: unchanged because no FAIR_CANDIDATE qualified.
+Future action: if a later task makes the legacy action user-facing, it must first remove or relabel the oracle-dependent action under a separately reviewed task; Task 036 does not perform that change.
+Fallback for any observable-only deployment: Identity.

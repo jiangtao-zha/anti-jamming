@@ -1,0 +1,19 @@
+{
+  "task": "036",
+  "decision": "ORACLE_UPPER_BOUND_ONLY",
+  "rl_eligible": false,
+  "oracle_baseline_retained": true,
+  "fair_algorithm_registered": false,
+  "candidate_matrix_eligible": false,
+  "supported_jammers": [],
+  "supported_jsr_region": [],
+  "fallback": "Identity",
+  "registry_changes_applied": false,
+  "rl_action_space_modified": false,
+  "blocking_reasons": [
+    "legacy adapt_filter requires target alignment target_idx and is not fair under the public contract",
+    "no calibration candidate passed the preregistered qualification gates",
+    "frozen held-out rejection confirmation failed high-JSR target-jammer performance and position robustness"
+  ],
+  "evidence_commits": ["9853ded", "8cc4662", "0d9ea1e", "d2bb5a8", "22cb399", "b623a01", "47efff3", "e389085"]
+}
