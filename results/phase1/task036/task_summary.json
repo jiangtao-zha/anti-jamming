@@ -31,8 +31,11 @@
     "historical push failure is retained as evidence; later manual push synchronized the original Task 036 commits",
     "Task 036-fix final decision is ORACLE_UPPER_BOUND_ONLY_CONFIRMED; see results/phase1/task036_fix/"
   ],
-  "task036_fix_status": "COMPLETED_LOCAL_PUSH_BLOCKED",
+  "task036_fix_status": "COMPLETED_REMOTE_SYNCED",
   "task036_fix_decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
-  "task036_fix_remote_sync": "PUSH_BLOCKED_BY_POLICY",
+  "task036_fix_remote_sync": "COMPLETED_REMOTE_SYNCED",
+  "task036_fix_old_stageE_status": "INVALID_FROZEN_CANDIDATE_DISPATCH",
+  "task036_fix_tracking_head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
+  "task036_fix_direct_remote_verification": "UNAVAILABLE_SSH_POLICY; TRACKING_REF_AND_MANUAL_SYNC_RECORD_USED",
   "task036_fix_reproducibility_entry": "scripts/run_task036_fix.py --stage {fixture,gating,calibration,heldout,all}"
 }

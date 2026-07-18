@@ -1,9 +1,10 @@
 {
   "task": "036-fix",
-  "status": "COMPLETED_LOCAL_PUSH_BLOCKED",
+  "status": "COMPLETED_REMOTE_SYNCED",
   "final_decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
   "legacy_decision": "ORACLE_UPPER_BOUND_ONLY",
   "fair_prototype_status": "REJECTED_EXPERIMENTAL",
+  "old_stageE_status": "INVALID_FROZEN_CANDIDATE_DISPATCH",
   "stage_commits": {
     "stageA": "24603f1", "stageA_record": "39e7d03",
     "stageB": "d4618d0", "stageB_record": "81b0eeb",
@@ -19,8 +20,10 @@
   "historical_task036_remote_sync": "COMPLETED_REMOTE_SYNCED",
   "previous_push_attempt": "BLOCKED_BY_TENANT_SECURITY_POLICY",
   "later_manual_push": true,
-  "current_task036_fix_remote_sync": "PUSH_BLOCKED_BY_POLICY",
-  "local_head": "4ee7f20c4aca157b6e230cc6126a7bdc500f5e4d",
+  "current_task036_fix_remote_sync": "COMPLETED_REMOTE_SYNCED",
+  "local_head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
+  "tracking_head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
+  "direct_remote_verification": "UNAVAILABLE_SSH_POLICY; TRACKING_REF_AND_MANUAL_SYNC_RECORD_USED",
   "remote_sha_at_stageA": "c8909c45d4c8ed92acd58996fdc4698e74afb19b",
   "reproducibility_entry": "scripts/run_task036_fix.py --stage {fixture,gating,calibration,heldout,all}",
   "notes": [

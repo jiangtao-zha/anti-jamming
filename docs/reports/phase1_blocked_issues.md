@@ -59,3 +59,11 @@ Therefore:
 - Held-out 按 jammer×JSR 跨 seed×position 聚合；两类目标 jammer 各仅有 `1` 个通过 JSR 条件，因此最终为 `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`。
 - legacy adapt_filter 结论保留为 `ORACLE_UPPER_BOUND_ONLY`；Fair prototype 未注册，`rl_eligible=false`、`candidate_matrix_eligible=false`、`rl_action_space_modified=false`。
 - 原 Task 036 的历史远端状态已修正记录为 `COMPLETED_REMOTE_SYNCED`；本次 Task 036-fix push 被租户安全策略阻止，状态为 `PUSH_BLOCKED_BY_POLICY`，本地 HEAD 与错误证据已保存。原始 push failure 证据未删除。
+
+## Task 036-fix2：Frozen dispatch 与 held-out 证据修正
+
+- 旧 Task 036-fix Stage D 冻结了设计 B，但旧 Stage E 实际调用设计 A 的 `fit_adapt_filter_fair`；旧 Stage E 结果保留为历史证据，状态为 `INVALID_FROZEN_CANDIDATE_DISPATCH`，不再作为有效 frozen-candidate 结论。
+- 修正版统一 dispatch：A→`fit_adapt_filter_fair`，B→`fit_adapt_filter_fair_multihypothesis`；行为签名只包含 estimated index、fallback、量化 confidence 和 processed output hash，candidate/fit/gate 元数据不参与身份。
+- 8 个名义候选按真实行为去重为 2 个等价类；Stage B 校准未产生 qualified candidate，A 代表仅作为 canonical rejection representative。
+- 修正版 held-out 使用新 seeds `9200..9249`，按 jammer×JSR 跨 seed×position 聚合；两类目标 jammer 各只有 1 个通过 JSR 条件，因此最终只能确认 `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`。
+- `rl_eligible=false`、`candidate_matrix_eligible=false`、`fair_registered=false`、`rl_action_space_modified=false`；Task 037 未开始。旧 Task 036-fix 的手工远端同步记录保留，fix2 另行记录 push 状态。

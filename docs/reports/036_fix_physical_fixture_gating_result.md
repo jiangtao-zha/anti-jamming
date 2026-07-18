@@ -2,7 +2,8 @@
 
 Date: 2026-07-18  
 Finalize commit: `c1c7c68` (`phase1-036-fix-finalize`)  
-Status: `COMPLETED_LOCAL_PUSH_BLOCKED`
+Historical status: `COMPLETED_REMOTE_SYNCED` at tracking/local head `cb7eac7`
+Superseded correction: Task 036-fix2 (this report remains historical evidence)
 Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`
 
 ## 1. Why the old fixture was not physically consistent
@@ -62,4 +63,4 @@ The original Task 036 Oracle conclusion is retained. The corrected findings are 
 
 Regression results are saved under `results/phase1/task036_fix/stageF/`: `validate_algorithms.py` exited `0` with interface PASS `800/800`, and `run_correctness_tests.py` exited `0` with failures `0`. The legacy `anti_jamming/adapt_filter.py` hash remains the Stage A baseline hash.
 
-The historical Task 036 status is corrected to `COMPLETED_REMOTE_SYNCED`, with `previous_push_attempt=BLOCKED_BY_TENANT_SECURITY_POLICY` and `later_manual_push=true`; the old failure evidence remains intact. The new Task 036-fix push was rejected by tenant security policy before execution. The push-attempt SHA was `4ee7f20c4aca157b6e230cc6126a7bdc500f5e4d`; the Stage A recorded remote SHA is `c8909c45d4c8ed92acd58996fdc4698e74afb19b`. The new history is therefore `PUSH_BLOCKED_BY_POLICY`, not falsely marked synchronized. Evidence is saved in `results/phase1/task036_fix/git_push_stdout.txt`, `git_push_stderr.txt`, and `git_remote_verification.txt`.
+The historical Task 036-fix commits were later manually synchronized at `cb7eac7a9e544b6785e1c7bd117e48a99012b59f`; the earlier automatic push failure evidence remains preserved. Direct SSH verification is currently unavailable under the tenant policy, so the tracking ref and manual-sync record are the verification basis. Task 036-fix2 separately records its own push attempt and status. The old Stage E result is retained but is now explicitly classified as `INVALID_FROZEN_CANDIDATE_DISPATCH` because Stage D froze design B while Stage E executed design A.

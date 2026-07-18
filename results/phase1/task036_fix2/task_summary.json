@@ -1,0 +1,35 @@
+{
+  "task": "036-fix2",
+  "status": "COMPLETED_LOCAL_PUSH_PENDING",
+  "final_decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
+  "legacy_decision": "ORACLE_UPPER_BOUND_ONLY",
+  "old_stageE_status": "INVALID_FROZEN_CANDIDATE_DISPATCH",
+  "stage_commits": {
+    "stageA": "1f69bcb",
+    "stageA_record": "8151b05",
+    "stageB": "29c143c",
+    "stageB_record": "2aba817",
+    "stageC": "00ad699",
+    "stageC_record": "2dc3df1",
+    "stageD": "PENDING_FINALIZE_COMMIT",
+    "stageD_record": "PENDING_RECORD_COMMIT"
+  },
+  "nominal_candidate_count": 8,
+  "effective_candidate_count": 2,
+  "frozen_candidate_id": "A_k3_c0.8_r0.001",
+  "heldout_seed_range": [9200, 9249],
+  "rl_eligible": false,
+  "candidate_matrix_eligible": false,
+  "fair_registered": false,
+  "rl_action_space_modified": false,
+  "historical_task036_fix_remote_sync": "COMPLETED_REMOTE_SYNCED",
+  "previous_automatic_push": "BLOCKED_BY_POLICY",
+  "later_manual_push": true,
+  "current_task036_fix2_remote_sync": "PENDING_FINAL_PUSH",
+  "reproducibility_entry": "scripts/run_task036_fix2.py --stage {dedup,heldout,all}",
+  "notes": [
+    "old Task 036-fix Stage E remains invalid dispatch historical evidence",
+    "no confidence, fixture, evaluation, RL, or legacy algorithm changes",
+    "Task 037 not started"
+  ]
+}

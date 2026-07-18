@@ -1,0 +1,6 @@
+Stage D finalization prepared.
+validate_algorithms.py: exit_code=0, interface PASS=800, FAIL=0
+run_correctness_tests.py: exit_code=0, failures=0
+heldout-after-dedup guard: exit_code=1 as required
+decision=ORACLE_UPPER_BOUND_ONLY_CONFIRMED
+remote status=PENDING_FINAL_PUSH

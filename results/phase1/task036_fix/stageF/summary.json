@@ -1,7 +1,7 @@
 {
   "task": "036-fix",
   "stage": "stageF",
-  "status": "COMPLETED_LOCAL_PUSH_BLOCKED",
+  "status": "COMPLETED_REMOTE_SYNCED",
   "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
   "legacy_decision": "ORACLE_UPPER_BOUND_ONLY",
   "rl_eligible": false,
@@ -10,6 +10,9 @@
   "rl_action_space_modified": false,
   "regression_exit_codes": {"validate_algorithms": 0, "run_correctness_tests": 0},
   "historical_task036_remote_sync": "COMPLETED_REMOTE_SYNCED",
-  "task036_fix_remote_sync": "PUSH_BLOCKED_BY_POLICY",
+  "task036_fix_remote_sync": "COMPLETED_REMOTE_SYNCED",
+  "old_stageE_status": "INVALID_FROZEN_CANDIDATE_DISPATCH",
+  "tracking_head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
+  "direct_remote_verification": "UNAVAILABLE_SSH_POLICY; TRACKING_REF_AND_MANUAL_SYNC_RECORD_USED",
   "next_stage": null
 }

@@ -28,3 +28,12 @@
 - Passing JSR counts: `NoiseProductJamming=1`, `NoiseConvolutionJamming=1`; no target jammer meets the required two distinct passing JSR conditions.
 - Evidence: `results/phase1/task036_fix2/stageC/` and `docs/reports/036_fix2_stageC_corrected_heldout_result.md`.
 - Next stage: final status, regression, record commit, and remote verification.
+
+## Stage D — 2026-07-18
+
+- Status: `IN_PROGRESS`; finalization commit pending.
+- Regression: `validate_algorithms.py` exit `0` with interface PASS `800/800`; `run_correctness_tests.py` exit `0` with failures `0`; post-held-out dedup lock exited `1` as expected.
+- Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`; `FAIR_CANDIDATE` is prohibited and all RL eligibility flags remain false.
+- Historical Task 036-fix status is recorded as manually synchronized at tracking/local head `cb7eac7`; old automatic push failure evidence remains preserved.
+- Evidence: `results/phase1/task036_fix2/stageD/`, `docs/reports/036_fix2_frozen_dispatch_dedup_result.md`, and the stage manifest.
+- Next stage: finalize, record, push once, and verify SHA without overwriting blocked evidence.
