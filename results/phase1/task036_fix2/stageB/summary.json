@@ -1,0 +1,33 @@
+{
+  "task": "036-fix2",
+  "stage": "stageB",
+  "status": "COMPLETED",
+  "nominal_candidate_count": 8,
+  "effective_candidate_count": 2,
+  "equivalence_class_count": 2,
+  "calibration_trial_rows": 4800,
+  "calibration_aggregate_rows": 48,
+  "calibration_qualified_count": 0,
+  "selected_candidate_id": null,
+  "heldout_mode": "REJECTION_CONFIRMATION_ONLY",
+  "dispatch_mismatch_count": 0,
+  "interface_failures": 0,
+  "oracle_input_failures": 0,
+  "negative_dispatch_test_pass": true,
+  "behavior_signature_fields": [
+    "estimated_target_idx",
+    "fallback",
+    "confidence_q",
+    "processed_output_hash"
+  ],
+  "behavior_signature_excluded_metadata": [
+    "candidate_id",
+    "design",
+    "fit_function_name",
+    "fit_status",
+    "gate_reasons",
+    "algorithm_description"
+  ],
+  "no_oracle": true,
+  "next_stage": "stageC"
+}

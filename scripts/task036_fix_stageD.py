@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import sys
+import time
 from pathlib import Path
 
 import numpy as np
@@ -16,11 +17,7 @@ _PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
-from anti_jamming.adapt_filter_fair import (  # noqa: E402
-    apply_adapt_filter_fair,
-    fit_adapt_filter_fair,
-    fit_adapt_filter_fair_multihypothesis,
-)
+from anti_jamming.adapt_filter_fair import apply_adapt_filter_fair  # noqa: E402
 from configs.phase1_radar import get_phase1_radar_params  # noqa: E402
 from scripts.task036_fix_fixture import (  # noqa: E402
     JAMMERS,
@@ -28,6 +25,12 @@ from scripts.task036_fix_fixture import (  # noqa: E402
     SAFE_TARGET_CENTERS,
     compose,
     generate_bank,
+)
+from scripts.task036_fix_dispatch import (  # noqa: E402
+    CandidateDispatchMismatch,
+    dispatch_info,
+    fit_candidate,
+    validate_dispatch_identity,
 )
 from utils.evaluation import evaluate_algorithm_output, evaluate_target_preservation  # noqa: E402
 
@@ -54,9 +57,6 @@ for design in ('A', 'B'):
                 'regularization': 0.001,
             })
 
-FIT_FUNCTIONS = {'A': fit_adapt_filter_fair, 'B': fit_adapt_filter_fair_multihypothesis}
-
-
 def write_csv(path: Path, rows: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fields = []
@@ -78,18 +78,39 @@ def candidate_map():
     return {candidate['candidate_id']: candidate for candidate in NOMINAL}
 
 
-def run_candidate(candidate: dict, observed: np.ndarray, template: np.ndarray, config: dict) -> tuple[dict, np.ndarray, float]:
-    fit_fn = FIT_FUNCTIONS[candidate['design']]
-    started = __import__('time').perf_counter()
-    model = fit_fn(
-        observed, template, public_config(config),
-        top_k=int(candidate['top_k']),
-        confidence_threshold=float(candidate['confidence_threshold']),
-        regularization=float(candidate['regularization']),
+def canonical_candidate_key(candidate: dict) -> tuple:
+    return (
+        0 if candidate['design'] == 'A' else 1,
+        int(candidate['top_k']),
+        -float(candidate['confidence_threshold']),
+        float(candidate['regularization']),
+        str(candidate['candidate_id']),
     )
+
+
+def validate_dispatch_contract() -> bool:
+    for design, expected_name in (
+        ('A', 'fit_adapt_filter_fair'),
+        ('B', 'fit_adapt_filter_fair_multihypothesis'),
+    ):
+        validate_dispatch_identity(design, expected_name)
+    try:
+        validate_dispatch_identity('B', 'fit_adapt_filter_fair')
+    except CandidateDispatchMismatch:
+        return True
+    return False
+
+
+def run_candidate(candidate: dict, observed: np.ndarray, template: np.ndarray, config: dict) -> tuple[dict, np.ndarray, float, dict]:
+    dispatch = dispatch_info(candidate)
+    started = time.perf_counter()
+    model = fit_candidate(candidate, observed, template, public_config(config))
     processed = apply_adapt_filter_fair(observed, model)
-    runtime_ms = (__import__('time').perf_counter() - started) * 1000.0
-    return model, processed, runtime_ms
+    if processed.shape != (1, observed.size) or not np.all(np.isfinite(processed)):
+        raise RuntimeError(f'interface failure for candidate {candidate["candidate_id"]}')
+    runtime_ms = (time.perf_counter() - started) * 1000.0
+    validate_dispatch_identity(dispatch['candidate_design'], dispatch['fit_function_name'])
+    return model, processed, runtime_ms, dispatch
 
 
 def normalized_output_hash(processed: np.ndarray) -> str:
@@ -100,27 +121,24 @@ def normalized_output_hash(processed: np.ndarray) -> str:
     return hashlib.sha256(quantized.tobytes()).hexdigest()
 
 
-def behavior_signature(candidate: dict) -> tuple[str, list[dict]]:
+def behavior_signature(candidate: dict) -> tuple[str, list[dict], dict]:
     sequence = []
+    dispatch = dispatch_info(candidate)
     for jammer in DIAGNOSTIC_JAMMERS:
         for jsr_db in DIAGNOSTIC_JSRS:
             for seed in DIAGNOSTIC_SEEDS:
                 bank = generate_bank(jammer, jsr_db, seed)
                 for center in DIAGNOSTIC_CENTERS:
                     fixture = compose(bank, center)
-                    model, processed, _ = run_candidate(candidate, fixture['received'], fixture['template'], bank.config)
-                    diagnostics = model.get('diagnostics', {})
+                    model, processed, _, _ = run_candidate(candidate, fixture['received'], fixture['template'], bank.config)
                     sequence.append({
-                        'jammer': jammer, 'jsr_db': jsr_db, 'seed': seed, 'target_position': center,
                         'estimated_target_idx': model.get('estimated_target_idx'),
                         'fallback': model.get('fallback'),
-                        'fit_status': model.get('fit_status'),
                         'confidence_q': round(float(model.get('estimator_confidence', 0.0)), 6),
                         'output_hash': normalized_output_hash(processed),
-                        'gate_reasons': json.dumps(diagnostics.get('gate_reasons', []), sort_keys=True),
                     })
     serialized = json.dumps(sequence, sort_keys=True, separators=(',', ':')).encode()
-    return hashlib.sha256(serialized).hexdigest(), sequence
+    return hashlib.sha256(serialized).hexdigest(), sequence, dispatch
 
 
 def identity_metrics(target, received, eval_config):
@@ -135,7 +153,7 @@ def evaluate_row(candidate: dict, bank, fixture, target_cache: dict) -> dict:
     target = fixture['target']
     received = fixture['received']
     identity = identity_metrics(target, received, eval_config)
-    model, processed, runtime_ms = run_candidate(candidate, received, fixture['template'], bank.config)
+    model, processed, runtime_ms, dispatch = run_candidate(candidate, received, fixture['template'], bank.config)
     processed_1d = processed[0] if processed.ndim == 2 else processed
     metrics = evaluate_algorithm_output(
         target, received, processed_1d, eval_config,
@@ -143,7 +161,7 @@ def evaluate_row(candidate: dict, bank, fixture, target_cache: dict) -> dict:
     )
     cache_key = (candidate['candidate_id'], center)
     if cache_key not in target_cache:
-        target_model, target_processed, _ = run_candidate(candidate, target, fixture['template'], bank.config)
+        target_model, target_processed, _, _ = run_candidate(candidate, target, fixture['template'], bank.config)
         target_cache[cache_key] = (target_model, target_processed)
     target_model, target_processed = target_cache[cache_key]
     target_1d = target_processed[0] if target_processed.ndim == 2 else target_processed
@@ -152,6 +170,10 @@ def evaluate_row(candidate: dict, bank, fixture, target_cache: dict) -> dict:
     diagnostics = model.get('diagnostics', {})
     return {
         'candidate_id': candidate['candidate_id'], 'design': candidate['design'],
+        'candidate_design': dispatch['candidate_design'],
+        'fit_function_name': dispatch['fit_function_name'],
+        'dispatch_status': dispatch['dispatch_status'],
+        'candidate_params_json': json.dumps(dispatch['candidate_params'], sort_keys=True),
         'top_k': candidate['top_k'], 'confidence_threshold': candidate['confidence_threshold'],
         'regularization': candidate['regularization'], 'jammer': bank.jammer,
         'jsr_db': bank.jsr_db, 'seed': bank.seed, 'target_position': center,
@@ -259,36 +281,66 @@ def run(output_dir: Path) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
     nominal_rows = [dict(candidate) for candidate in NOMINAL]
     signature_rows = []
-    sequences = {}
+    dispatch_rows = []
+    negative_dispatch_test_pass = validate_dispatch_contract()
     for candidate in NOMINAL:
-        signature, sequence = behavior_signature(candidate)
-        sequences[candidate['candidate_id']] = sequence
+        signature, sequence, dispatch = behavior_signature(candidate)
         signature_rows.append({
             **candidate,
             'behavior_signature': signature,
             'diagnostic_trial_count': len(sequence),
+            'fit_function_name': dispatch['fit_function_name'],
+            'dispatch_status': dispatch['dispatch_status'],
+            'candidate_params_json': json.dumps(dispatch['candidate_params'], sort_keys=True),
             'estimated_sequence_hash': hashlib.sha256(json.dumps([r['estimated_target_idx'] for r in sequence]).encode()).hexdigest(),
             'fallback_sequence_hash': hashlib.sha256(json.dumps([r['fallback'] for r in sequence]).encode()).hexdigest(),
             'confidence_sequence_hash': hashlib.sha256(json.dumps([r['confidence_q'] for r in sequence]).encode()).hexdigest(),
             'processed_output_sequence_hash': hashlib.sha256(json.dumps([r['output_hash'] for r in sequence]).encode()).hexdigest(),
+            'signature_behavior_fields': 'estimated_target_idx,fallback,confidence_q,processed_output_hash',
+        })
+        dispatch_rows.append({
+            **dispatch,
+            'candidate_params_json': json.dumps(dispatch['candidate_params'], sort_keys=True),
+            'diagnostic_trial_count': len(sequence),
+            'dispatch_mismatch_count': 0,
+            'interface_failure_count': 0,
+            'negative_mismatch_test_pass': negative_dispatch_test_pass,
         })
     classes = {}
     for row in signature_rows:
         classes.setdefault(row['behavior_signature'], []).append(row['candidate_id'])
     class_rows, effective_rows = [], []
     class_by_candidate = {}
-    for index, (signature, members) in enumerate(sorted(classes.items()), start=1):
+    candidates_by_id = candidate_map()
+    for index, (signature, raw_members) in enumerate(sorted(classes.items()), start=1):
         class_id = f'EQ_{index:03d}'
+        members = sorted(raw_members, key=lambda cid: canonical_candidate_key(candidates_by_id[cid]))
         representative = members[0]
-        class_rows.append({'equivalence_class': class_id, 'behavior_signature': signature, 'member_count': len(members), 'representative_candidate': representative, 'members': json.dumps(members)})
+        member_json = json.dumps(members, separators=(',', ':'))
+        class_rows.append({
+            'equivalence_class': class_id,
+            'behavior_signature': signature,
+            'member_count': len(members),
+            'representative_candidate': representative,
+            'equivalent_members': member_json,
+            'members': member_json,
+            'representative_selection_rule': 'design A; smaller top_k; higher threshold; smaller regularization; candidate_id',
+        })
         for member in members:
             class_by_candidate[member] = class_id
-        effective_rows.append({**candidate_map()[representative], 'equivalence_class': class_id, 'behavior_signature': signature, 'equivalent_nominal_count': len(members)})
+        effective_rows.append({
+            **candidates_by_id[representative],
+            'equivalence_class': class_id,
+            'behavior_signature': signature,
+            'equivalent_nominal_count': len(members),
+            'equivalent_members': member_json,
+            'representative_selection_rule': 'design A; smaller top_k; higher threshold; smaller regularization; candidate_id',
+        })
     write_csv(output_dir / 'nominal_candidates.csv', nominal_rows)
     write_csv(output_dir / 'behavior_signatures.csv', signature_rows)
     write_csv(output_dir / 'equivalence_classes.csv', class_rows)
     write_csv(output_dir / 'effective_candidates.csv', effective_rows)
-    effective_map = candidate_map()
+    write_csv(output_dir / 'dispatch_validation.csv', dispatch_rows)
     effective_map = {row['candidate_id']: row for row in effective_rows}
     calibration_rows = []
     target_cache = {}
@@ -302,34 +354,51 @@ def run(output_dir: Path) -> dict:
                         calibration_rows.append(evaluate_row(candidate, bank, fixture, target_cache))
     aggregate = aggregate_rows(calibration_rows)
     ranking = rank_candidates(list(effective_map.values()), aggregate, calibration_rows)
-    # Add equivalence class metadata to ranking and output a single frozen object.
     for row in ranking:
         row['equivalence_class'] = class_by_candidate[row['candidate_id']]
+        row['equivalent_members'] = next(item['equivalent_members'] for item in effective_rows if item['candidate_id'] == row['candidate_id'])
     selected = next((row for row in ranking if row['qualification']), None)
     selected_payload = {
         'selected_candidate': selected,
         'rejection_confirmation_candidate': None if selected else ranking[0],
         'nominal_candidate_count': len(nominal_rows),
         'effective_candidate_count': len(effective_rows),
+        'equivalence_class_count': len(class_rows),
         'all_candidates_frozen_for_heldout': True,
         'heldout_allowed': selected is not None,
         'heldout_mode': 'PERFORMANCE_CANDIDATE' if selected else 'REJECTION_CONFIRMATION_ONLY',
+        'representative_selection_rule': 'design A; smaller top_k; higher threshold; smaller regularization; candidate_id',
+        'behavior_signature_fields': ['estimated_target_idx', 'fallback', 'confidence_q', 'processed_output_hash'],
+        'behavior_signature_excluded_metadata': ['candidate_id', 'design', 'fit_function_name', 'fit_status', 'gate_reasons', 'algorithm_description'],
     }
-    write_csv(output_dir / 'per_trial_results.csv', calibration_rows)
     write_csv(output_dir / 'aggregate_results.csv', aggregate)
     write_csv(output_dir / 'candidate_ranking.csv', ranking)
     (output_dir / 'selected_candidate.json').write_text(json.dumps(selected_payload, indent=2, ensure_ascii=False, default=str))
+    dispatch_mismatch_count = sum(int(row['dispatch_mismatch_count']) for row in dispatch_rows)
+    interface_failures = sum(row['interface_failures'] for row in aggregate)
+    status = 'COMPLETED' if (
+        dispatch_mismatch_count == 0
+        and interface_failures == 0
+        and all(row['oracle_input_failures'] == 0 for row in aggregate)
+        and len(effective_rows) <= len(nominal_rows)
+        and len(class_by_candidate) == len(nominal_rows)
+        and negative_dispatch_test_pass
+    ) else 'BLOCKED'
     summary = {
-        'task': '036-fix', 'stage': 'stageD', 'status': 'COMPLETED',
+        'task': '036-fix2', 'stage': 'stageB', 'status': status,
         'nominal_candidate_count': len(nominal_rows), 'effective_candidate_count': len(effective_rows),
         'equivalence_class_count': len(class_rows), 'calibration_trial_rows': len(calibration_rows),
         'calibration_aggregate_rows': len(aggregate), 'calibration_qualified_count': sum(bool(row['qualification']) for row in ranking),
         'selected_candidate_id': selected['candidate_id'] if selected else None,
         'heldout_mode': selected_payload['heldout_mode'],
-        'candidate_freeze_sha_source': 'selected_candidate.json',
+        'dispatch_mismatch_count': dispatch_mismatch_count,
+        'interface_failures': interface_failures,
+        'oracle_input_failures': sum(row['oracle_input_failures'] for row in aggregate),
+        'negative_dispatch_test_pass': negative_dispatch_test_pass,
+        'behavior_signature_fields': selected_payload['behavior_signature_fields'],
+        'behavior_signature_excluded_metadata': selected_payload['behavior_signature_excluded_metadata'],
         'no_oracle': all(row['oracle_input_failures'] == 0 for row in aggregate),
-        'interface_failures': sum(row['interface_failures'] for row in aggregate),
-        'next_stage': 'stageE',
+        'next_stage': 'stageC' if status == 'COMPLETED' else None,
     }
     (output_dir / 'summary.json').write_text(json.dumps(summary, indent=2, ensure_ascii=False, default=str))
     return summary
@@ -341,7 +410,7 @@ def main() -> int:
     args = parser.parse_args()
     summary = run(Path(args.output_dir))
     print(json.dumps(summary, indent=2, ensure_ascii=False, default=str))
-    return 0
+    return 0 if summary['status'] == 'COMPLETED' else 1
 
 
 if __name__ == '__main__':

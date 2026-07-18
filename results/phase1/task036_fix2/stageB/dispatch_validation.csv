@@ -1,0 +1,9 @@
+candidate_id,candidate_design,fit_function_name,candidate_params,dispatch_status,candidate_params_json,diagnostic_trial_count,dispatch_mismatch_count,interface_failure_count,negative_mismatch_test_pass
+A_k3_c0.65_r0.001,A,fit_adapt_filter_fair,"{'top_k': 3, 'confidence_threshold': 0.65, 'regularization': 0.001}",PASS,"{""confidence_threshold"": 0.65, ""regularization"": 0.001, ""top_k"": 3}",144,0,0,True
+A_k3_c0.8_r0.001,A,fit_adapt_filter_fair,"{'top_k': 3, 'confidence_threshold': 0.8, 'regularization': 0.001}",PASS,"{""confidence_threshold"": 0.8, ""regularization"": 0.001, ""top_k"": 3}",144,0,0,True
+A_k5_c0.65_r0.001,A,fit_adapt_filter_fair,"{'top_k': 5, 'confidence_threshold': 0.65, 'regularization': 0.001}",PASS,"{""confidence_threshold"": 0.65, ""regularization"": 0.001, ""top_k"": 5}",144,0,0,True
+A_k5_c0.8_r0.001,A,fit_adapt_filter_fair,"{'top_k': 5, 'confidence_threshold': 0.8, 'regularization': 0.001}",PASS,"{""confidence_threshold"": 0.8, ""regularization"": 0.001, ""top_k"": 5}",144,0,0,True
+B_k3_c0.65_r0.001,B,fit_adapt_filter_fair_multihypothesis,"{'top_k': 3, 'confidence_threshold': 0.65, 'regularization': 0.001}",PASS,"{""confidence_threshold"": 0.65, ""regularization"": 0.001, ""top_k"": 3}",144,0,0,True
+B_k3_c0.8_r0.001,B,fit_adapt_filter_fair_multihypothesis,"{'top_k': 3, 'confidence_threshold': 0.8, 'regularization': 0.001}",PASS,"{""confidence_threshold"": 0.8, ""regularization"": 0.001, ""top_k"": 3}",144,0,0,True
+B_k5_c0.65_r0.001,B,fit_adapt_filter_fair_multihypothesis,"{'top_k': 5, 'confidence_threshold': 0.65, 'regularization': 0.001}",PASS,"{""confidence_threshold"": 0.65, ""regularization"": 0.001, ""top_k"": 5}",144,0,0,True
+B_k5_c0.8_r0.001,B,fit_adapt_filter_fair_multihypothesis,"{'top_k': 5, 'confidence_threshold': 0.8, 'regularization': 0.001}",PASS,"{""confidence_threshold"": 0.8, ""regularization"": 0.001, ""top_k"": 5}",144,0,0,True

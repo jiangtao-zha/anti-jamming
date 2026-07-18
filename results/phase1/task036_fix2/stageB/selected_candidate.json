@@ -1,0 +1,43 @@
+{
+  "selected_candidate": null,
+  "rejection_confirmation_candidate": {
+    "candidate_id": "A_k3_c0.8_r0.001",
+    "design": "A",
+    "top_k": 3,
+    "confidence_threshold": 0.8,
+    "regularization": 0.001,
+    "equivalence_class": "EQ_001",
+    "behavior_signature": "5c7259d618ffd68a2c9b7e6f7dec479e6167fe56c7bbb5989ef6d5ff0cb86227",
+    "equivalent_nominal_count": 4,
+    "equivalent_members": "[\"A_k3_c0.8_r0.001\",\"A_k5_c0.8_r0.001\",\"B_k3_c0.8_r0.001\",\"B_k5_c0.8_r0.001\"]",
+    "representative_selection_rule": "design A; smaller top_k; higher threshold; smaller regularization; candidate_id",
+    "effective_candidate": true,
+    "qualification": false,
+    "positive_jsr_count_npj": 1,
+    "positive_jsr_count_ncj": 1,
+    "target_delta_mean_db": 4.192123697862608,
+    "score": 4.192123697862608,
+    "criteria_json": "{\"fallback_nonconstant\": true, \"interface_pass\": true, \"no_oracle\": true, \"nojammer_target_only_gt_minus_0_5\": true, \"pd_not_below_identity\": true, \"position_spread_lt_5\": true, \"target_erased_zero\": true, \"target_jammer_pass\": false, \"target_only_gt_minus_0_5\": true}"
+  },
+  "nominal_candidate_count": 8,
+  "effective_candidate_count": 2,
+  "equivalence_class_count": 2,
+  "all_candidates_frozen_for_heldout": true,
+  "heldout_allowed": false,
+  "heldout_mode": "REJECTION_CONFIRMATION_ONLY",
+  "representative_selection_rule": "design A; smaller top_k; higher threshold; smaller regularization; candidate_id",
+  "behavior_signature_fields": [
+    "estimated_target_idx",
+    "fallback",
+    "confidence_q",
+    "processed_output_hash"
+  ],
+  "behavior_signature_excluded_metadata": [
+    "candidate_id",
+    "design",
+    "fit_function_name",
+    "fit_status",
+    "gate_reasons",
+    "algorithm_description"
+  ]
+}
