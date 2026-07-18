@@ -18,3 +18,13 @@
 - Canonical rejection representative: `A_k3_c0.8_r0.001` in `EQ_001`; the equivalent class contains four A/B members.
 - Evidence: `results/phase1/task036_fix2/stageB/` and `docs/reports/036_fix2_stageB_dispatch_dedup_result.md`.
 - Next stage: new held-out seeds `9200..9249` using the frozen Stage B representative.
+
+## Stage C — 2026-07-18
+
+- Status: `COMPLETED`; result commit pending.
+- Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`.
+- Corrected held-out uses frozen `A_k3_c0.8_r0.001`, design A, `fit_adapt_filter_fair`, and new seeds `9200..9249`; old `9100..9149` remains invalid dispatch history.
+- Evidence: 24,000 trial rows, 96 aggregates, 480 position rows, dispatch mismatches `0`, interface failures `0`, fair target-erased rows `0`, fallback ratio `0.495375`.
+- Passing JSR counts: `NoiseProductJamming=1`, `NoiseConvolutionJamming=1`; no target jammer meets the required two distinct passing JSR conditions.
+- Evidence: `results/phase1/task036_fix2/stageC/` and `docs/reports/036_fix2_stageC_corrected_heldout_result.md`.
+- Next stage: final status, regression, record commit, and remote verification.

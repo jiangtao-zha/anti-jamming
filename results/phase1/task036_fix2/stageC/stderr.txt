@@ -1,0 +1,6 @@
+/Users/jiangtao/anti_jamming/anti_jamming/adapt_filter_fair.py:204: PeakPropertyWarning: some peaks have a prominence of 0
+  prominence_raw = float(signal.peak_prominences(response, [best_center])[0][0])
+/Users/jiangtao/anti_jamming/anti_jamming/adapt_filter_fair.py:209: PeakPropertyWarning: some peaks have a prominence of 0
+  width = float(signal.peak_widths(response, [best_center], rel_height=0.5)[0][0])
+/Users/jiangtao/anti_jamming/anti_jamming/adapt_filter_fair.py:209: PeakPropertyWarning: some peaks have a width of 0
+  width = float(signal.peak_widths(response, [best_center], rel_height=0.5)[0][0])

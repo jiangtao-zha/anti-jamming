@@ -23,7 +23,16 @@
       "decision": "DISPATCH_AND_BEHAVIOR_DEDUP_PASS; TWO_EFFECTIVE_BEHAVIORS; NO_CALIBRATION_QUALIFIED",
       "next_stage": "stageC"
     },
-    "stageC": {"status": "NOT_STARTED", "next_stage": "stageD"},
+    "stageC": {
+      "status": "COMPLETED",
+      "start_commit": "2aba817",
+      "result_commit": "PENDING_STAGEC_COMMIT",
+      "report": "docs/reports/036_fix2_stageC_corrected_heldout_result.md",
+      "result_dir": "results/phase1/task036_fix2/stageC",
+      "exit_code": 0,
+      "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED; CORRECTED_DISPATCH_PASS; NEW_SEEDS_9200_9249",
+      "next_stage": "stageD"
+    },
     "stageD": {"status": "NOT_STARTED", "next_stage": null}
   }
 }

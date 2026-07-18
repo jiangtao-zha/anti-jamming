@@ -1,0 +1,45 @@
+{
+  "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
+  "legacy_decision": "ORACLE_UPPER_BOUND_ONLY",
+  "fair_status": "REJECTED_EXPERIMENTAL",
+  "rl_eligible": false,
+  "candidate_matrix_eligible": false,
+  "fair_registered": false,
+  "rl_action_space_modified": false,
+  "fallback": "Identity",
+  "candidate_id": "A_k3_c0.8_r0.001",
+  "candidate_file_sha256": "e978164f6ca18480f9f0578a4cf421dd7df8b6e1f811e447c88ac9646e3ebe0b",
+  "candidate_design": "A",
+  "fit_function_name": "fit_adapt_filter_fair",
+  "candidate_params": {
+    "top_k": 3,
+    "confidence_threshold": 0.8,
+    "regularization": 0.001
+  },
+  "dispatch_status": "PASS",
+  "dispatch_mismatch_count": 0,
+  "heldout_mode": "REJECTION_CONFIRMATION_ONLY",
+  "seed_range": [
+    9200,
+    9249
+  ],
+  "invalid_historical_seed_range": [
+    9100,
+    9149
+  ],
+  "target_positions": [
+    1000,
+    1500,
+    2500,
+    3500,
+    4000
+  ],
+  "passing_jsr_count_by_jammer": {
+    "NoiseProductJamming": 1,
+    "NoiseConvolutionJamming": 1
+  },
+  "overall_fallback_ratio": 0.495375,
+  "blocking_reasons": [
+    "no target jammer has two distinct passing JSR conditions after seed x position aggregation"
+  ]
+}

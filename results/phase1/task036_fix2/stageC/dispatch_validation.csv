@@ -1,0 +1,2 @@
+candidate_id,candidate_design,fit_function_name,candidate_params,dispatch_status,candidate_params_json,heldout_calls,dispatch_mismatch_count,interface_failures
+A_k3_c0.8_r0.001,A,fit_adapt_filter_fair,"{'top_k': 3, 'confidence_threshold': 0.8, 'regularization': 0.001}",PASS,"{""confidence_threshold"": 0.8, ""regularization"": 0.001, ""top_k"": 3}",8000,0,0
