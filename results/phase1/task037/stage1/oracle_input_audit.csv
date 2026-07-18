@@ -1,0 +1,2 @@
+runtime_input_keys,runtime_forbidden_keys,runtime_oracle_input_status,static_forbidden_accesses,static_oracle_access_status,output_shape,template_shape,finite_output,adapter_audit_status
+"Bw,C,Fs,M,N,Pw,Srt_matrix,St_base,Tr,f0",,PASS,,PASS,"(1, 5000)","(1000,)",True,PASS

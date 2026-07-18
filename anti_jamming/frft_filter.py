@@ -87,82 +87,62 @@ def frft_anti_jamming(radar_par, a1, a2, w=100, u1_target=None, u2_target=None):
     return X_filtered_time, Srpc_range_after
 
 # =====================================================================
-# 以下为经典的 Ozaktas FrFT 算法的 Python 等效实现
+# Finite-dimensional unitary FrFT convention
 # =====================================================================
+def _centered_unitary_dft(values):
+    """Apply the centered, orthonormal DFT used by the finite FrFT."""
+    shifted = np.fft.ifftshift(values)
+    transformed = np.fft.fft(shifted, norm='ortho')
+    return np.fft.fftshift(transformed)
+
+
 def myfrft(f, a):
-    f = np.asarray(f, dtype=complex).flatten()
-    N = len(f)
-    shft = (np.arange(N) + int(np.fix(N / 2))) % N
-    sN = np.sqrt(N)
-    a = a % 4
-    
-    # 基础边界条件
-    if a == 0: return f
-    if a == 2: return np.flipud(f)
-    if a == 1:
-        Faf = np.zeros(N, dtype=complex)
-        Faf[shft] = fft(f[shft]) / sN
-        return Faf
-    if a == 3:
-        Faf = np.zeros(N, dtype=complex)
-        Faf[shft] = ifft(f[shft]) * sN
-        return Faf
-        
-    # 角度规约
-    if a > 2.0:
-        a = a - 2
-        f = np.flipud(f)
-    if a > 1.5:
-        a = a - 1
-        f_temp = np.zeros(N, dtype=complex)
-        f_temp[shft] = fft(f[shft]) / sN
-        f = f_temp
-    if a < 0.5:
-        a = a + 1
-        f_temp = np.zeros(N, dtype=complex)
-        f_temp[shft] = ifft(f[shft]) * sN
-        f = f_temp
+    """Apply a finite-dimensional, unitary fractional Fourier transform.
 
-    alpha = a * np.pi / 2
-    tana2 = np.tan(alpha / 2)
-    sina = np.sin(alpha)
-    
-    # 插值函数与快速卷积
-    def fconv(x, y):
-        N_conv = len(x) + len(y) - 1
-        P = 2**int(np.ceil(np.log2(N_conv)))
-        z = ifft(fft(x, n=P) * fft(y, n=P))
-        return z[:N_conv]
+    The previous chirp-convolution translation had an incorrect index/shift
+    convention: non-integer orders were neither energy preserving nor inverse
+    consistent.  This implementation uses the spectral fractional power of
+    the centered orthonormal DFT ``U``.  Since ``U**4 = I`` on the finite
+    grid, the four spectral projectors give an O(N log N) transform with the
+    expected convention:
 
-    def interp(x):
-        Nx = len(x)
-        y = np.zeros(2 * Nx - 1, dtype=x.dtype)
-        y[0::2] = x
-        idx = np.arange(-(2*Nx - 3), 2*Nx - 2) / 2.0
-        xint = fconv(y, np.sinc(idx)) # np.sinc 内置了 pi
-        return xint[2*Nx - 3 : 4*Nx - 4]
+    ``a=0`` identity, ``a=1`` centered unitary DFT, ``a=2`` reversal,
+    ``a=3`` inverse centered unitary DFT, and period four.  The convention is
+    explicit and deterministic; it is not a claim that a continuous Ozaktas
+    interpolation was numerically valid for the old implementation.
+    """
+    values = np.asarray(f, dtype=complex)
+    if values.ndim != 1:
+        raise ValueError(f'myfrft expects a 1-D signal, got shape {values.shape}')
+    if values.size == 0:
+        raise ValueError('myfrft does not accept an empty signal')
+    try:
+        order = float(a)
+    except (TypeError, ValueError) as exc:
+        raise ValueError('FrFT order must be a finite scalar') from exc
+    if not np.isfinite(order):
+        raise ValueError('FrFT order must be a finite scalar')
 
-    # 插值与补零
-    f = np.concatenate((np.zeros(N - 1), interp(f), np.zeros(N - 1)))
-    
-    # 乘积 Chirp
-    idx1 = np.arange(-2*N + 2, 2*N - 1)
-    chrp = np.exp(-1j * np.pi / N * tana2 / 4 * (idx1**2))
-    f = chrp * f
-    
-    # 卷积 Chirp
-    c = np.pi / N / sina / 4
-    idx2 = np.arange(-(4*N - 4), 4*N - 3)
-    Faf = fconv(np.exp(1j * c * (idx2**2)), f)
-    
-    # 截取有效区间并反求 Chirp
-    Faf = Faf[4*N - 4 : 8*N - 7] * np.sqrt(c / np.pi)
-    Faf = chrp * Faf
-    
-    # 抽取与相位补偿
-    Faf = np.exp(-1j * (1 - a) * np.pi / 4) * Faf[N - 1 : 3*N - 2 : 2]
-    
-    return Faf
+    order = order % 4.0
+    u0 = values.copy()
+    if np.isclose(order, 0.0, atol=1e-14):
+        return u0
+
+    u1 = _centered_unitary_dft(u0)
+    u2 = _centered_unitary_dft(u1)
+    u3 = _centered_unitary_dft(u2)
+    powers = (u0, u1, u2, u3)
+
+    # U has eigenvalues exp(-j*pi*k/2), k=0..3.  The projectors are
+    # P_k=(1/4) sum_m exp(+j*pi*k*m/2) U^m and are mutually orthogonal.
+    output = np.zeros_like(u0)
+    for k, eigenphase in enumerate(np.exp(-1j * np.pi * np.arange(4) / 2.0)):
+        projector = sum(
+            np.exp(1j * np.pi * k * m / 2.0) * powers[m]
+            for m in range(4)
+        ) / 4.0
+        output += (eigenphase ** order) * projector
+    return output
 
 def run_visual_test():
     """

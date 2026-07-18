@@ -1,0 +1,4 @@
+component,path,definition,order_angle,period,integer_orders,default_order_range,mask_parameter,forbidden_oracle_fields
+myfrft,anti_jamming/frft_filter.py,finite spectral fractional power of centered unitary DFT,theta=pi*a/2,4,0=I;1=U;2=U^2;3=U^3;4=I,,,
+frft_adapter,anti_jamming/adapters.py,template/received concentration scan and soft mask,,,,"0.75..1.35, 25 steps","mask_threshold, default 0.1",
+contract,utils/test_contract.py,whitelisted receiver fields plus Srt_matrix/St_base,,,,,,"jam_info,jammer_signal,jammer_type,jsr_status,measured_jsr_db,requested_jsr_db,target_dist,target_idx,target_range,target_start_idx,true_jammer_signal"

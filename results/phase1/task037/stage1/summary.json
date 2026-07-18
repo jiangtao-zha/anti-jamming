@@ -1,0 +1,15 @@
+{
+  "task": "037",
+  "stage": "stage1",
+  "status": "COMPLETED",
+  "gate": "PASS",
+  "core_correctness_fix_applied": true,
+  "previous_baseline_failed_energy_inverse": true,
+  "property_rows": 92,
+  "property_failures": 0,
+  "edge_case_rows": 5,
+  "edge_case_failures": 0,
+  "oracle_audit_status": "PASS",
+  "next_stage": "stage2_separability_diagnostics",
+  "definition": "finite-dimensional spectral fractional power of centered orthonormal DFT"
+}
