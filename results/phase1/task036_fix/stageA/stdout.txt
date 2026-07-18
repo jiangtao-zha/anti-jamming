@@ -1,0 +1,8 @@
+branch=algorithm_design_0711
+local_head=c8909c45d4c8ed92acd58996fdc4698e74afb19b
+remote_ref=refs/heads/algorithm_design_0711
+remote_sha=c8909c45d4c8ed92acd58996fdc4698e74afb19b
+legacy_decision=ORACLE_UPPER_BOUND_ONLY
+legacy_decision_reopened=false
+current_remote_synced=true
+next_stage=stageB
