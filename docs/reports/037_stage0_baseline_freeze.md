@@ -2,7 +2,7 @@
 
 Date: 2026-07-18
 Status: `COMPLETED`
-Commit: `PENDING_STAGE0_COMMIT`
+Commit: `c65d7d1` (`phase1-037-stage0-freeze-frft-baseline`)
 
 ## Baseline objects
 

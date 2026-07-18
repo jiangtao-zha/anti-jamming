@@ -6,7 +6,7 @@
     "stage0": {
       "status": "COMPLETED",
       "start_commit": "7fe8b14",
-      "result_commit": "PENDING_STAGE0_COMMIT",
+      "result_commit": "c65d7d1",
       "report": "docs/reports/037_stage0_baseline_freeze.md",
       "result_dir": "results/phase1/task037/stage0",
       "exit_code": 0,

@@ -2,7 +2,7 @@
 
 ## Stage 0 — 2026-07-18
 
-- Status: `COMPLETED`; commit pending at report creation.
+- Status: `COMPLETED`; result commit `c65d7d1` (`phase1-037-stage0-freeze-frft-baseline`).
 - Decision: `BASELINE_FROZEN`; Current FrFT and Identity are preserved, future candidate is `NOT_IMPLEMENTED`.
 - Current implementation: `anti_jamming/frft_filter.py:myfrft` plus `anti_jamming/adapters.py:frft_adapter`; default order search `[0.75,1.35]`, 25 points, `mask_threshold=0.1`.
 - Existing formal evidence: 160 FrFT interface rows, 160 PASS, oracle input failures 0; existing SMSP/FMNoiseSaopin results remain negative/near-neutral and are not recomputed here.
