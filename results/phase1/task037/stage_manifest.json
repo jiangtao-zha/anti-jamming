@@ -14,7 +14,7 @@
       "next_stage": "stage1"
     },
     "stage1": {"status": "COMPLETED", "start_commit": "394457c", "result_commit": "b6899b3", "report": "docs/reports/037_stage1_frft_audit.md", "result_dir": "results/phase1/task037/stage1", "exit_code": 0, "decision": "PASS_CORE_CORRECTNESS_AND_ORACLE_AUDIT", "next_stage": "stage2"},
-    "stage2": {"status": "NOT_STARTED", "report": "docs/reports/037_stage2_separability_diagnostics.md", "result_dir": "results/phase1/task037/stage2"},
+    "stage2": {"status": "COMPLETED", "start_commit": "f62b0e4", "result_commit": "TBD", "report": "docs/reports/037_stage2_separability_diagnostics.md", "result_dir": "results/phase1/task037/stage2", "exit_code": 0, "decision": "PASS_TO_STAGE3_ORACLE_DIAGNOSTIC", "next_stage": "stage3"},
     "stage3": {"status": "NOT_STARTED", "report": "docs/reports/037_stage3_oracle_upper_bound.md", "result_dir": "results/phase1/task037/stage3"},
     "stage4": {"status": "NOT_STARTED", "report": "docs/reports/037_stage4_observable_design.md", "result_dir": "results/phase1/task037/stage4"},
     "stage5": {"status": "NOT_STARTED", "report": "docs/reports/037_stage5_calibration.md", "result_dir": "results/phase1/task037/stage5"},

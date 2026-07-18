@@ -1,0 +1,65 @@
+{
+  "task": "037",
+  "stage": "stage2",
+  "status": "COMPLETED",
+  "diagnostic_window": "local 1000-sample window centered at prescribed target position",
+  "orders": {
+    "min": -1.0,
+    "max": 1.0,
+    "step": 0.02,
+    "periodic_distance": "d4(a,b)=min_k |a-b+4k|"
+  },
+  "seeds": [
+    10000,
+    10029,
+    30
+  ],
+  "target_centers": [
+    1000,
+    1500,
+    2500,
+    3500,
+    4000
+  ],
+  "jsrs_db": [
+    0.0,
+    10.0,
+    20.0,
+    30.0
+  ],
+  "formal_target_jammers": [
+    "SMSP",
+    "FMNoiseSaopin"
+  ],
+  "supplementary_jammers": [
+    "NoiseProductJamming",
+    "NoiseConvolutionJamming",
+    "NoJammer",
+    "AMNoiseGaiJam",
+    "FMNoiseAimedJam",
+    "FMZuse"
+  ],
+  "total_cases": 4800,
+  "completed_cases": 4800,
+  "formal_per_order_rows": 484800,
+  "component_truth_used_only_in_runner": true,
+  "noise_realization_reused_across_positions": true,
+  "preliminary_gate_by_target_jammer": {
+    "SMSP": {
+      "order_gap_median_across_jsr": 1.9,
+      "order_gap_q25_across_jsr": 1.9,
+      "domain_overlap_median": 0.0,
+      "preliminary_order_gate": true,
+      "preliminary_spatial_gate": true
+    },
+    "FMNoiseSaopin": {
+      "order_gap_median_across_jsr": 1.9,
+      "order_gap_q25_across_jsr": 1.9,
+      "domain_overlap_median": 0.0,
+      "preliminary_order_gate": true,
+      "preliminary_spatial_gate": true
+    }
+  },
+  "stage3_recommendation": "RUN_ORACLE_UPPER_BOUND_FOR_TARGET_JAMMERS",
+  "not_an_algorithm_qualification": true
+}

@@ -19,3 +19,13 @@
 - Continuous LFM theoretical order: not claimed under this finite-grid spectral convention; the chirp scan records `NOT_IDENTIFIABLE_WITHOUT_CONTINUOUS_SCALING` and passes the audit by making the limitation explicit.
 - Oracle boundary: FrFT adapter was called with the whitelist-only receiver dictionary; no forbidden target position, jammer label, JSR, or truth-component access was detected.
 - Next stage: Stage 2 separability diagnostics. No RL change is authorized.
+
+## Stage 2 — 2026-07-18
+
+- Status: `COMPLETED`; result commit to be recorded after the stage commit.
+- Gate: `PASS_TO_STAGE3_ORACLE_DIAGNOSTIC`.
+- Formal objects: `SMSP` and `FMNoiseSaopin`; supplementary objects are kept separate and are not part of the formal fairness conclusion.
+- Configuration: seeds `10000..10029`, JSR `0/10/20/30`, target centers `1000/1500/2500/3500/4000`, coarse orders `[-1,1]` step `0.02`, local 1000-sample diagnostic window.
+- Result: both formal jammers pass the preliminary order/spatial gate; peak order-gap median and q25 are `1.90`/`1.90`, and median same-order overlap is `0.000` for both formal objects.
+- Boundary: true component data stayed inside the diagnostic runner; no formal adapter was called and no RL eligibility changed.
+- Next stage: Stage 3 Oracle upper-bound experiment, explicitly diagnostic-only and not fair/RL-eligible.
