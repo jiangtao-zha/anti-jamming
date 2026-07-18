@@ -1,0 +1,81 @@
+{
+  "task": "036-fix",
+  "stage": "stageB",
+  "fixture_labels": [
+    "PHYSICAL_COMPONENT_RECOMPOSITION",
+    "WHOLE_RECORD_TRANSLATION_STRESS"
+  ],
+  "formal_label": "PHYSICAL_COMPONENT_RECOMPOSITION",
+  "stress_label": "WHOLE_RECORD_TRANSLATION_STRESS",
+  "jammers": [
+    "NoiseProductJamming",
+    "NoiseConvolutionJamming",
+    "NoJammer",
+    "AMNoiseGaiJam",
+    "FMNoiseAimedJam",
+    "FMNoiseSaopin",
+    "SMSP",
+    "FMZuse"
+  ],
+  "jsrs_db": [
+    0.0,
+    10.0,
+    20.0,
+    30.0
+  ],
+  "seeds": [
+    6100,
+    6104
+  ],
+  "target_centers": [
+    1000,
+    1500,
+    2500,
+    3500,
+    4000
+  ],
+  "noise_rule": "same jammer x JSR x seed noise realization reused at every target position",
+  "target_rule": "template embedded at target center with no truncation",
+  "policies": [
+    {
+      "jammer": "NoiseProductJamming",
+      "position_policy": "TARGET_COUPLED_COMPONENT_SHIFT",
+      "policy_evidence": "jammer component is St_pulse multiplied by generated noise; relative target-template gate is retained"
+    },
+    {
+      "jammer": "NoiseConvolutionJamming",
+      "position_policy": "TARGET_COUPLED_COMPONENT_SHIFT",
+      "policy_evidence": "jammer component is convolution with St_pulse; relative target-template gate is retained"
+    },
+    {
+      "jammer": "NoJammer",
+      "position_policy": "NO_JAMMER",
+      "policy_evidence": "no jammer component; noise realization is held fixed"
+    },
+    {
+      "jammer": "AMNoiseGaiJam",
+      "position_policy": "TARGET_INDEPENDENT_COMPONENT_FIXED",
+      "policy_evidence": "active jammer waveform uses local t_jam and does not consume target waveform or R_target for component placement"
+    },
+    {
+      "jammer": "FMNoiseAimedJam",
+      "position_policy": "TARGET_INDEPENDENT_COMPONENT_FIXED",
+      "policy_evidence": "active jammer waveform uses local t_jam and does not consume target waveform or R_target for component placement"
+    },
+    {
+      "jammer": "FMNoiseSaopin",
+      "position_policy": "TARGET_INDEPENDENT_COMPONENT_FIXED",
+      "policy_evidence": "active jammer waveform uses local t_jam and does not consume target waveform or R_target for component placement"
+    },
+    {
+      "jammer": "SMSP",
+      "position_policy": "TARGET_INDEPENDENT_COMPONENT_FIXED",
+      "policy_evidence": "active jammer pulses use local tau_i/t_jam and do not consume target waveform for component placement"
+    },
+    {
+      "jammer": "FMZuse",
+      "position_policy": "TARGET_INDEPENDENT_COMPONENT_FIXED",
+      "policy_evidence": "active jammer waveform uses local t_jam and does not consume target waveform or R_target for component placement"
+    }
+  ]
+}

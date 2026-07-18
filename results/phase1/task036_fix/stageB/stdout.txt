@@ -1,0 +1,8 @@
+task 036-fix stageB COMPLETED
+validation_rows 800
+comparison_rows 800
+PASS 700
+NO_JAMMER_NOT_APPLICABLE 100
+physical_fixture_failures 0
+formal_fixture PHYSICAL_COMPONENT_RECOMPOSITION
+stress_fixture WHOLE_RECORD_TRANSLATION_STRESS_ONLY

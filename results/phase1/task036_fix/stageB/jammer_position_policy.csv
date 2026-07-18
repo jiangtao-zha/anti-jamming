@@ -1,0 +1,9 @@
+jammer,position_policy,policy_evidence
+NoiseProductJamming,TARGET_COUPLED_COMPONENT_SHIFT,jammer component is St_pulse multiplied by generated noise; relative target-template gate is retained
+NoiseConvolutionJamming,TARGET_COUPLED_COMPONENT_SHIFT,jammer component is convolution with St_pulse; relative target-template gate is retained
+NoJammer,NO_JAMMER,no jammer component; noise realization is held fixed
+AMNoiseGaiJam,TARGET_INDEPENDENT_COMPONENT_FIXED,active jammer waveform uses local t_jam and does not consume target waveform or R_target for component placement
+FMNoiseAimedJam,TARGET_INDEPENDENT_COMPONENT_FIXED,active jammer waveform uses local t_jam and does not consume target waveform or R_target for component placement
+FMNoiseSaopin,TARGET_INDEPENDENT_COMPONENT_FIXED,active jammer waveform uses local t_jam and does not consume target waveform or R_target for component placement
+SMSP,TARGET_INDEPENDENT_COMPONENT_FIXED,active jammer pulses use local tau_i/t_jam and do not consume target waveform for component placement
+FMZuse,TARGET_INDEPENDENT_COMPONENT_FIXED,active jammer waveform uses local t_jam and does not consume target waveform or R_target for component placement

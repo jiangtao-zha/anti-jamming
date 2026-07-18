@@ -13,7 +13,16 @@
       "decision": "BASELINE_FROZEN; LEGACY_ORACLE_DECISION_RETAINED; REMOTE_SYNC_CONFIRMED",
       "next_stage": "stageB"
     },
-    "stageB": {"status": "NOT_STARTED", "next_stage": "stageC"},
+    "stageB": {
+      "status": "COMPLETED",
+      "start_commit": "39e7d03",
+      "result_commit": "PENDING_STAGEB_COMMIT",
+      "report": "docs/reports/036_fix_stageB_physical_position_fixture.md",
+      "result_dir": "results/phase1/task036_fix/stageB",
+      "exit_code": 0,
+      "decision": "PHYSICAL_FIXTURE_GATE_PASS",
+      "next_stage": "stageC"
+    },
     "stageC": {"status": "NOT_STARTED", "next_stage": "stageD"},
     "stageD": {"status": "NOT_STARTED", "next_stage": "stageE"},
     "stageE": {"status": "NOT_STARTED", "next_stage": "stageF"},

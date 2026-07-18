@@ -1,0 +1,15 @@
+{
+  "task": "036-fix",
+  "stage": "stageB",
+  "status": "COMPLETED",
+  "validation_rows": 800,
+  "comparison_rows": 800,
+  "fixture_status_counts": {
+    "PASS": 700,
+    "NO_JAMMER_NOT_APPLICABLE": 100
+  },
+  "physical_fixture_failures": 0,
+  "formal_fixture_label": "PHYSICAL_COMPONENT_RECOMPOSITION",
+  "whole_record_translation_status": "STRESS_ONLY_NOT_FORMAL_EVIDENCE",
+  "next_stage": "stageC"
+}
