@@ -1,6 +1,7 @@
 # Task 036-fix Final Result — Physical Fixture, Effective Gating, and Status Closure
 
 Date: 2026-07-18  
+Finalize commit: `c1c7c68` (`phase1-036-fix-finalize`)  
 Status: `COMPLETED_LOCAL_PUSH_PENDING`  
 Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`
 

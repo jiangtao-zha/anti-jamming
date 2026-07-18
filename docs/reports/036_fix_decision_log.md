@@ -49,7 +49,7 @@
 
 ## Stage F — 2026-07-18
 
-- Status: `IN_PROGRESS`; finalization commit pending.
+- Status: `COMPLETED`; result commit `c1c7c68` (`phase1-036-fix-finalize`).
 - Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`; legacy `ORACLE_UPPER_BOUND_ONLY` retained.
 - Regression: `validate_algorithms.py` exit `0`, interface `800/800` PASS; `run_correctness_tests.py` exit `0`, failures `0`.
 - Eligibility: `rl_eligible=false`, `candidate_matrix_eligible=false`, `fair_registered=false`, `rl_action_space_modified=false`.
