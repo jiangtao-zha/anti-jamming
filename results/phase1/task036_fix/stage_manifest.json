@@ -26,7 +26,7 @@
     "stageC": {
       "status": "COMPLETED",
       "start_commit": "81b0eeb",
-      "result_commit": "PENDING_STAGEC_COMMIT",
+      "result_commit": "7b13949",
       "report": "docs/reports/036_fix_stageC_effective_gating.md",
       "result_dir": "results/phase1/task036_fix/stageC",
       "exit_code": 0,

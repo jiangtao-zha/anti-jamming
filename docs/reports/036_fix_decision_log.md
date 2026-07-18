@@ -21,7 +21,7 @@
 
 ## Stage C — 2026-07-18
 
-- Status: `COMPLETED`; result commit pending.
+- Status: `COMPLETED`; result commit `7b13949` (`phase1-036-fix-stageC-effective-gating`).
 - Decision: `GATING_DESIGN_PASS`.
 - Five fixed observable confidence components replace the tautological max-peak normalization; weights and threshold are recorded in `gating_metadata.json`.
 - Validation: 16 A/B cases, interface failures 0, components in `[0,1]`, total fallback `8/16=0.5`.
