@@ -4,7 +4,9 @@
 
 状态：`COMPLETED`
 
-阶段提交：`TBD`（由本阶段记录提交回填）
+阶段提交：`4ed22df`（`phase1-037-stage2-frft-separability-diagnostics`）
+
+Git 分支：`algorithm_design_0711`
 
 ## 结论
 

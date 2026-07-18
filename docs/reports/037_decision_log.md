@@ -22,7 +22,7 @@
 
 ## Stage 2 — 2026-07-18
 
-- Status: `COMPLETED`; result commit to be recorded after the stage commit.
+- Status: `COMPLETED`; result commit `4ed22df` (`phase1-037-stage2-frft-separability-diagnostics`).
 - Gate: `PASS_TO_STAGE3_ORACLE_DIAGNOSTIC`.
 - Formal objects: `SMSP` and `FMNoiseSaopin`; supplementary objects are kept separate and are not part of the formal fairness conclusion.
 - Configuration: seeds `10000..10029`, JSR `0/10/20/30`, target centers `1000/1500/2500/3500/4000`, coarse orders `[-1,1]` step `0.02`, local 1000-sample diagnostic window.
