@@ -1,0 +1,5 @@
+Stage F prepared final status, regression evidence, and push verification plan.
+validate_algorithms.py: exit_code=0, interface PASS=800, FAIL=0
+run_correctness_tests.py: exit_code=0, failures=0
+legacy adapt_filter hash unchanged from Stage A baseline.
+remote status: PENDING_FINAL_PUSH

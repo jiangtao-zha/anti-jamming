@@ -1,0 +1,6 @@
+{
+  "validate_algorithms": {"exit_code": 0, "interface_pass": 800, "interface_fail": 0, "performance_interface_fail": 0},
+  "run_correctness_tests": {"exit_code": 0, "loader_cases": 10, "adapter_cases": 10, "no_jammer_cases": 10, "failures": 0},
+  "legacy_adapt_filter_unchanged": true,
+  "legacy_adapt_filter_sha256": "19a4ede113428d7ad0528f133a2274cf38480075241c7a2b365f9ee8bbcdba34"
+}

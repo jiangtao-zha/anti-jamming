@@ -1,0 +1,30 @@
+{
+  "task": "036-fix",
+  "status": "COMPLETED_LOCAL_PUSH_PENDING",
+  "final_decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
+  "legacy_decision": "ORACLE_UPPER_BOUND_ONLY",
+  "fair_prototype_status": "REJECTED_EXPERIMENTAL",
+  "stage_commits": {
+    "stageA": "24603f1", "stageA_record": "39e7d03",
+    "stageB": "d4618d0", "stageB_record": "81b0eeb",
+    "stageC": "7b13949", "stageC_record": "eae176a",
+    "stageD": "be8fa2a", "stageD_record": "858d9fa",
+    "stageE": "cfe39fc", "stageE_record": "562ed5e",
+    "stageF": "PENDING_FINALIZE_COMMIT", "stageF_record": "PENDING_RECORD_COMMIT"
+  },
+  "rl_action_space_modified": false,
+  "rl_eligible": false,
+  "candidate_matrix_eligible": false,
+  "fair_registered": false,
+  "historical_task036_remote_sync": "COMPLETED_REMOTE_SYNCED",
+  "previous_push_attempt": "BLOCKED_BY_TENANT_SECURITY_POLICY",
+  "later_manual_push": true,
+  "current_task036_fix_remote_sync": "PENDING_FINAL_PUSH",
+  "reproducibility_entry": "scripts/run_task036_fix.py --stage {fixture,gating,calibration,heldout,all}",
+  "notes": [
+    "legacy Task 036 results remain preserved under results/phase1/task036/",
+    "formal position evidence uses physical component recomposition",
+    "held-out qualification is aggregated by jammer x JSR across seed x position",
+    "no long training started and Task 037 not started"
+  ]
+}

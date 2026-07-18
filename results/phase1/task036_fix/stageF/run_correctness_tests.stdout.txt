@@ -1,0 +1,5 @@
+Loader cases: 10
+Adapter cases: 10
+No-jammer cases: 10
+Failures: 0
+Process Exit Code: 0

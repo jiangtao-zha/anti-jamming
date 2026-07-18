@@ -24,10 +24,11 @@ Task 035 结果：WLN 在 FMZuse JSR=10/20/30 有正收益，但 5 个负控平�
 - Task 034-fix3：收紧 contract/oracle failure 退出码，补齐真实 invalid-input 调用证据，修正 target preservation 聚合和 NoJammer JSR 状态。
 - Task 035：完成 Current WLN baseline、9 组 calibration、FMZuse held-out 和 5 类负控；未修改 WLN 结构，最终状态 REJECTED。
 - Task 036：完成 Stage 0–8；legacy adapt_filter 保留为 Oracle upper bound，Fair prototype 未进入 RL candidate matrix，未修改 RL/action space。
+- Task 036-fix：完成物理位置 Fixture、有效 Confidence/Identity Gating、行为去重、Calibration 和独立 Held-out；最终 `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`，Fair prototype 保持实验拒绝状态，未进入 RL candidate matrix。
 
 ## In Progress
 
-- 无。Task 036 已完成，等待审查；Task 037 未开始。
+- Task 036-fix 已完成本地阶段与回归，等待最终 push/SHA 校验；Task 037 未开始。
 
 ## Pending
 

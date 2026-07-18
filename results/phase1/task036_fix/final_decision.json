@@ -1,0 +1,23 @@
+{
+  "task": "036-fix",
+  "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
+  "legacy_decision": "ORACLE_UPPER_BOUND_ONLY",
+  "legacy_adapt_filter_status": "BLOCKED_ORACLE",
+  "fair_prototype_status": "REJECTED_EXPERIMENTAL",
+  "rl_eligible": false,
+  "candidate_matrix_eligible": false,
+  "fair_registered": false,
+  "rl_action_space_modified": false,
+  "fallback": "Identity",
+  "heldout_mode": "REJECTION_CONFIRMATION_ONLY",
+  "frozen_representative": "B_k3_c0.8_r0.001",
+  "calibration_nominal_candidates": 8,
+  "calibration_effective_candidates": 4,
+  "heldout_passing_jsr_count_by_jammer": {"NoiseProductJamming": 1, "NoiseConvolutionJamming": 1},
+  "historical_task036_remote_sync": "COMPLETED_REMOTE_SYNCED",
+  "previous_push_attempt": "BLOCKED_BY_TENANT_SECURITY_POLICY",
+  "later_manual_push": true,
+  "current_task036_fix_remote_sync": "PENDING_FINAL_PUSH",
+  "current_remote_synced": false,
+  "blocking_reasons": ["no target jammer has two distinct passing JSR conditions after held-out seed x position aggregation"]
+}
