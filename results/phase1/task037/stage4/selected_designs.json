@@ -1,0 +1,5 @@
+{
+  "status": "SKIPPED_BY_DECISION_GATE",
+  "reason": "ORACLE_UPPER_BOUND_FAILED",
+  "designs": []
+}

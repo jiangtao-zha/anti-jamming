@@ -1,0 +1,1 @@
+{"candidate_count": 0, "candidate_matrix_eligible": false, "implemented": false, "next_stage": "stage5_skipped_by_decision_gate", "reason": "ORACLE_UPPER_BOUND_FAILED", "rl_eligible": false, "stage": "stage4", "status": "SKIPPED_BY_DECISION_GATE", "task": "037"}

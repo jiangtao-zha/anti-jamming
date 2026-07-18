@@ -38,3 +38,15 @@
 - Best observed ΔSINR means stayed below 1 dB. FMNoiseSaopin had some nonnegative CI lower bounds but failed Pd and target-only preservation; SMSP also failed CI/Pd/position or delta requirements.
 - Oracle target-protection was strengthened to a hard support retaining 90% cumulative true-target FrFT energy; the conclusion remained `FAILED`.
 - Gate consequence: Stage 4 observable prototype and Stage 5 calibration are `SKIPPED_BY_DECISION_GATE`; Stage 6 will only run small rejection confirmation. `candidate_matrix_eligible=false`, `rl_eligible=false`.
+
+## Stage 4 — 2026-07-18
+
+- Status: `SKIPPED_BY_DECISION_GATE`; no observable prototype was designed or implemented because Stage 3 Oracle upper bound failed.
+- Result: empty design/smoke outputs and explicit `candidate_matrix_eligible=false`, `rl_eligible=false`.
+- Commit: to be recorded after the skipped-stage commit.
+
+## Stage 5 — 2026-07-18
+
+- Status: `SKIPPED_BY_DECISION_GATE`; no calibration, behavior deduplication, or candidate selection was run.
+- `heldout_mode=REJECTION_CONFIRMATION_ONLY`; no candidate can enter the held-out set or RL matrix.
+- Commit: to be recorded after the skipped-stage commit.

@@ -1,0 +1,11 @@
+{
+  "task": "037",
+  "stage": "stage4",
+  "status": "SKIPPED_BY_DECISION_GATE",
+  "reason": "ORACLE_UPPER_BOUND_FAILED",
+  "candidate_count": 0,
+  "implemented": false,
+  "candidate_matrix_eligible": false,
+  "rl_eligible": false,
+  "next_stage": "stage5_skipped_by_decision_gate"
+}
