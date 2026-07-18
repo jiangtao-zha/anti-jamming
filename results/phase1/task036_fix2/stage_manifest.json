@@ -40,7 +40,8 @@
       "report": "docs/reports/036_fix2_frozen_dispatch_dedup_result.md",
       "result_dir": "results/phase1/task036_fix2/stageD",
       "exit_code": 0,
-      "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED; REGRESSION_PASS; RECORD_AND_PUSH_PENDING",
+      "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED; REGRESSION_PASS; PUSH_BLOCKED_BY_POLICY",
+      "record_commit": "a6b12f6",
       "next_stage": null
     }
   },
