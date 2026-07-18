@@ -11,7 +11,7 @@
 
 ## Stage B — 2026-07-18
 
-- Status: `COMPLETED`; result commit pending.
+- Status: `COMPLETED`; result commit `29c143c` (`phase1-036-fix2-stageB-dispatch-behavior-dedup`).
 - Decision: `DISPATCH_AND_BEHAVIOR_DEDUP_PASS`; 8 nominal candidates reduced to 2 effective behavior classes.
 - Dispatch: A→`fit_adapt_filter_fair`, B→`fit_adapt_filter_fair_multihypothesis`; mismatch `0`, interface failures `0`, oracle input failures `0`, negative mismatch test `PASS`.
 - Calibration: seeds `9000..9019`, 4,800 trial rows, 48 aggregates, no qualified candidate.

@@ -16,7 +16,7 @@
     "stageB": {
       "status": "COMPLETED",
       "start_commit": "8151b05",
-      "result_commit": "PENDING_STAGEB_COMMIT",
+      "result_commit": "29c143c",
       "report": "docs/reports/036_fix2_stageB_dispatch_dedup_result.md",
       "result_dir": "results/phase1/task036_fix2/stageB",
       "exit_code": 0,

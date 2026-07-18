@@ -1,7 +1,7 @@
 # Task 036-fix2 Stage B — Dispatch and Behavior Deduplication
 
 Status: `COMPLETED`  
-Result commit: pending
+Result commit: `29c143c` (`phase1-036-fix2-stageB-dispatch-behavior-dedup`)
 
 ## Changes
 
