@@ -1,0 +1,18 @@
+{
+  "old_stageE_status": "INVALID_FROZEN_CANDIDATE_DISPATCH",
+  "frozen_candidate": {
+    "candidate_id": "B_k3_c0.8_r0.001",
+    "design": "B",
+    "source": "results/phase1/task036_fix/stageD/selected_candidate.json"
+  },
+  "old_stageE_dispatch": {
+    "fit_function_call": "fit_adapt_filter_fair",
+    "actual_design": "A",
+    "expected_fit_function": "fit_adapt_filter_fair_multihypothesis",
+    "expected_design": "B",
+    "mismatch": true
+  },
+  "old_behavior_signature_metadata": ["fit_status", "gate_reasons"],
+  "old_results_are_historical_only": true,
+  "old_results_may_not_be_used_for_final_qualification": true
+}

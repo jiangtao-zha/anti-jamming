@@ -1,0 +1,17 @@
+{
+  "task": "036-fix2",
+  "stage": "stageA",
+  "branch": "algorithm_design_0711",
+  "head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
+  "tracking_ref_sha": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
+  "remote_ls_remote_status": "UNAVAILABLE_SSH_POLICY",
+  "old_stageE_status": "INVALID_FROZEN_CANDIDATE_DISPATCH",
+  "stageD_frozen_design": "B",
+  "stageD_frozen_candidate_id": "B_k3_c0.8_r0.001",
+  "stageE_actual_fit_function": "fit_adapt_filter_fair",
+  "stageE_actual_design": "A",
+  "legacy_decision": "ORACLE_UPPER_BOUND_ONLY",
+  "legacy_decision_reopened": false,
+  "old_results_preserved": true,
+  "unrelated_worktree_changes_preserved": true
+}

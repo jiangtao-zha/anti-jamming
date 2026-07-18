@@ -1,0 +1,10 @@
+{
+  "task": "036-fix2",
+  "stage": "stageA",
+  "status": "COMPLETED",
+  "old_stageE_status": "INVALID_FROZEN_CANDIDATE_DISPATCH",
+  "frozen_design": "B",
+  "executed_design": "A",
+  "old_results_preserved": true,
+  "next_stage": "stageB"
+}
