@@ -1,7 +1,7 @@
 # Task 036-fix2 Stage A — Invalid Frozen Candidate Dispatch Audit
 
 Status: `COMPLETED`  
-Result commit: pending
+Result commit: `1f69bcb` (`phase1-036-fix2-stageA-audit-invalid-dispatch`)
 
 ## Frozen evidence
 
