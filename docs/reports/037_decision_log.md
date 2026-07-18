@@ -32,7 +32,7 @@
 
 ## Stage 3 — 2026-07-18
 
-- Status: `COMPLETED`; result commit to be recorded after the stage commit.
+- Status: `COMPLETED`; result commit `d2f2cb5` (`phase1-037-stage3-frft-oracle-upper-bound`).
 - Decision: `ORACLE_UPPER_BOUND_FAILED`; `qualified_rows=0` across 128 aggregate strategy×mask×jammer×JSR rows.
 - Experiment: 800 component cases from seeds `10100..10119`, JSR `0/10/20/30`, five target centers; four pre-registered order strategies and four Oracle masks; 12800 trial rows.
 - Best observed ΔSINR means stayed below 1 dB. FMNoiseSaopin had some nonnegative CI lower bounds but failed Pd and target-only preservation; SMSP also failed CI/Pd/position or delta requirements.

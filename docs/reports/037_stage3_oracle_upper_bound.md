@@ -4,7 +4,9 @@
 
 状态：`COMPLETED`
 
-阶段提交：`TBD`（由本阶段记录提交回填）
+阶段提交：`d2f2cb5`（`phase1-037-stage3-frft-oracle-upper-bound`）
+
+Git 分支：`algorithm_design_0711`
 
 ## 决策
 
