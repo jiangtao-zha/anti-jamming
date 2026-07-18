@@ -1,0 +1,1 @@
+{"candidate_matrix_eligible": false, "effective_candidate_count": 0, "heldout_mode": "REJECTION_CONFIRMATION_ONLY", "next_stage": "stage6_rejection_confirmation", "nominal_candidate_count": 0, "reason": "ORACLE_UPPER_BOUND_FAILED", "rl_eligible": false, "stage": "stage5", "status": "SKIPPED_BY_DECISION_GATE", "task": "037"}
