@@ -12,4 +12,6 @@ Stage 3 的 Oracle upper bound 在 `SMSP` 和 `FMNoiseSaopin` 上均失败，未
 MPLCONFIGDIR=/tmp/task037-mpl .venv/bin/python scripts/run_task037.py --stage prototype
 ```
 
-规定提交：`phase1-037-stage4-observable-prototype-skipped`。
+Git 分支：`algorithm_design_0711`。
+
+规定提交：`37dc370`（`phase1-037-stage4-observable-prototype-skipped`）。

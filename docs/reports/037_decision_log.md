@@ -43,7 +43,7 @@
 
 - Status: `SKIPPED_BY_DECISION_GATE`; no observable prototype was designed or implemented because Stage 3 Oracle upper bound failed.
 - Result: empty design/smoke outputs and explicit `candidate_matrix_eligible=false`, `rl_eligible=false`.
-- Commit: to be recorded after the skipped-stage commit.
+- Commit: `37dc370` (`phase1-037-stage4-observable-prototype-skipped`).
 
 ## Stage 5 — 2026-07-18
 
