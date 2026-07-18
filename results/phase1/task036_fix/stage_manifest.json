@@ -43,7 +43,16 @@
       "decision": "NO_CALIBRATION_QUALIFIED; REJECTION_CONFIRMATION_ONLY",
       "next_stage": "stageE"
     },
-    "stageE": {"status": "NOT_STARTED", "next_stage": "stageF"},
+    "stageE": {
+      "status": "COMPLETED",
+      "start_commit": "858d9fa",
+      "result_commit": "cfe39fc",
+      "report": "docs/reports/036_fix_stageE_heldout_result.md",
+      "result_dir": "results/phase1/task036_fix/stageE",
+      "exit_code": 0,
+      "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
+      "next_stage": "stageF"
+    },
     "stageF": {"status": "NOT_STARTED", "next_stage": null}
   }
 }

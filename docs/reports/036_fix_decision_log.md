@@ -36,3 +36,13 @@
 - Frozen rejection-confirmation representative: `B_k3_c0.8_r0.001`; it is not a selected candidate.
 - Evidence: `results/phase1/task036_fix/stageD/` and `docs/reports/036_fix_stageD_dedup_calibration.md`.
 - Next stage: independent held-out rejection confirmation with new seeds `9100..9149`.
+
+## Stage E — 2026-07-18
+
+- Status: `COMPLETED`; result commit `cfe39fc` (`phase1-036-fix-stageE-confirm-oracle-only`).
+- Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`.
+- Held-out mode: `REJECTION_CONFIRMATION_ONLY`; frozen representative `B_k3_c0.8_r0.001`; seeds `9100..9149`; formal aggregation is jammer×JSR across seed×position.
+- Results: 24,000 trial rows, 96 aggregate rows, 480 position rows, interface failures `0`, fair target-erased rows `0`, fallback ratio `0.490125`.
+- Passing JSR counts: `NoiseProductJamming=1`, `NoiseConvolutionJamming=1`; neither target jammer reaches the required two distinct passing JSR conditions.
+- Evidence: `results/phase1/task036_fix/stageE/` and `docs/reports/036_fix_stageE_heldout_result.md`.
+- Next stage: final status, regression, record commit, and remote push verification.
