@@ -30,7 +30,7 @@
 
 ## Stage D — 2026-07-18
 
-- Status: `COMPLETED`; result commit pending.
+- Status: `COMPLETED`; result commit `be8fa2a` (`phase1-036-fix-stageD-dedup-calibration`).
 - Decision: `NO_CALIBRATION_QUALIFIED; REJECTION_CONFIRMATION_ONLY`.
 - Nominal/effective candidates: `8/4`; calibration rows: `9,600`; aggregate rows: `96`.
 - Frozen rejection-confirmation representative: `B_k3_c0.8_r0.001`; it is not a selected candidate.

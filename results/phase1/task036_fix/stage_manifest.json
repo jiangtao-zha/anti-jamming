@@ -36,7 +36,7 @@
     "stageD": {
       "status": "COMPLETED",
       "start_commit": "eae176a",
-      "result_commit": "PENDING_STAGE D_COMMIT",
+      "result_commit": "be8fa2a",
       "report": "docs/reports/036_fix_stageD_dedup_calibration.md",
       "result_dir": "results/phase1/task036_fix/stageD",
       "exit_code": 0,
