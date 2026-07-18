@@ -36,4 +36,7 @@
 - Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`; `FAIR_CANDIDATE` is prohibited and all RL eligibility flags remain false.
 - Historical Task 036-fix status is recorded as manually synchronized at tracking/local head `cb7eac7`; old automatic push failure evidence remains preserved.
 - Evidence: `results/phase1/task036_fix2/stageD/`, `docs/reports/036_fix2_frozen_dispatch_dedup_result.md`, and the stage manifest.
-- Next stage: record, push once, and verify SHA without overwriting blocked evidence.
+- Record commit: `a6b12f6` (`phase1-036-fix2-record-commit`).
+- Push result: `PUSH_BLOCKED_BY_POLICY`; local HEAD `a6b12f6`, tracking ref `cb7eac7`; direct SSH verification failed with `Operation not permitted`.
+- Evidence: `results/phase1/task036_fix2/git_push_stdout.txt`, `git_push_stderr.txt`, and `git_remote_verification.txt`.
+- Next stage: none; Task 037 remains not started.

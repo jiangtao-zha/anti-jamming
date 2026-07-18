@@ -1,0 +1,7 @@
+local_head=a6b12f67e4f263a9905da8c5143ac0387594757a
+tracking_ref=cb7eac7a9e544b6785e1c7bd117e48a99012b59f
+push_status=PUSH_BLOCKED_BY_POLICY
+direct_verification_command=git ls-remote origin refs/heads/algorithm_design_0711
+direct_verification_result=FAILED: ssh: connect to host github.com port 22: Operation not permitted
+remote_sha_verified=false
+No remote SHA is claimed for the fix2 commits.

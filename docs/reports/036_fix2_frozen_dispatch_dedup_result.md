@@ -1,7 +1,7 @@
 # Task 036-fix2 Final Result — Frozen Dispatch, Behavior Deduplication, and Corrected Held-out Evidence
 
 Date: 2026-07-18
-Status before final push: `COMPLETED_LOCAL_RECORD_PENDING`
+Status: `COMPLETED_LOCAL_PUSH_BLOCKED`
 Finalize commit: `a416f34` (`phase1-036-fix2-finalize`)
 Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`
 
@@ -76,4 +76,4 @@ Each stage has an independent report, result directory, stdout, stderr, manifest
 
 The historical Task 036-fix state is recorded as manually synchronized at local/tracking head `cb7eac7a9e544b6785e1c7bd117e48a99012b59f`; its earlier automatic push rejection and verification evidence remain preserved. Direct SSH remote verification is unavailable under the current tenant policy, so the tracking ref and manual-sync record are reported explicitly rather than treated as a new live remote probe.
 
-Task 036-fix2 still requires its own final commit, record commit, one push attempt, and verification. The result must be marked `PUSH_BLOCKED_BY_POLICY` if that attempt is rejected; it must not be reported as synchronized without a verified SHA.
+Task 036-fix2 finalization and record commits are complete: `a416f34` and `a6b12f6`. The single push attempt was rejected by tenant security policy before execution. Direct `git ls-remote` verification also failed with `ssh: connect to host github.com port 22: Operation not permitted`; therefore fix2 is explicitly `PUSH_BLOCKED_BY_POLICY`, local HEAD is `a6b12f67e4f263a9905da8c5143ac0387594757a`, and no remote SHA is claimed. Raw evidence is saved under `results/phase1/task036_fix2/`. Task 037 was not started.

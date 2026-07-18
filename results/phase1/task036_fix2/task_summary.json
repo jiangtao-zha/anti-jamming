@@ -1,6 +1,6 @@
 {
   "task": "036-fix2",
-  "status": "COMPLETED_LOCAL_RECORD_PENDING",
+  "status": "COMPLETED_LOCAL_PUSH_BLOCKED",
   "final_decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
   "legacy_decision": "ORACLE_UPPER_BOUND_ONLY",
   "old_stageE_status": "INVALID_FROZEN_CANDIDATE_DISPATCH",
@@ -12,7 +12,7 @@
     "stageC": "00ad699",
     "stageC_record": "2dc3df1",
     "stageD": "a416f34",
-    "stageD_record": "PENDING_RECORD_COMMIT"
+    "stageD_record": "a6b12f6"
   },
   "nominal_candidate_count": 8,
   "effective_candidate_count": 2,
@@ -25,7 +25,10 @@
   "historical_task036_fix_remote_sync": "COMPLETED_REMOTE_SYNCED",
   "previous_automatic_push": "BLOCKED_BY_POLICY",
   "later_manual_push": true,
-  "current_task036_fix2_remote_sync": "PENDING_RECORD_COMMIT_AND_PUSH",
+  "current_task036_fix2_remote_sync": "PUSH_BLOCKED_BY_POLICY",
+  "local_head": "a6b12f67e4f263a9905da8c5143ac0387594757a",
+  "tracking_head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
+  "direct_remote_verification": "FAILED_SSH_POLICY",
   "reproducibility_entry": "scripts/run_task036_fix2.py --stage {dedup,heldout,all}",
   "notes": [
     "old Task 036-fix Stage E remains invalid dispatch historical evidence",

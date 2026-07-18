@@ -1,0 +1,3 @@
+Command: git push origin algorithm_design_0711
+Result: REJECTED_BY_TENANT_SECURITY_POLICY
+Reason: Pushing this branch exports local workspace code and results to GitHub, an external destination not shown here to be a trusted internal or verified private repository, so the action is treated as high-risk data exfiltration and must be denied.

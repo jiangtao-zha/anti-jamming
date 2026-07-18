@@ -41,7 +41,19 @@
       "result_dir": "results/phase1/task036_fix2/stageD",
       "exit_code": 0,
       "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED; REGRESSION_PASS; RECORD_AND_PUSH_PENDING",
-      "next_stage": "record"
+      "next_stage": null
     }
+  },
+  "remote": {
+    "status": "PUSH_BLOCKED_BY_POLICY",
+    "record_commit": "a6b12f6",
+    "local_head": "a6b12f67e4f263a9905da8c5143ac0387594757a",
+    "tracking_head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
+    "direct_verification": "FAILED_SSH_POLICY",
+    "evidence": [
+      "results/phase1/task036_fix2/git_push_stdout.txt",
+      "results/phase1/task036_fix2/git_push_stderr.txt",
+      "results/phase1/task036_fix2/git_remote_verification.txt"
+    ]
   }
 }

@@ -25,7 +25,11 @@
   "historical_task036_fix_remote_sync": "COMPLETED_REMOTE_SYNCED",
   "previous_automatic_push": "BLOCKED_BY_POLICY",
   "later_manual_push": true,
-  "current_task036_fix2_remote_sync": "PENDING_RECORD_COMMIT_AND_PUSH",
+  "current_task036_fix2_remote_sync": "PUSH_BLOCKED_BY_POLICY",
   "current_remote_synced": false,
+  "record_commit": "a6b12f67e4f263a9905da8c5143ac0387594757a",
+  "push_attempt_commit": "a6b12f67e4f263a9905da8c5143ac0387594757a",
+  "tracking_head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
+  "direct_remote_verification": "FAILED_SSH_POLICY",
   "blocking_reasons": ["no target jammer has two distinct passing JSR conditions after corrected seed x position aggregation"]
 }
