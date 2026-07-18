@@ -1,0 +1,5 @@
+candidate_id,design,top_k,confidence_threshold,regularization,equivalence_class,behavior_signature,equivalent_nominal_count
+A_k3_c0.65_r0.001,A,3,0.65,0.001,EQ_001,7465f65cc65b22f7c54fba65eafa3c2c19f4f30e2cf70224ae15bee40f2dc150,2
+B_k3_c0.8_r0.001,B,3,0.8,0.001,EQ_002,a3e150ba6e54fcfb856508a10d692083ac0c617a4ee0be9b7e71e7f67dbbb548,2
+A_k3_c0.8_r0.001,A,3,0.8,0.001,EQ_003,baf9dc6c1c9ed146285784fc2caf9cb1651083c36550c3879c5b3ea7f6c6d026,2
+B_k3_c0.65_r0.001,B,3,0.65,0.001,EQ_004,bcb023beb9962075f864b8ddb88f4ae6bc850ba4dd7961c30ba7fa92975760c8,2

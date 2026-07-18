@@ -1,0 +1,25 @@
+{
+  "selected_candidate": null,
+  "rejection_confirmation_candidate": {
+    "candidate_id": "B_k3_c0.8_r0.001",
+    "design": "B",
+    "top_k": 3,
+    "confidence_threshold": 0.8,
+    "regularization": 0.001,
+    "equivalence_class": "EQ_002",
+    "behavior_signature": "a3e150ba6e54fcfb856508a10d692083ac0c617a4ee0be9b7e71e7f67dbbb548",
+    "equivalent_nominal_count": 2,
+    "effective_candidate": true,
+    "qualification": false,
+    "positive_jsr_count_npj": 1,
+    "positive_jsr_count_ncj": 1,
+    "target_delta_mean_db": 4.192123697862608,
+    "score": 4.192123697862608,
+    "criteria_json": "{\"fallback_nonconstant\": true, \"interface_pass\": true, \"no_oracle\": true, \"nojammer_target_only_gt_minus_0_5\": true, \"pd_not_below_identity\": true, \"position_spread_lt_5\": true, \"target_erased_zero\": true, \"target_jammer_pass\": false, \"target_only_gt_minus_0_5\": true}"
+  },
+  "nominal_candidate_count": 8,
+  "effective_candidate_count": 4,
+  "all_candidates_frozen_for_heldout": true,
+  "heldout_allowed": false,
+  "heldout_mode": "REJECTION_CONFIRMATION_ONLY"
+}

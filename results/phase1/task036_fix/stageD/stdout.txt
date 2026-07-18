@@ -1,0 +1,13 @@
+task 036-fix stageD COMPLETED
+nominal_candidate_count 8
+effective_candidate_count 4
+equivalence_class_count 4
+calibration_trial_rows 9600
+calibration_aggregate_rows 96
+calibration_qualified_count 0
+heldout_mode REJECTION_CONFIRMATION_ONLY
+selected_candidate none
+frozen_rejection_confirmation B_k3_c0.8_r0.001
+interface_failures 0
+oracle_input_failures 0
+next_stage stageE

@@ -27,3 +27,12 @@
 - Validation: 16 A/B cases, interface failures 0, components in `[0,1]`, total fallback `8/16=0.5`.
 - Evidence: `results/phase1/task036_fix/stageC/` and `docs/reports/036_fix_stageC_effective_gating.md`.
 - Next stage: behavior-signature deduplication and small calibration.
+
+## Stage D — 2026-07-18
+
+- Status: `COMPLETED`; result commit pending.
+- Decision: `NO_CALIBRATION_QUALIFIED; REJECTION_CONFIRMATION_ONLY`.
+- Nominal/effective candidates: `8/4`; calibration rows: `9,600`; aggregate rows: `96`.
+- Frozen rejection-confirmation representative: `B_k3_c0.8_r0.001`; it is not a selected candidate.
+- Evidence: `results/phase1/task036_fix/stageD/` and `docs/reports/036_fix_stageD_dedup_calibration.md`.
+- Next stage: independent held-out rejection confirmation with new seeds `9100..9149`.

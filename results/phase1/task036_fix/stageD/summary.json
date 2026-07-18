@@ -1,0 +1,17 @@
+{
+  "task": "036-fix",
+  "stage": "stageD",
+  "status": "COMPLETED",
+  "nominal_candidate_count": 8,
+  "effective_candidate_count": 4,
+  "equivalence_class_count": 4,
+  "calibration_trial_rows": 9600,
+  "calibration_aggregate_rows": 96,
+  "calibration_qualified_count": 0,
+  "selected_candidate_id": null,
+  "heldout_mode": "REJECTION_CONFIRMATION_ONLY",
+  "candidate_freeze_sha_source": "selected_candidate.json",
+  "no_oracle": true,
+  "interface_failures": 0,
+  "next_stage": "stageE"
+}
