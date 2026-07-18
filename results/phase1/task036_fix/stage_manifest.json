@@ -6,7 +6,7 @@
     "stageA": {
       "status": "COMPLETED",
       "start_commit": "c8909c4",
-      "result_commit": "PENDING_STAGEA_COMMIT",
+      "result_commit": "24603f1",
       "report": "docs/reports/036_fix_stageA_baseline.md",
       "result_dir": "results/phase1/task036_fix/stageA",
       "exit_code": 0,

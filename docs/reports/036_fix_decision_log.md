@@ -3,7 +3,7 @@
 ## Stage A — 2026-07-18
 
 - Status: `COMPLETED`.
-- Result commit: pending Stage A commit.
+- Result commit: `24603f1` (`phase1-036-fix-stageA-freeze`).
 - Baseline: local and remote `algorithm_design_0711` both at `c8909c45`.
 - Legacy decision retained: `ORACLE_UPPER_BOUND_ONLY`; `legacy_decision_reopened=false`.
 - Previous push failure is preserved as historical evidence; current remote sync is confirmed by `git ls-remote`.
