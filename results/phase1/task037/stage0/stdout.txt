@@ -1,0 +1,7 @@
+Task 037 Stage 0 baseline freeze completed.
+Current FrFT implementation: anti_jamming/frft_filter.py:myfrft
+Current FrFT adapter: anti_jamming/adapters.py:frft_adapter
+Current FrFT defaults: order [0.75, 1.35], 25 points, mask_threshold=0.1
+Current formal matrix: 160 FrFT interface rows, 160 PASS, oracle input failures=0.
+Task 036-fix2 was not rerun.
+Task 038 was not started.

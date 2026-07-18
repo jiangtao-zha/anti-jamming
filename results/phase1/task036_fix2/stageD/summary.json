@@ -1,7 +1,7 @@
 {
   "task": "036-fix2",
   "stage": "stageD",
-  "status": "COMPLETED_LOCAL_PUSH_BLOCKED",
+  "status": "COMPLETED_REMOTE_SYNCED",
   "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
   "legacy_decision": "ORACLE_UPPER_BOUND_ONLY",
   "stageA_commit": "1f69bcb",
@@ -22,10 +22,11 @@
   "rl_action_space_modified": false,
   "regression_exit_codes": {"validate_algorithms": 0, "run_correctness_tests": 0},
   "historical_task036_fix_remote_sync": "COMPLETED_REMOTE_SYNCED",
-  "task036_fix2_remote_sync": "PUSH_BLOCKED_BY_POLICY",
+  "task036_fix2_remote_sync": "COMPLETED_REMOTE_SYNCED",
   "push_attempt_local_head": "a6b12f67e4f263a9905da8c5143ac0387594757a",
   "status_closure_commit": "04c4eb8",
-  "tracking_head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
-  "direct_remote_verification": "FAILED_SSH_POLICY",
+  "tracking_head": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2",
+  "remote_sha": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2",
+  "direct_remote_verification": "UNAVAILABLE_SSH_POLICY; TRACKING_REF_AND_LATER_MANUAL_SYNC_RECORD_USED",
   "next_stage": null
 }

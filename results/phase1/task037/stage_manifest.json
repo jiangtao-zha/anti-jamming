@@ -1,0 +1,24 @@
+{
+  "task": "037",
+  "branch": "algorithm_design_0711",
+  "source_task": "036-fix2",
+  "stages": {
+    "stage0": {
+      "status": "COMPLETED",
+      "start_commit": "7fe8b14",
+      "result_commit": "PENDING_STAGE0_COMMIT",
+      "report": "docs/reports/037_stage0_baseline_freeze.md",
+      "result_dir": "results/phase1/task037/stage0",
+      "exit_code": 0,
+      "decision": "BASELINE_FROZEN; CURRENT_FRFT_PRESERVED; HISTORICAL_REMOTE_STATE_CORRECTED",
+      "next_stage": "stage1"
+    },
+    "stage1": {"status": "NOT_STARTED", "report": "docs/reports/037_stage1_frft_audit.md", "result_dir": "results/phase1/task037/stage1"},
+    "stage2": {"status": "NOT_STARTED", "report": "docs/reports/037_stage2_separability_diagnostics.md", "result_dir": "results/phase1/task037/stage2"},
+    "stage3": {"status": "NOT_STARTED", "report": "docs/reports/037_stage3_oracle_upper_bound.md", "result_dir": "results/phase1/task037/stage3"},
+    "stage4": {"status": "NOT_STARTED", "report": "docs/reports/037_stage4_observable_design.md", "result_dir": "results/phase1/task037/stage4"},
+    "stage5": {"status": "NOT_STARTED", "report": "docs/reports/037_stage5_calibration.md", "result_dir": "results/phase1/task037/stage5"},
+    "stage6": {"status": "NOT_STARTED", "report": "docs/reports/037_stage6_heldout.md", "result_dir": "results/phase1/task037/stage6"},
+    "stage7": {"status": "NOT_STARTED", "report": "docs/reports/037_stage7_final_decision.md", "result_dir": "results/phase1/task037/stage7"}
+  }
+}

@@ -66,4 +66,4 @@ Therefore:
 - 修正版统一 dispatch：A→`fit_adapt_filter_fair`，B→`fit_adapt_filter_fair_multihypothesis`；行为签名只包含 estimated index、fallback、量化 confidence 和 processed output hash，candidate/fit/gate 元数据不参与身份。
 - 8 个名义候选按真实行为去重为 2 个等价类；Stage B 校准未产生 qualified candidate，A 代表仅作为 canonical rejection representative。
 - 修正版 held-out 使用新 seeds `9200..9249`，按 jammer×JSR 跨 seed×position 聚合；两类目标 jammer 各只有 1 个通过 JSR 条件，因此最终只能确认 `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`。
-- `rl_eligible=false`、`candidate_matrix_eligible=false`、`fair_registered=false`、`rl_action_space_modified=false`；Task 037 未开始。旧 Task 036-fix 的手工远端同步记录保留，fix2 另行记录 push 状态。
+- `rl_eligible=false`、`candidate_matrix_eligible=false`、`fair_registered=false`、`rl_action_space_modified=false`；Task 037 随后独立启动。旧 Task 036-fix2 的手工远端同步记录为 `COMPLETED_REMOTE_SYNCED`，SHA `7fe8b146fe34b6667061c844bd3e1887e6fe5fa2`，原始 push failure evidence 保留。

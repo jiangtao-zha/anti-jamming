@@ -1,0 +1,11 @@
+{
+  "source_task": "036-fix2",
+  "automatic_push_attempt": "BLOCKED_BY_POLICY",
+  "later_manual_push": true,
+  "remote_sync": "COMPLETED_REMOTE_SYNCED",
+  "remote_sha": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2",
+  "tracking_sha": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2",
+  "direct_ls_remote": "UNAVAILABLE_SSH_POLICY",
+  "historical_push_failure_evidence_preserved": true,
+  "task036_fix2_results_recomputed": false
+}

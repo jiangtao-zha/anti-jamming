@@ -1,0 +1,40 @@
+{
+  "task": "037",
+  "stage": "stage0",
+  "stage_status": "COMPLETED",
+  "baseline_status": "NOT_IMPLEMENTED",
+  "date": "2026-07-18",
+  "branch": "algorithm_design_0711",
+  "local_head": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2",
+  "tracking_ref": "origin/algorithm_design_0711",
+  "tracking_sha": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2",
+  "remote_sha_basis": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2; later manual synchronization record and tracking ref",
+  "direct_remote_verification": "UNAVAILABLE_SSH_POLICY",
+  "identity_baseline": "received -> received",
+  "current_frft": {
+    "implementation": "anti_jamming/frft_filter.py:myfrft",
+    "adapter": "anti_jamming/adapters.py:frft_adapter",
+    "registry_name": "frft_filter",
+    "order_search_default": {"min": 0.75, "max": 1.35, "steps": 25},
+    "mask_threshold_default": 0.1,
+    "mask_strength_floor": 0.05,
+    "activity_window": "received/template matched-filter peak; Npw=min(len(St_base), round(Pw*Fs))",
+    "target_order_source": "template concentration argmax",
+    "received_order_source": "received activity-window concentration argmax",
+    "status": "CURRENT_BASELINE_FROZEN"
+  },
+  "future_candidate": {"status": "NOT_IMPLEMENTED", "allowed_input": "observed IQ, known template, public radar parameters only"},
+  "formal_matrix": {
+    "source": "results/phase1/task034_fix3/performance_contract/combined_results.csv",
+    "interface_rows": 160,
+    "interface_pass": 160,
+    "oracle_input_failures": 0,
+    "rows": [
+      {"jammer": "FMNoiseAimedJam", "delta_sinr_db_by_jsr": {"0": -0.2493913141, "10": -0.2147556387, "20": -0.1735427445, "30": -0.3020462526}, "target_only_db": -0.3374184102},
+      {"jammer": "FMNoiseSaopin", "delta_sinr_db_by_jsr": {"0": -0.2962769901, "10": -0.3018831580, "20": -0.2792862292, "30": 0.1032398469}, "target_only_db": -0.3374184102}
+    ]
+  },
+  "task036_fix2_not_rerun": true,
+  "task038_started": false,
+  "rl_or_action_space_modified": false
+}

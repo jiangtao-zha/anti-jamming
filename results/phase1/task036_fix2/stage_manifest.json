@@ -46,12 +46,13 @@
     }
   },
   "remote": {
-    "status": "PUSH_BLOCKED_BY_POLICY",
+    "status": "COMPLETED_REMOTE_SYNCED",
     "record_commit": "a6b12f6",
     "push_attempt_commit": "a6b12f67e4f263a9905da8c5143ac0387594757a",
     "status_closure_commit": "04c4eb8",
-    "tracking_head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
-    "direct_verification": "FAILED_SSH_POLICY",
+    "tracking_head": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2",
+    "remote_sha": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2",
+    "direct_verification": "UNAVAILABLE_SSH_POLICY; TRACKING_REF_AND_LATER_MANUAL_SYNC_RECORD_USED",
     "evidence": [
       "results/phase1/task036_fix2/git_push_stdout.txt",
       "results/phase1/task036_fix2/git_push_stderr.txt",

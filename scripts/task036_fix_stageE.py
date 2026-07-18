@@ -300,7 +300,7 @@ def run(output_dir: Path) -> dict:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output-dir', default='results/phase1/task036_fix/stageE')
+    parser.add_argument('--output-dir', default='results/phase1/task036_fix2/stageC')
     args = parser.parse_args()
     summary = run(Path(args.output_dir))
     print(json.dumps(summary, indent=2, ensure_ascii=False, default=str))

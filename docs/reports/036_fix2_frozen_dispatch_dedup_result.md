@@ -1,7 +1,7 @@
 # Task 036-fix2 Final Result — Frozen Dispatch, Behavior Deduplication, and Corrected Held-out Evidence
 
 Date: 2026-07-18
-Status: `COMPLETED_LOCAL_PUSH_BLOCKED`
+Historical status: `COMPLETED_REMOTE_SYNCED`
 Finalize commit: `a416f34` (`phase1-036-fix2-finalize`)
 Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`
 
@@ -74,6 +74,6 @@ Each stage has an independent report, result directory, stdout, stderr, manifest
 
 ## 7. Git and remote status
 
-The historical Task 036-fix state is recorded as manually synchronized at local/tracking head `cb7eac7a9e544b6785e1c7bd117e48a99012b59f`; its earlier automatic push rejection and verification evidence remain preserved. Direct SSH remote verification is unavailable under the current tenant policy, so the tracking ref and manual-sync record are reported explicitly rather than treated as a new live remote probe.
+The historical Task 036-fix state is recorded as manually synchronized at tracking/remote head `7fe8b146fe34b6667061c844bd3e1887e6fe5fa2`; its earlier automatic push rejection and verification evidence remain preserved. Direct SSH remote verification is unavailable under the current tenant policy, so the tracking ref and manual-sync record are reported explicitly rather than treated as a new live remote probe.
 
-Task 036-fix2 finalization and record commits are complete: `a416f34` and `a6b12f6`. The single push attempt was issued from commit `a6b12f67e4f263a9905da8c5143ac0387594757a` and rejected by tenant security policy before execution. Direct `git ls-remote` verification also failed with `ssh: connect to host github.com port 22: Operation not permitted`; therefore fix2 is explicitly `PUSH_BLOCKED_BY_POLICY`, no remote SHA is claimed, and the later local status-closure commit is `04c4eb8`. Raw evidence is saved under `results/phase1/task036_fix2/`. Task 037 was not started.
+Task 036-fix2 finalization and record commits are complete: `a416f34` and `a6b12f6`. The original automatic push attempt from commit `a6b12f67e4f263a9905da8c5143ac0387594757a` was rejected by tenant security policy, and its raw failure evidence remains preserved. A later manual synchronization is recorded at tracking/remote SHA `7fe8b146fe34b6667061c844bd3e1887e6fe5fa2`; direct SSH `ls-remote` remains unavailable under the current policy. Task 037 now starts from this synchronized historical state.

@@ -1,0 +1,1 @@
+Direct git ls-remote was unavailable under the current tenant SSH policy; tracking ref and the later manual-sync record provide the recorded remote SHA.

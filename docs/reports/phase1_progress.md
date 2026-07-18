@@ -2,7 +2,7 @@
 
 ## Current Task
 
-Task 036：adapt_filter 公平性审计、observable-only 原型与 held-out 已完成，最终结论为 `ORACLE_UPPER_BOUND_ONLY`；等待审查。
+Task 037：FrFT 域目标—干扰可分离性验证、抑制上界与动作资格决策；Stage 0 正在执行。
 
 主提交：`9df3072 phase1-034-fix3-contract-failure-regression`
 
@@ -26,10 +26,11 @@ Task 035 结果：WLN 在 FMZuse JSR=10/20/30 有正收益，但 5 个负控平�
 - Task 036：完成 Stage 0–8；legacy adapt_filter 保留为 Oracle upper bound，Fair prototype 未进入 RL candidate matrix，未修改 RL/action space。
 - Task 036-fix：完成物理位置 Fixture、有效 Confidence/Identity Gating、行为去重、Calibration 和独立 Held-out；历史结果已同步到 tracking head `cb7eac7`，但旧 Stage E 后续被 Task 036-fix2 认定为 frozen-candidate dispatch 无效。
 - Task 036-fix2：修复 A/B frozen dispatch，按实际行为去重并用新 seeds `9200..9249` 重跑 held-out；最终 `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`，Fair prototype 保持实验拒绝状态，未进入 RL candidate matrix。
+- Task 036-fix2 历史远端状态：后续手动同步已记录为 `COMPLETED_REMOTE_SYNCED`，remote/tracking SHA `7fe8b146fe34b6667061c844bd3e1887e6fe5fa2`；原始 push failure evidence 保留。
 
 ## In Progress
 
-- Task 036-fix2 本地阶段与回归已完成；finalize `a416f34`、record `a6b12f6` 已创建，但 push 被租户安全策略阻止，证据已保存，Task 037 未开始。
+- Task 037 Stage 0：冻结 Current FrFT、修正历史状态与 Task 036-fix2 runner 默认目录；尚未开始 FrFT 数值实验。
 
 ## Pending
 

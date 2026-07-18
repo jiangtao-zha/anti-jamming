@@ -34,9 +34,9 @@
 - Status: `COMPLETED`; result commit `a416f34` (`phase1-036-fix2-finalize`).
 - Regression: `validate_algorithms.py` exit `0` with interface PASS `800/800`; `run_correctness_tests.py` exit `0` with failures `0`; post-held-out dedup lock exited `1` as expected.
 - Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`; `FAIR_CANDIDATE` is prohibited and all RL eligibility flags remain false.
-- Historical Task 036-fix status is recorded as manually synchronized at tracking/local head `cb7eac7`; old automatic push failure evidence remains preserved.
+- Historical Task 036-fix status is recorded as manually synchronized at tracking/remote head `7fe8b146`; old automatic push failure evidence remains preserved.
 - Evidence: `results/phase1/task036_fix2/stageD/`, `docs/reports/036_fix2_frozen_dispatch_dedup_result.md`, and the stage manifest.
 - Record commit: `a6b12f6` (`phase1-036-fix2-record-commit`).
-- Push result: `PUSH_BLOCKED_BY_POLICY`; push-attempt commit `a6b12f6`, tracking ref `cb7eac7`; direct SSH verification failed with `Operation not permitted`.
+- Initial push result: `PUSH_BLOCKED_BY_POLICY`; push-attempt commit `a6b12f6`, with original tracking ref `cb7eac7`; later manual synchronization is recorded at `7fe8b146fe34b6667061c844bd3e1887e6fe5fa2`. Direct SSH verification remains unavailable with `Operation not permitted`.
 - Evidence: `results/phase1/task036_fix2/git_push_stdout.txt`, `git_push_stderr.txt`, and `git_remote_verification.txt`.
 - Next stage: none; Task 037 remains not started.
