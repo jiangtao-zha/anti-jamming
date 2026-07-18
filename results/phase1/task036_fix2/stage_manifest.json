@@ -48,7 +48,8 @@
   "remote": {
     "status": "PUSH_BLOCKED_BY_POLICY",
     "record_commit": "a6b12f6",
-    "local_head": "a6b12f67e4f263a9905da8c5143ac0387594757a",
+    "push_attempt_commit": "a6b12f67e4f263a9905da8c5143ac0387594757a",
+    "status_closure_commit": "04c4eb8",
     "tracking_head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
     "direct_verification": "FAILED_SSH_POLICY",
     "evidence": [

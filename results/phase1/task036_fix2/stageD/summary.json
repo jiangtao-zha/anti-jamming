@@ -23,7 +23,8 @@
   "regression_exit_codes": {"validate_algorithms": 0, "run_correctness_tests": 0},
   "historical_task036_fix_remote_sync": "COMPLETED_REMOTE_SYNCED",
   "task036_fix2_remote_sync": "PUSH_BLOCKED_BY_POLICY",
-  "local_head": "a6b12f67e4f263a9905da8c5143ac0387594757a",
+  "push_attempt_local_head": "a6b12f67e4f263a9905da8c5143ac0387594757a",
+  "status_closure_commit": "04c4eb8",
   "tracking_head": "cb7eac7a9e544b6785e1c7bd117e48a99012b59f",
   "direct_remote_verification": "FAILED_SSH_POLICY",
   "next_stage": null
