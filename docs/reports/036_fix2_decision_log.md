@@ -21,7 +21,7 @@
 
 ## Stage C — 2026-07-18
 
-- Status: `COMPLETED`; result commit pending.
+- Status: `COMPLETED`; result commit `00ad699` (`phase1-036-fix2-stageC-confirm-oracle-only`).
 - Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`.
 - Corrected held-out uses frozen `A_k3_c0.8_r0.001`, design A, `fit_adapt_filter_fair`, and new seeds `9200..9249`; old `9100..9149` remains invalid dispatch history.
 - Evidence: 24,000 trial rows, 96 aggregates, 480 position rows, dispatch mismatches `0`, interface failures `0`, fair target-erased rows `0`, fallback ratio `0.495375`.

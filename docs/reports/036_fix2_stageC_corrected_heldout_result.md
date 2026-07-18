@@ -1,7 +1,7 @@
 # Task 036-fix2 Stage C — Corrected Independent Held-out Result
 
 Status: `COMPLETED`  
-Result commit: pending  
+Result commit: `00ad699` (`phase1-036-fix2-stageC-confirm-oracle-only`)  
 Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`
 
 ## Frozen candidate and dispatch

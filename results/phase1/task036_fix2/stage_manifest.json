@@ -26,7 +26,7 @@
     "stageC": {
       "status": "COMPLETED",
       "start_commit": "2aba817",
-      "result_commit": "PENDING_STAGEC_COMMIT",
+      "result_commit": "00ad699",
       "report": "docs/reports/036_fix2_stageC_corrected_heldout_result.md",
       "result_dir": "results/phase1/task036_fix2/stageC",
       "exit_code": 0,
