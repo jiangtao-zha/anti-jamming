@@ -34,14 +34,14 @@
       "next_stage": "stageD"
     },
     "stageD": {
-      "status": "IN_PROGRESS",
+      "status": "COMPLETED",
       "start_commit": "2dc3df1",
-      "result_commit": "PENDING_FINALIZE_COMMIT",
+      "result_commit": "a416f34",
       "report": "docs/reports/036_fix2_frozen_dispatch_dedup_result.md",
       "result_dir": "results/phase1/task036_fix2/stageD",
       "exit_code": 0,
-      "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED; REGRESSION_PASS; PUSH_PENDING",
-      "next_stage": null
+      "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED; REGRESSION_PASS; RECORD_AND_PUSH_PENDING",
+      "next_stage": "record"
     }
   }
 }

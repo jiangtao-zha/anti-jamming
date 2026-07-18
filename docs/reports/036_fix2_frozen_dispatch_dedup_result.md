@@ -1,8 +1,8 @@
 # Task 036-fix2 Final Result — Frozen Dispatch, Behavior Deduplication, and Corrected Held-out Evidence
 
 Date: 2026-07-18
-Status before final push: `COMPLETED_LOCAL_PUSH_PENDING`
-Finalize commit: `PENDING_FINALIZE_COMMIT`
+Status before final push: `COMPLETED_LOCAL_RECORD_PENDING`
+Finalize commit: `a416f34` (`phase1-036-fix2-finalize`)
 Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`
 
 ## 1. Historical invalidity and scope
@@ -70,7 +70,7 @@ Each stage has an independent report, result directory, stdout, stderr, manifest
 - Stage A: `1f69bcb` / `8151b05`, audit and record;
 - Stage B: `29c143c` / `2aba817`, dispatch, deduplication, and calibration;
 - Stage C: `00ad699` / `2dc3df1`, corrected held-out and record;
-- Stage D: `PENDING_FINALIZE_COMMIT` / `PENDING_RECORD_COMMIT`, finalization and record.
+- Stage D: `a416f34` / `PENDING_RECORD_COMMIT`, finalization and record.
 
 ## 7. Git and remote status
 

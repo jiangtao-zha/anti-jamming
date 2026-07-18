@@ -16,6 +16,8 @@
   "frozen_candidate_fit_function": "fit_adapt_filter_fair",
   "frozen_candidate_file_sha256": "e978164f6ca18480f9f0578a4cf421dd7df8b6e1f811e447c88ac9646e3ebe0b",
   "heldout_seed_range": [9200, 9249],
+  "finalize_commit": "a416f34",
+  "stageD_status": "COMPLETED_REGRESSION_PASS",
   "invalid_historical_seed_range": [9100, 9149],
   "passing_jsr_count_by_jammer": {"NoiseProductJamming": 1, "NoiseConvolutionJamming": 1},
   "dispatch_mismatch_count": 0,
@@ -23,7 +25,7 @@
   "historical_task036_fix_remote_sync": "COMPLETED_REMOTE_SYNCED",
   "previous_automatic_push": "BLOCKED_BY_POLICY",
   "later_manual_push": true,
-  "current_task036_fix2_remote_sync": "PENDING_FINAL_PUSH",
+  "current_task036_fix2_remote_sync": "PENDING_RECORD_COMMIT_AND_PUSH",
   "current_remote_synced": false,
   "blocking_reasons": ["no target jammer has two distinct passing JSR conditions after corrected seed x position aggregation"]
 }
