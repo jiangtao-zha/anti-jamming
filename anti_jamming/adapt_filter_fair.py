@@ -24,6 +24,16 @@ ALLOWED_CONFIG_KEYS = frozenset({
     'C', 'f0', 'Bw', 'Pw', 'Fs', 'Tr', 'M', 'N',
 })
 
+CONFIDENCE_WEIGHTS = {
+    'peak_to_background': 0.25,
+    'top1_top2_margin': 0.25,
+    'peak_prominence': 0.20,
+    'peak_width_consistency': 0.15,
+    'local_to_global': 0.15,
+}
+DEFAULT_MAX_CONDITION_NUMBER = 1e6
+DEFAULT_OUTPUT_PROXY_MINIMUM = 0.05
+
 
 def _validate_inputs(observed_iq: Any, template: Any, radar_params: dict) -> tuple[np.ndarray, np.ndarray, dict]:
     if not isinstance(radar_params, dict):
@@ -80,6 +90,8 @@ def _candidate_centers(response: np.ndarray, template_length: int, top_k: int, s
     clipped = np.asarray(response, dtype=float).copy()
     clipped[:low] = 0.0
     clipped[high + 1:] = 0.0
+    if not np.isfinite(np.max(clipped)) or float(np.max(clipped)) <= 1e-12:
+        return []
     peaks, properties = signal.find_peaks(
         clipped,
         distance=max(1, int(separation)),
@@ -130,6 +142,100 @@ def _candidate_diagnostics(response: np.ndarray, candidates: list[int]) -> list[
     return diagnostics
 
 
+def _clip01(value: float) -> float:
+    if not np.isfinite(value):
+        return 0.0
+    return float(np.clip(value, 0.0, 1.0))
+
+
+def _reference_peak_width(template: np.ndarray) -> float:
+    autocorrelation = np.abs(signal.fftconvolve(template, np.conj(template[::-1]), mode='same'))
+    if autocorrelation.size == 0 or float(np.max(autocorrelation)) <= 1e-12:
+        return 1.0
+    peak = int(np.argmax(autocorrelation))
+    try:
+        width = float(signal.peak_widths(autocorrelation, [peak], rel_height=0.5)[0][0])
+    except (ValueError, IndexError):
+        width = 1.0
+    return max(width, 1.0)
+
+
+def _confidence_components(
+    response: np.ndarray,
+    template: np.ndarray,
+    candidates: list[int],
+    best_center: int,
+) -> dict:
+    """Compute fixed, observable confidence components in [0, 1]."""
+    response = np.asarray(response, dtype=float).reshape(-1)
+    if not candidates or response.size == 0:
+        return {
+            'peak_to_background': 0.0,
+            'top1_top2_margin': 0.0,
+            'peak_prominence': 0.0,
+            'peak_width_consistency': 0.0,
+            'local_to_global': 0.0,
+            'confidence': 0.0,
+            'best_response': 0.0,
+            'second_response': 0.0,
+            'background_median': 0.0,
+            'peak_prominence_raw': 0.0,
+            'peak_width_samples': 0.0,
+            'template_reference_width_samples': _reference_peak_width(template),
+            'local_to_global_raw': 0.0,
+        }
+    best_center = int(best_center)
+    values = sorted(
+        ((float(response[int(center)]), int(center)) for center in candidates),
+        reverse=True,
+    )
+    p1 = max(values[0][0], 0.0)
+    p2 = max(values[1][0], 0.0) if len(values) > 1 else 0.0
+    half = template.size // 2
+    local_left = max(0, best_center - half)
+    local_right = min(response.size, best_center + half + 1)
+    outside = np.ones(response.size, dtype=bool)
+    outside[local_left:local_right] = False
+    background = float(np.median(response[outside])) if np.any(outside) else float(np.median(response))
+    pbr_ratio = p1 / (background + 1e-12)
+    pbr_component = _clip01((pbr_ratio - 1.0) / 4.0)
+    margin_component = _clip01((p1 - p2) / (p1 + 1e-12))
+    try:
+        prominence_raw = float(signal.peak_prominences(response, [best_center])[0][0])
+    except (ValueError, IndexError):
+        prominence_raw = 0.0
+    prominence_component = _clip01(prominence_raw / (p1 + 1e-12))
+    try:
+        width = float(signal.peak_widths(response, [best_center], rel_height=0.5)[0][0])
+    except (ValueError, IndexError):
+        width = 0.0
+    reference_width = _reference_peak_width(template)
+    width_component = _clip01(math.exp(-abs(math.log((width + 1e-12) / (reference_width + 1e-12))))) if width > 0 else 0.0
+    total_energy = float(np.sum(np.square(response)))
+    local_energy = float(np.sum(np.square(response[local_left:local_right])))
+    local_ratio = local_energy / (total_energy + 1e-12)
+    local_component = _clip01(local_ratio)
+    components = {
+        'peak_to_background': pbr_component,
+        'top1_top2_margin': margin_component,
+        'peak_prominence': prominence_component,
+        'peak_width_consistency': width_component,
+        'local_to_global': local_component,
+    }
+    confidence = sum(CONFIDENCE_WEIGHTS[name] * components[name] for name in CONFIDENCE_WEIGHTS)
+    components.update({
+        'confidence': _clip01(confidence),
+        'best_response': p1,
+        'second_response': p2,
+        'background_median': background,
+        'peak_prominence_raw': prominence_raw,
+        'peak_width_samples': width,
+        'template_reference_width_samples': reference_width,
+        'local_to_global_raw': local_ratio,
+    })
+    return components
+
+
 def _identity_model(status: str, diagnostics: dict, regularization: float) -> dict:
     return {
         'estimated_target_idx': None,
@@ -141,6 +247,58 @@ def _identity_model(status: str, diagnostics: dict, regularization: float) -> di
         'diagnostics': diagnostics,
         'fallback': 'Identity',
     }
+
+
+def _finalize_gated_model(
+    model: dict,
+    received: np.ndarray,
+    template: np.ndarray,
+    response: np.ndarray,
+    confidence: float,
+    confidence_threshold: float,
+    diagnostics: dict,
+    regularization: float,
+) -> dict:
+    reasons = []
+    if confidence < confidence_threshold:
+        reasons.append('LOW_CONFIDENCE')
+    center = model.get('estimated_target_idx')
+    if center is None:
+        reasons.append('NO_CANDIDATE')
+    else:
+        low, high = _valid_center_bounds(received.shape[1], template.size)
+        edge_guard = max(4, template.size // 10)
+        edge_distance = min(int(center) - low, high - int(center))
+        diagnostics['edge_distance_samples'] = int(edge_distance)
+        if edge_distance < edge_guard:
+            reasons.append('ILLEGAL_EDGE_PROXIMITY')
+    condition_number = float(model.get('condition_number', np.inf))
+    diagnostics['max_condition_number'] = DEFAULT_MAX_CONDITION_NUMBER
+    if not np.isfinite(condition_number) or condition_number > DEFAULT_MAX_CONDITION_NUMBER:
+        reasons.append('CONDITION_NUMBER')
+    if not reasons and model.get('filter_coefficients') is not None:
+        try:
+            output, _, _ = _projection_output(received, model['filter_coefficients'], regularization)
+            output_response = _aggregate_matched_response(output, template)
+            center_value = float(output_response[int(center)])
+            input_value = float(response[int(center)])
+            output_proxy = center_value / (input_value + 1e-12)
+            diagnostics['output_proxy'] = output_proxy
+            diagnostics['output_proxy_minimum'] = DEFAULT_OUTPUT_PROXY_MINIMUM
+            if not np.isfinite(output_proxy) or output_proxy < DEFAULT_OUTPUT_PROXY_MINIMUM:
+                reasons.append('OUTPUT_PROXY')
+        except (ValueError, FloatingPointError, IndexError) as exc:
+            diagnostics['output_proxy_error'] = str(exc)
+            reasons.append('OUTPUT_PROXY')
+    if reasons:
+        diagnostics['gate_reasons'] = reasons
+        return _identity_model(f"FALLBACK_IDENTITY_{reasons[0]}", diagnostics, regularization)
+    model.update({
+        'estimator_confidence': float(confidence),
+        'diagnostics': diagnostics,
+        'fallback': None,
+    })
+    return model
 
 
 def _model_for_center(received: np.ndarray, template: np.ndarray, center: int, regularization: float) -> dict:
@@ -161,15 +319,16 @@ def fit_adapt_filter_fair(
     radar_params: dict,
     *,
     top_k: int = 5,
-    confidence_threshold: float = 0.12,
+    confidence_threshold: float = 0.80,
     candidate_separation: int | None = None,
     regularization: float = 0.01,
 ) -> dict:
     """Prototype A: estimate one observable delay and protect its template.
 
-    Confidence is a normalized margin over the observable matched-filter
-    candidates. The true target index is not accepted or inferred from any
-    forbidden field.
+    Confidence is a fixed weighted combination of five observable diagnostics:
+    peak-to-background ratio, top-1/top-2 margin, peak prominence, peak-width
+    consistency with template autocorrelation, and local-to-global energy.
+    The true target index is not accepted or inferred from any forbidden field.
     """
     received, local_template, _ = _validate_inputs(observed_iq, template, radar_params)
     if top_k < 1 or not 0.0 <= confidence_threshold <= 1.0:
@@ -177,18 +336,30 @@ def fit_adapt_filter_fair(
     separation = candidate_separation or max(4, local_template.size // 8)
     response = _aggregate_matched_response(received, local_template)
     candidates = _candidate_centers(response, local_template.size, top_k, separation)
+    if not candidates:
+        return _identity_model(
+            'FALLBACK_IDENTITY_NO_CANDIDATE',
+            {
+                'method': 'matched_filter_top_k_peak_margin_effective_gating',
+                'candidate_count': 0,
+                'confidence_weights': dict(CONFIDENCE_WEIGHTS),
+                'gate_reasons': ['NO_CANDIDATE'],
+            },
+            regularization,
+        )
     candidate_info = _candidate_diagnostics(response, candidates)
     best = candidate_info[0]
-    second = candidate_info[1]['relative_score'] if len(candidate_info) > 1 else 0.0
-    margin_confidence = float((best['relative_score'] - second) / (best['relative_score'] + 1e-12))
-    peak_confidence = float(best['normalized_peak'])
-    confidence = float(np.clip(0.5 * margin_confidence + 0.5 * peak_confidence, 0.0, 1.0))
+    confidence_components = _confidence_components(
+        response, local_template, candidates, int(best['center'])
+    )
+    confidence = float(confidence_components['confidence'])
     diagnostics = {
-        'method': 'matched_filter_top_k_peak_margin',
+        'method': 'matched_filter_top_k_effective_gating',
         'candidate_count': len(candidate_info),
         'topk_candidates': candidate_info,
-        'margin_confidence': margin_confidence,
-        'peak_confidence': peak_confidence,
+        'confidence_weights': dict(CONFIDENCE_WEIGHTS),
+        'confidence_components': confidence_components,
+        'confidence_threshold': float(confidence_threshold),
         'candidate_separation': int(separation),
     }
     if confidence < confidence_threshold:
@@ -198,13 +369,11 @@ def fit_adapt_filter_fair(
     except (ValueError, FloatingPointError) as exc:
         diagnostics['fit_error'] = str(exc)
         return _identity_model('FALLBACK_IDENTITY_NUMERICAL', diagnostics, regularization)
-    model.update({
-        'estimator_confidence': confidence,
-        'fit_status': 'FITTED_TOPK_PROTECTED_PROJECTION',
-        'diagnostics': diagnostics,
-        'fallback': None,
-    })
-    return model
+    model['fit_status'] = 'FITTED_TOPK_PROTECTED_PROJECTION'
+    return _finalize_gated_model(
+        model, received, local_template, response, confidence,
+        confidence_threshold, diagnostics, regularization,
+    )
 
 
 def fit_adapt_filter_fair_multihypothesis(
@@ -213,7 +382,7 @@ def fit_adapt_filter_fair_multihypothesis(
     radar_params: dict,
     *,
     top_k: int = 5,
-    confidence_threshold: float = 0.08,
+    confidence_threshold: float = 0.80,
     candidate_separation: int | None = None,
     regularization: float = 0.01,
 ) -> dict:
@@ -229,6 +398,17 @@ def fit_adapt_filter_fair_multihypothesis(
     separation = candidate_separation or max(4, local_template.size // 8)
     response = _aggregate_matched_response(received, local_template)
     candidates = _candidate_centers(response, local_template.size, top_k, separation)
+    if not candidates:
+        return _identity_model(
+            'FALLBACK_IDENTITY_NO_CANDIDATE',
+            {
+                'method': 'multi_hypothesis_observable_stability_effective_gating',
+                'candidate_count': 0,
+                'confidence_weights': dict(CONFIDENCE_WEIGHTS),
+                'gate_reasons': ['NO_CANDIDATE'],
+            },
+            regularization,
+        )
     candidate_models = []
     candidate_scores = []
     for center in candidates:
@@ -256,11 +436,13 @@ def fit_adapt_filter_fair_multihypothesis(
     best_index = int(order[0])
     best_score = float(candidate_scores[best_index])
     second_score = float(candidate_scores[order[1]]) if len(order) > 1 else 0.0
-    margin_confidence = float((best_score - second_score) / (abs(best_score) + 1e-12))
-    peak_confidence = float(response[candidates[best_index]] / (np.max(response) + 1e-12))
-    confidence = float(np.clip(0.5 * max(0.0, margin_confidence) + 0.5 * peak_confidence, 0.0, 1.0))
+    selected_center = int(candidate_models[best_index]['estimated_target_idx'])
+    confidence_components = _confidence_components(
+        response, local_template, candidates, selected_center
+    )
+    confidence = float(confidence_components['confidence'])
     diagnostics = {
-        'method': 'multi_hypothesis_observable_stability',
+        'method': 'multi_hypothesis_observable_stability_effective_gating',
         'candidate_count': len(candidate_models),
         'candidate_scores': [float(value) for value in candidate_scores],
         'topk_candidates': [
@@ -273,20 +455,20 @@ def fit_adapt_filter_fair_multihypothesis(
             }
             for model in candidate_models
         ],
-        'margin_confidence': margin_confidence,
-        'peak_confidence': peak_confidence,
+        'selection_margin_confidence': float(max(0.0, (best_score - second_score) / (abs(best_score) + 1e-12))),
+        'confidence_weights': dict(CONFIDENCE_WEIGHTS),
+        'confidence_components': confidence_components,
+        'confidence_threshold': float(confidence_threshold),
         'candidate_separation': int(separation),
     }
     if confidence < confidence_threshold:
         return _identity_model('FALLBACK_IDENTITY_LOW_CONFIDENCE', diagnostics, regularization)
     selected = candidate_models[best_index]
-    selected.update({
-        'estimator_confidence': confidence,
-        'fit_status': 'FITTED_MULTI_HYPOTHESIS_PROTECTED_PROJECTION',
-        'diagnostics': diagnostics,
-        'fallback': None,
-    })
-    return selected
+    selected['fit_status'] = 'FITTED_MULTI_HYPOTHESIS_PROTECTED_PROJECTION'
+    return _finalize_gated_model(
+        selected, received, local_template, response, confidence,
+        confidence_threshold, diagnostics, regularization,
+    )
 
 
 def apply_adapt_filter_fair(observed_iq: Any, model: dict) -> np.ndarray:

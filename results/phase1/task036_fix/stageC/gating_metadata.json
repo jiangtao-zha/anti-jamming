@@ -1,0 +1,33 @@
+{
+  "confidence_components": [
+    "peak_to_background",
+    "top1_top2_margin",
+    "peak_prominence",
+    "peak_width_consistency",
+    "local_to_global"
+  ],
+  "weights": {
+    "peak_to_background": 0.25,
+    "top1_top2_margin": 0.25,
+    "peak_prominence": 0.2,
+    "peak_width_consistency": 0.15,
+    "local_to_global": 0.15
+  },
+  "threshold": 0.8,
+  "top_k": 3,
+  "regularization": 0.001,
+  "edge_guard_rule": "min distance to valid center bound >= max(4, template_length//10)",
+  "condition_number_limit": 1000000.0,
+  "output_proxy_minimum": 0.05,
+  "oracle_inputs": [],
+  "case_types": [
+    "AMBIGUOUS_PEAKS",
+    "CLEAN_TARGET",
+    "FALSE_PEAK_DOMINANT",
+    "HIGH_JSR",
+    "LOW_JSR",
+    "MID_JSR",
+    "NO_JAMMER",
+    "PURE_NOISE"
+  ]
+}

@@ -1,0 +1,11 @@
+task 036-fix stageC COMPLETED
+confidence_threshold 0.8
+confidence_components peak_to_background,top1_top2_margin,peak_prominence,peak_width_consistency,local_to_global
+component_range_pass true
+interface_failures 0
+total_trials 16
+total_fallbacks 8
+overall_fallback_ratio 0.5
+fallback_ratio_strictly_between_zero_one true
+no_oracle true
+next_stage stageD

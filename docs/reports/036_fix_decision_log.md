@@ -18,3 +18,12 @@
 - Evidence: `results/phase1/task036_fix/stageB/` and `docs/reports/036_fix_stageB_physical_position_fixture.md`.
 - Validation: 700 jammer rows `PASS`, 100 NoJammer rows `NO_JAMMER_NOT_APPLICABLE`, 0 failures; target/noise/jammer energy and JSR checks pass.
 - Next stage: effective observable confidence and Identity gating.
+
+## Stage C — 2026-07-18
+
+- Status: `COMPLETED`; result commit pending.
+- Decision: `GATING_DESIGN_PASS`.
+- Five fixed observable confidence components replace the tautological max-peak normalization; weights and threshold are recorded in `gating_metadata.json`.
+- Validation: 16 A/B cases, interface failures 0, components in `[0,1]`, total fallback `8/16=0.5`.
+- Evidence: `results/phase1/task036_fix/stageC/` and `docs/reports/036_fix_stageC_effective_gating.md`.
+- Next stage: behavior-signature deduplication and small calibration.

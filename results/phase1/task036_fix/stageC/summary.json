@@ -1,0 +1,28 @@
+{
+  "task": "036-fix",
+  "stage": "stageC",
+  "status": "COMPLETED",
+  "case_count": 8,
+  "algorithm_count": 2,
+  "confidence_weights": {
+    "peak_to_background": 0.25,
+    "top1_top2_margin": 0.25,
+    "peak_prominence": 0.2,
+    "peak_width_consistency": 0.15,
+    "local_to_global": 0.15
+  },
+  "confidence_threshold": 0.8,
+  "top_k": 3,
+  "regularization": 0.001,
+  "component_range_pass": true,
+  "interface_failures": 0,
+  "fallback_ratio_min": 0.0,
+  "fallback_ratio_max": 1.0,
+  "total_trials": 16,
+  "total_fallbacks": 8,
+  "overall_fallback_ratio": 0.5,
+  "fallback_ratio_strictly_between_zero_one": true,
+  "no_oracle": true,
+  "no_target_erased_metric_in_fit": true,
+  "next_stage": "stageD"
+}
