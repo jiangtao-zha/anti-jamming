@@ -53,5 +53,5 @@
 - Decision: `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`; legacy `ORACLE_UPPER_BOUND_ONLY` retained.
 - Regression: `validate_algorithms.py` exit `0`, interface `800/800` PASS; `run_correctness_tests.py` exit `0`, failures `0`.
 - Eligibility: `rl_eligible=false`, `candidate_matrix_eligible=false`, `fair_registered=false`, `rl_action_space_modified=false`.
-- Historical Task 036 push status corrected to `COMPLETED_REMOTE_SYNCED`; original tenant-policy failure evidence remains. New Task 036-fix remote status is `PENDING_FINAL_PUSH` until local/remote SHA verification.
+- Historical Task 036 push status corrected to `COMPLETED_REMOTE_SYNCED`; original tenant-policy failure evidence remains. New Task 036-fix push was rejected before execution by tenant security policy; status is `PUSH_BLOCKED_BY_POLICY` and the local/remote verification evidence is saved.
 - Evidence: `results/phase1/task036_fix/stageF/`, `docs/reports/036_fix_physical_fixture_gating_result.md`, and `scripts/run_task036_fix.py`.

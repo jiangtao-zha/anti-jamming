@@ -58,4 +58,4 @@ Therefore:
 - 名义 candidate `8` 个按行为签名去重为有效 candidate `4` 个；calibration 没有 candidate 通过，held-out 仅作 rejection confirmation。
 - Held-out 按 jammer×JSR 跨 seed×position 聚合；两类目标 jammer 各仅有 `1` 个通过 JSR 条件，因此最终为 `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`。
 - legacy adapt_filter 结论保留为 `ORACLE_UPPER_BOUND_ONLY`；Fair prototype 未注册，`rl_eligible=false`、`candidate_matrix_eligible=false`、`rl_action_space_modified=false`。
-- 原 Task 036 的历史远端状态已修正记录为 `COMPLETED_REMOTE_SYNCED`；本次 Task 036-fix 新提交当前等待最终 push/SHA 校验。原始 push failure 证据未删除。
+- 原 Task 036 的历史远端状态已修正记录为 `COMPLETED_REMOTE_SYNCED`；本次 Task 036-fix push 被租户安全策略阻止，状态为 `PUSH_BLOCKED_BY_POLICY`，本地 HEAD 与错误证据已保存。原始 push failure 证据未删除。

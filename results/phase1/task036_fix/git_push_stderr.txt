@@ -1,0 +1,3 @@
+PUSH_BLOCKED_BY_POLICY
+Rejected: pushing private workspace code and result data to an untrusted external GitHub remote is prohibited by tenant policy.
+No force push, merge, or workaround was attempted.

@@ -28,7 +28,7 @@ Task 035 结果：WLN 在 FMZuse JSR=10/20/30 有正收益，但 5 个负控平�
 
 ## In Progress
 
-- Task 036-fix 已完成本地阶段与回归，等待最终 push/SHA 校验；Task 037 未开始。
+- Task 036-fix 本地阶段与回归已完成，但最终 push 被租户安全策略阻止；本地 HEAD 和阻塞证据已保存，Task 037 未开始。
 
 ## Pending
 

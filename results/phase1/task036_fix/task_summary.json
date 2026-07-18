@@ -1,6 +1,6 @@
 {
   "task": "036-fix",
-  "status": "COMPLETED_LOCAL_PUSH_PENDING",
+  "status": "COMPLETED_LOCAL_PUSH_BLOCKED",
   "final_decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
   "legacy_decision": "ORACLE_UPPER_BOUND_ONLY",
   "fair_prototype_status": "REJECTED_EXPERIMENTAL",
@@ -10,7 +10,7 @@
     "stageC": "7b13949", "stageC_record": "eae176a",
     "stageD": "be8fa2a", "stageD_record": "858d9fa",
     "stageE": "cfe39fc", "stageE_record": "562ed5e",
-    "stageF": "c1c7c68", "stageF_record": "PENDING_RECORD_COMMIT"
+    "stageF": "c1c7c68", "stageF_record": "4ee7f20"
   },
   "rl_action_space_modified": false,
   "rl_eligible": false,
@@ -19,7 +19,9 @@
   "historical_task036_remote_sync": "COMPLETED_REMOTE_SYNCED",
   "previous_push_attempt": "BLOCKED_BY_TENANT_SECURITY_POLICY",
   "later_manual_push": true,
-  "current_task036_fix_remote_sync": "PENDING_FINAL_PUSH",
+  "current_task036_fix_remote_sync": "PUSH_BLOCKED_BY_POLICY",
+  "local_head": "4ee7f20c4aca157b6e230cc6126a7bdc500f5e4d",
+  "remote_sha_at_stageA": "c8909c45d4c8ed92acd58996fdc4698e74afb19b",
   "reproducibility_entry": "scripts/run_task036_fix.py --stage {fixture,gating,calibration,heldout,all}",
   "notes": [
     "legacy Task 036 results remain preserved under results/phase1/task036/",

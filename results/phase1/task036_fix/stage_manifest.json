@@ -54,13 +54,13 @@
       "next_stage": "stageF"
     },
     "stageF": {
-      "status": "COMPLETED",
+      "status": "BLOCKED",
       "start_commit": "562ed5e",
       "result_commit": "c1c7c68",
       "report": "docs/reports/036_fix_physical_fixture_gating_result.md",
       "result_dir": "results/phase1/task036_fix/stageF",
-      "exit_code": 0,
-      "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED; REGRESSION_PASS; FINAL_PUSH_PENDING",
+      "exit_code": 1,
+      "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED; REGRESSION_PASS; PUSH_BLOCKED_BY_POLICY",
       "next_stage": null
     }
   }

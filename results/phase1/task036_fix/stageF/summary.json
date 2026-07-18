@@ -1,7 +1,7 @@
 {
   "task": "036-fix",
   "stage": "stageF",
-  "status": "COMPLETED_LOCAL_PUSH_PENDING",
+  "status": "COMPLETED_LOCAL_PUSH_BLOCKED",
   "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
   "legacy_decision": "ORACLE_UPPER_BOUND_ONLY",
   "rl_eligible": false,
@@ -10,6 +10,6 @@
   "rl_action_space_modified": false,
   "regression_exit_codes": {"validate_algorithms": 0, "run_correctness_tests": 0},
   "historical_task036_remote_sync": "COMPLETED_REMOTE_SYNCED",
-  "task036_fix_remote_sync": "PENDING_FINAL_PUSH",
+  "task036_fix_remote_sync": "PUSH_BLOCKED_BY_POLICY",
   "next_stage": null
 }

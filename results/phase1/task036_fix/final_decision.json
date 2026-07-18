@@ -17,7 +17,9 @@
   "historical_task036_remote_sync": "COMPLETED_REMOTE_SYNCED",
   "previous_push_attempt": "BLOCKED_BY_TENANT_SECURITY_POLICY",
   "later_manual_push": true,
-  "current_task036_fix_remote_sync": "PENDING_FINAL_PUSH",
+  "current_task036_fix_remote_sync": "PUSH_BLOCKED_BY_POLICY",
   "current_remote_synced": false,
+  "local_head": "4ee7f20c4aca157b6e230cc6126a7bdc500f5e4d",
+  "remote_sha_at_stageA": "c8909c45d4c8ed92acd58996fdc4698e74afb19b",
   "blocking_reasons": ["no target jammer has two distinct passing JSR conditions after held-out seed x position aggregation"]
 }
