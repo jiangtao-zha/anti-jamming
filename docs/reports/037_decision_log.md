@@ -12,7 +12,7 @@
 
 ## Stage 1 — 2026-07-18
 
-- Status: `COMPLETED`; result commit to be recorded after the stage commit.
+- Status: `COMPLETED`; result commit `b6899b3` (`phase1-037-stage1-frft-correctness-audit`).
 - Gate: `PASS`; `property_tests.csv` 92/92 PASS, edge cases 5/5 PASS, Oracle/input audit PASS.
 - Core correction: replaced the non-unitary, inverse-inconsistent chirp-convolution translation in `myfrft` with an explicit finite-dimensional spectral fractional power of the centered orthonormal DFT. This is the only algorithm correction in Stage 1.
 - Definition: `theta=pi*a/2`, order period 4; `a=0/1/2/3` are `I/U/U^2/U^3`, and `a=4` is `I`.

@@ -4,7 +4,9 @@
 
 状态：`COMPLETED`
 
-阶段提交：`TBD`（由本阶段记录提交回填）
+阶段提交：`b6899b3`（`phase1-037-stage1-frft-correctness-audit`）
+
+Git 分支：`algorithm_design_0711`
 
 ## 结论
 
