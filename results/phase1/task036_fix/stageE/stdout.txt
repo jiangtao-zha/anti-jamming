@@ -1,0 +1,22 @@
+{
+  "task": "036-fix",
+  "stage": "stageE",
+  "status": "COMPLETED",
+  "mode": "REJECTION_CONFIRMATION_ONLY",
+  "decision": "ORACLE_UPPER_BOUND_ONLY_CONFIRMED",
+  "per_trial_rows": 24000,
+  "aggregate_rows": 96,
+  "position_rows": 480,
+  "seed_range": [9100, 9149],
+  "candidate_id": "B_k3_c0.8_r0.001",
+  "candidate_file_sha256": "d397a80c5ad9f4083dfd3db8171f0c37cc32187d151c92db7d62faf925afa44a",
+  "passing_jsr_count_by_jammer": {
+    "NoiseProductJamming": 1,
+    "NoiseConvolutionJamming": 1
+  },
+  "overall_fallback_ratio": 0.490125,
+  "interface_failures": 0,
+  "fair_target_erased_count": 0,
+  "heldout_after_tuning": false,
+  "next_stage": "stageF"
+}
