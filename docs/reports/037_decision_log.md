@@ -49,4 +49,4 @@
 
 - Status: `SKIPPED_BY_DECISION_GATE`; no calibration, behavior deduplication, or candidate selection was run.
 - `heldout_mode=REJECTION_CONFIRMATION_ONLY`; no candidate can enter the held-out set or RL matrix.
-- Commit: to be recorded after the skipped-stage commit.
+- Commit: `de67528` (`phase1-037-stage5-calibration-skipped`).
