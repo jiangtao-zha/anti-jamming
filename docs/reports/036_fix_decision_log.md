@@ -12,7 +12,7 @@
 
 ## Stage B — 2026-07-18
 
-- Status: `COMPLETED`; result commit pending.
+- Status: `COMPLETED`; result commit `d4618d0` (`phase1-036-fix-stageB-physical-position-fixture`).
 - Decision: `PHYSICAL_FIXTURE_GATE_PASS`.
 - Formal fixture: `PHYSICAL_COMPONENT_RECOMPOSITION`; old whole-record translation is `WHOLE_RECORD_TRANSLATION_STRESS` only.
 - Evidence: `results/phase1/task036_fix/stageB/` and `docs/reports/036_fix_stageB_physical_position_fixture.md`.
