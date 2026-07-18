@@ -1,0 +1,9 @@
+completed_cases=100/800
+completed_cases=200/800
+completed_cases=300/800
+completed_cases=400/800
+completed_cases=500/800
+completed_cases=600/800
+completed_cases=700/800
+completed_cases=800/800
+{"aggregate_rows": 128, "candidate_matrix_eligible": false, "formal_jammers": ["SMSP", "FMNoiseSaopin"], "jsrs_db": [0.0, 10.0, 20.0, 30.0], "masks": ["oracle_target_protection", "oracle_jammer_rejection", "oracle_ratio", "oracle_soft_wiener"], "next_stage": "stage4_and_stage5_skipped_by_decision_gate", "oracle_only": true, "oracle_upper_bound": "FAILED", "qualified_rows": 0, "rl_eligible": false, "seeds": [10100, 10119, 20], "stage": "stage3", "status": "COMPLETED", "strategies": ["true_target_optimum", "true_jammer_optimum", "received_only_optimum", "fixed_theoretical_target_order"], "target_centers": [1000, 1500, 2500, 3500, 4000], "target_jammer_decisions": {"FMNoiseSaopin": {"qualified_jsrs": [], "qualified_rows": 0, "status": "ORACLE_UPPER_BOUND_FAIL", "two_jsr_gate": false}, "SMSP": {"qualified_jsrs": [], "qualified_rows": 0, "status": "ORACLE_UPPER_BOUND_FAIL", "two_jsr_gate": false}}, "task": "037", "trial_rows": 12800}

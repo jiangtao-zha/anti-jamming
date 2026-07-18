@@ -34,6 +34,7 @@ Task 035 结果：WLN 在 FMZuse JSR=10/20/30 有正收益，但 5 个负控平�
 
 - Task 037 Stage 1：FrFT 核心正确性审计通过；已完成有限维 unitary 谱 FrFT 核心修正，等待 Stage 2 可分离性诊断。
 - Task 037 Stage 2：完成 4800 个分量重组诊断；正式 SMSP/FMNoiseSaopin 均通过初步 order/spatial gate，进入 Oracle 上界实验。
+- Task 037 Stage 3：Oracle FrFT 上界失败；12800 个预注册 trial 无任何聚合同时达到 ΔSINR/Pd/target-only/position 门槛，Stage 4/5 按门跳过。
 
 ## Pending
 

@@ -29,3 +29,12 @@
 - Result: both formal jammers pass the preliminary order/spatial gate; peak order-gap median and q25 are `1.90`/`1.90`, and median same-order overlap is `0.000` for both formal objects.
 - Boundary: true component data stayed inside the diagnostic runner; no formal adapter was called and no RL eligibility changed.
 - Next stage: Stage 3 Oracle upper-bound experiment, explicitly diagnostic-only and not fair/RL-eligible.
+
+## Stage 3 — 2026-07-18
+
+- Status: `COMPLETED`; result commit to be recorded after the stage commit.
+- Decision: `ORACLE_UPPER_BOUND_FAILED`; `qualified_rows=0` across 128 aggregate strategy×mask×jammer×JSR rows.
+- Experiment: 800 component cases from seeds `10100..10119`, JSR `0/10/20/30`, five target centers; four pre-registered order strategies and four Oracle masks; 12800 trial rows.
+- Best observed ΔSINR means stayed below 1 dB. FMNoiseSaopin had some nonnegative CI lower bounds but failed Pd and target-only preservation; SMSP also failed CI/Pd/position or delta requirements.
+- Oracle target-protection was strengthened to a hard support retaining 90% cumulative true-target FrFT energy; the conclusion remained `FAILED`.
+- Gate consequence: Stage 4 observable prototype and Stage 5 calibration are `SKIPPED_BY_DECISION_GATE`; Stage 6 will only run small rejection confirmation. `candidate_matrix_eligible=false`, `rl_eligible=false`.

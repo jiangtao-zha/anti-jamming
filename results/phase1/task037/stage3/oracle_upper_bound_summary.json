@@ -1,0 +1,61 @@
+{
+  "task": "037",
+  "stage": "stage3",
+  "status": "COMPLETED",
+  "oracle_upper_bound": "FAILED",
+  "formal_jammers": [
+    "SMSP",
+    "FMNoiseSaopin"
+  ],
+  "seeds": [
+    10100,
+    10119,
+    20
+  ],
+  "jsrs_db": [
+    0.0,
+    10.0,
+    20.0,
+    30.0
+  ],
+  "target_centers": [
+    1000,
+    1500,
+    2500,
+    3500,
+    4000
+  ],
+  "strategies": [
+    "true_target_optimum",
+    "true_jammer_optimum",
+    "received_only_optimum",
+    "fixed_theoretical_target_order"
+  ],
+  "masks": [
+    "oracle_target_protection",
+    "oracle_jammer_rejection",
+    "oracle_ratio",
+    "oracle_soft_wiener"
+  ],
+  "trial_rows": 12800,
+  "aggregate_rows": 128,
+  "qualified_rows": 0,
+  "target_jammer_decisions": {
+    "SMSP": {
+      "qualified_rows": 0,
+      "qualified_jsrs": [],
+      "two_jsr_gate": false,
+      "status": "ORACLE_UPPER_BOUND_FAIL"
+    },
+    "FMNoiseSaopin": {
+      "qualified_rows": 0,
+      "qualified_jsrs": [],
+      "two_jsr_gate": false,
+      "status": "ORACLE_UPPER_BOUND_FAIL"
+    }
+  },
+  "next_stage": "stage4_and_stage5_skipped_by_decision_gate",
+  "candidate_matrix_eligible": false,
+  "rl_eligible": false,
+  "oracle_only": true
+}

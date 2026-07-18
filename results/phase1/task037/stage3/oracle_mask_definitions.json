@@ -1,0 +1,36 @@
+{
+  "status": "FROZEN_BEFORE_TRIALS",
+  "oracle_labels": [
+    "ORACLE_DIAGNOSTIC_ONLY",
+    "NOT_FAIR",
+    "NOT_RL_ELIGIBLE"
+  ],
+  "order_strategies": {
+    "true_target_optimum": "argmax target peak concentration on coarse diagnostic grid",
+    "true_jammer_optimum": "argmax jammer peak concentration on coarse diagnostic grid",
+    "received_only_optimum": "argmax received peak concentration on coarse diagnostic grid",
+    "fixed_theoretical_target_order": "fixed order 1.0; finite-grid Fourier reference, not a continuous LFM theorem"
+  },
+  "masks": {
+    "oracle_target_protection": {
+      "formula": "binary support of smallest bins carrying 90% cumulative true-target FrFT energy",
+      "information": "true target FrFT power",
+      "label": "ORACLE_DIAGNOSTIC_ONLY"
+    },
+    "oracle_jammer_rejection": {
+      "formula": "1 - 0.95*sqrt(Pj/max(Pj))",
+      "information": "true jammer FrFT power",
+      "label": "ORACLE_DIAGNOSTIC_ONLY"
+    },
+    "oracle_ratio": {
+      "formula": "Pt/(Pt + 2*Pj + eps)",
+      "information": "true target and jammer FrFT power",
+      "label": "ORACLE_DIAGNOSTIC_ONLY"
+    },
+    "oracle_soft_wiener": {
+      "formula": "Pt/(Pt + Pj + eps)",
+      "information": "true target and jammer FrFT power",
+      "label": "ORACLE_DIAGNOSTIC_ONLY"
+    }
+  }
+}
