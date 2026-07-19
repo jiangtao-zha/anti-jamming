@@ -48,4 +48,4 @@ Stage 6 使用 seeds `10300..10349`，正式 jammer 加六类负控，8000 场�
 
 ## 9. 远端
 
-远端 SHA 只在完成 record commit 后真实验证；若 SSH/network policy 阻止 push，将保留错误证据并标记 `PUSH_BLOCKED_BY_POLICY`，不伪造远端同步。
+record commit 已完成：本地 `a7b00fe2a35fd645f652600531f2794da484ad6a`。真实 push 被 GitHub pre-receive file-size policy 拒绝，因为 `results/phase1/task037/stage2/per_order_metrics.csv` 为 130.34 MB；远端仍为 `7fe8b146fe34b6667061c844bd3e1887e6fe5fa2`。最终状态为 `PUSH_BLOCKED_BY_POLICY`、`REMOTE_NOT_SYNCHRONIZED`，没有伪造同步。

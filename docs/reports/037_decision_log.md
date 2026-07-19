@@ -65,3 +65,10 @@
 - Status: `COMPLETED`; result commit `1406b49` (`phase1-037-stage7-finalize`). Regression gate passed: Interface `800/800`, correctness failures `0`.
 - Final decision: `REJECTED_NO_USABLE_SEPARABILITY`; no observable candidate, candidate matrix eligibility, or RL eligibility; Task 038 not started.
 - Next action: create the required final record commit, then perform one real push/remote verification attempt without force push or merge.
+
+## Push / remote verification — 2026-07-19
+
+- Record commit: local `a7b00fe2a35fd645f652600531f2794da484ad6a`.
+- Push: `PUSH_BLOCKED_BY_POLICY`; GitHub rejected the 130.34 MB `stage2/per_order_metrics.csv` file before updating the branch.
+- Remote verification: `REMOTE_SHA=7fe8b146fe34b6667061c844bd3e1887e6fe5fa2`, so remote is not synchronized with local.
+- Raw push stdout/stderr and verification are saved under `results/phase1/task037/`; no force push, merge, or fake sync was performed.

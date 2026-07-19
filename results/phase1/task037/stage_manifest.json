@@ -2,6 +2,8 @@
   "task": "037",
   "branch": "algorithm_design_0711",
   "source_task": "036-fix2",
+  "record_commit": "a7b00fe2a35fd645f652600531f2794da484ad6a",
+  "remote": {"status": "PUSH_BLOCKED_BY_POLICY", "local_sha": "a7b00fe2a35fd645f652600531f2794da484ad6a", "remote_sha": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2", "reason": "GitHub pre-receive file-size limit rejected stage2/per_order_metrics.csv at 130.34 MB"},
   "stages": {
     "stage0": {
       "status": "COMPLETED",
