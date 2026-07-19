@@ -40,7 +40,7 @@ Stage 6 使用 seeds `10300..10349`，正式 jammer 加六类负控，8000 场�
 
 ## 7. 阶段提交
 
-`c65d7d1` Stage 0；`b6899b3` Stage 1；`4ed22df` Stage 2；`e3486bf` Stage 3；`c42012d` Stage 4 skipped；`a95e16d` Stage 5 skipped；`1b0050d` Stage 6；`caf51fa` Stage 7 finalize；`b5e7642` record commit。
+`c65d7d1` Stage 0；`b6899b3` Stage 1；`4475ac1` Stage 2；`38d3778` Stage 3；`d68ec82` Stage 4 skipped；`c838c01` Stage 5 skipped；`fc84026` Stage 6；`f75bf44` Stage 7 finalize；`47fa629` record commit。
 
 ## 8. Regression
 
@@ -48,4 +48,4 @@ Stage 6 使用 seeds `10300..10349`，正式 jammer 加六类负控，8000 场�
 
 ## 9. 远端
 
-record commit 已完成：本地 `b5e7642`。真实 push 被 GitHub pre-receive file-size policy 拒绝，因为 `results/phase1/task037/stage2/per_order_metrics.csv` 为 130.34 MB；远端仍为 `7fe8b146fe34b6667061c844bd3e1887e6fe5fa2`。最终状态为 `PUSH_BLOCKED_BY_POLICY`、`REMOTE_NOT_SYNCHRONIZED`，没有伪造同步。
+record commit 已完成：`47fa629`。首次真实 push 被 GitHub pre-receive file-size policy 拒绝，因为 `results/phase1/task037/stage2/per_order_metrics.csv` 为 130.34 MB；该文件现已从待推送历史移除但仍保留在本地，远端重试状态待记录。

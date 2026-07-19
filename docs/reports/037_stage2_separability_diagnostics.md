@@ -4,7 +4,7 @@
 
 状态：`COMPLETED`
 
-阶段提交：`4ed22df`（`phase1-037-stage2-frft-separability-diagnostics`）
+阶段提交：`4475ac1`（`phase1-037-stage2-frft-separability-diagnostics`）
 
 Git 分支：`algorithm_design_0711`
 

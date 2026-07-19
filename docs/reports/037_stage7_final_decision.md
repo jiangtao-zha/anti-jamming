@@ -30,4 +30,4 @@ Task 038 started                = false
 
 Stage 0 冻结 baseline；Stage 1 修复并验证 FrFT 核心数学性质；Stage 2 完成分量级阶数、重叠和位置稳定性诊断；Stage 3 完成真实分量 Oracle 上界并失败；Stage 4/5 显式跳过；Stage 6 完成无候选 held-out rejection confirmation。没有修改 jammer math、JSR、Phase 1 物理配置、评价阈值、RL/PPO、reward、state 或 action space。
 
-规定 Stage 7 提交：`caf51fa`（`phase1-037-stage7-finalize`）；最终 record 提交：`b5e7642`（`phase1-037-record-commit`）。真实 push 已执行但被 GitHub 100 MB 单文件限制阻止；远端未同步，错误和 SHA 证据保存在 `results/phase1/task037/git_push_stderr.txt` 与 `git_remote_verification.txt`。
+规定 Stage 7 提交：`f75bf44`（`phase1-037-stage7-finalize`）；最终 record 提交：`47fa629`（`phase1-037-record-commit`）。首次 push 被 GitHub 100 MB 单文件限制阻止；随后已将该大文件从待推送历史移除并保留在本地，准备重试推送。原始错误证据保存在 `results/phase1/task037/git_push_stderr.txt`。

@@ -2,7 +2,7 @@
   "task": "037",
   "branch": "algorithm_design_0711",
   "source_task": "036-fix2",
-  "record_commit": "b5e7642",
+  "record_commit": "47fa629",
   "remote": {"status": "PUSH_BLOCKED_BY_POLICY", "local_sha": "b5e7642", "remote_sha": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2", "reason": "GitHub pre-receive file-size limit rejected stage2/per_order_metrics.csv at 130.34 MB"},
   "stages": {
     "stage0": {
@@ -16,11 +16,11 @@
       "next_stage": "stage1"
     },
     "stage1": {"status": "COMPLETED", "start_commit": "394457c", "result_commit": "b6899b3", "report": "docs/reports/037_stage1_frft_audit.md", "result_dir": "results/phase1/task037/stage1", "exit_code": 0, "decision": "PASS_CORE_CORRECTNESS_AND_ORACLE_AUDIT", "next_stage": "stage2"},
-    "stage2": {"status": "COMPLETED", "start_commit": "f62b0e4", "result_commit": "4ed22df", "report": "docs/reports/037_stage2_separability_diagnostics.md", "result_dir": "results/phase1/task037/stage2", "exit_code": 0, "decision": "PASS_TO_STAGE3_ORACLE_DIAGNOSTIC", "next_stage": "stage3"},
-    "stage3": {"status": "COMPLETED", "start_commit": "ec6b2b7", "result_commit": "e3486bf", "report": "docs/reports/037_stage3_oracle_upper_bound.md", "result_dir": "results/phase1/task037/stage3", "exit_code": 0, "decision": "ORACLE_UPPER_BOUND_FAILED", "next_stage": "stage4_skipped_by_decision_gate"},
-    "stage4": {"status": "SKIPPED_BY_DECISION_GATE", "start_commit": "6c3f5e2", "result_commit": "c42012d", "report": "docs/reports/037_stage4_observable_design.md", "result_dir": "results/phase1/task037/stage4", "exit_code": 0, "decision": "ORACLE_UPPER_BOUND_FAILED", "next_stage": "stage5"},
-    "stage5": {"status": "SKIPPED_BY_DECISION_GATE", "start_commit": "c42012d", "result_commit": "a95e16d", "report": "docs/reports/037_stage5_calibration.md", "result_dir": "results/phase1/task037/stage5", "exit_code": 0, "decision": "ORACLE_UPPER_BOUND_FAILED", "next_stage": "stage6"},
-    "stage6": {"status": "COMPLETED", "start_commit": "9852722", "result_commit": "1b0050d", "report": "docs/reports/037_stage6_heldout.md", "result_dir": "results/phase1/task037/stage6", "exit_code": 0, "decision": "REJECTED_NO_USABLE_SEPARABILITY", "next_stage": "stage7"},
-    "stage7": {"status": "COMPLETED", "start_commit": "7dc6e42", "result_commit": "caf51fa", "report": "docs/reports/037_stage7_final_decision.md", "result_dir": "results/phase1/task037/stage7", "exit_code": 0, "decision": "REJECTED_NO_USABLE_SEPARABILITY", "next_stage": "STOP_NO_TASK038"}
+    "stage2": {"status": "COMPLETED", "start_commit": "f62b0e4", "result_commit": "4475ac1", "report": "docs/reports/037_stage2_separability_diagnostics.md", "result_dir": "results/phase1/task037/stage2", "exit_code": 0, "decision": "PASS_TO_STAGE3_ORACLE_DIAGNOSTIC", "next_stage": "stage3"},
+    "stage3": {"status": "COMPLETED", "start_commit": "59ff228", "result_commit": "38d3778", "report": "docs/reports/037_stage3_oracle_upper_bound.md", "result_dir": "results/phase1/task037/stage3", "exit_code": 0, "decision": "ORACLE_UPPER_BOUND_FAILED", "next_stage": "stage4_skipped_by_decision_gate"},
+    "stage4": {"status": "SKIPPED_BY_DECISION_GATE", "start_commit": "97b726b", "result_commit": "d68ec82", "report": "docs/reports/037_stage4_observable_design.md", "result_dir": "results/phase1/task037/stage4", "exit_code": 0, "decision": "ORACLE_UPPER_BOUND_FAILED", "next_stage": "stage5"},
+    "stage5": {"status": "SKIPPED_BY_DECISION_GATE", "start_commit": "d68ec82", "result_commit": "c838c01", "report": "docs/reports/037_stage5_calibration.md", "result_dir": "results/phase1/task037/stage5", "exit_code": 0, "decision": "ORACLE_UPPER_BOUND_FAILED", "next_stage": "stage6"},
+    "stage6": {"status": "COMPLETED", "start_commit": "39e0359", "result_commit": "fc84026", "report": "docs/reports/037_stage6_heldout.md", "result_dir": "results/phase1/task037/stage6", "exit_code": 0, "decision": "REJECTED_NO_USABLE_SEPARABILITY", "next_stage": "stage7"},
+    "stage7": {"status": "COMPLETED", "start_commit": "1f10400", "result_commit": "f75bf44", "report": "docs/reports/037_stage7_final_decision.md", "result_dir": "results/phase1/task037/stage7", "exit_code": 0, "decision": "REJECTED_NO_USABLE_SEPARABILITY", "next_stage": "STOP_NO_TASK038"}
   }
 }

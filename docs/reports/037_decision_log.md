@@ -22,7 +22,7 @@
 
 ## Stage 2 — 2026-07-18
 
-- Status: `COMPLETED`; result commit `4ed22df` (`phase1-037-stage2-frft-separability-diagnostics`).
+- Status: `COMPLETED`; result commit `4475ac1` (`phase1-037-stage2-frft-separability-diagnostics`).
 - Gate: `PASS_TO_STAGE3_ORACLE_DIAGNOSTIC`.
 - Formal objects: `SMSP` and `FMNoiseSaopin`; supplementary objects are kept separate and are not part of the formal fairness conclusion.
 - Configuration: seeds `10000..10029`, JSR `0/10/20/30`, target centers `1000/1500/2500/3500/4000`, coarse orders `[-1,1]` step `0.02`, local 1000-sample diagnostic window.
@@ -32,7 +32,7 @@
 
 ## Stage 3 — 2026-07-18
 
-- Status: `COMPLETED`; result commit `e3486bf` (`phase1-037-stage3-frft-oracle-upper-bound`).
+- Status: `COMPLETED`; result commit `38d3778` (`phase1-037-stage3-frft-oracle-upper-bound`).
 - Decision: `ORACLE_UPPER_BOUND_FAILED`; `qualified_rows=0` across 128 aggregate strategy×mask×jammer×JSR rows.
 - Experiment: 800 component cases from seeds `10100..10119`, JSR `0/10/20/30`, five target centers; four pre-registered order strategies and four Oracle masks; 12800 trial rows.
 - Best observed ΔSINR means stayed below 1 dB. FMNoiseSaopin had some nonnegative CI lower bounds but failed Pd and target-only preservation; SMSP also failed CI/Pd/position or delta requirements.
@@ -43,17 +43,17 @@
 
 - Status: `SKIPPED_BY_DECISION_GATE`; no observable prototype was designed or implemented because Stage 3 Oracle upper bound failed.
 - Result: empty design/smoke outputs and explicit `candidate_matrix_eligible=false`, `rl_eligible=false`.
-- Commit: `c42012d` (`phase1-037-stage4-observable-prototype-skipped`).
+- Commit: `d68ec82` (`phase1-037-stage4-observable-prototype-skipped`).
 
 ## Stage 5 — 2026-07-18
 
 - Status: `SKIPPED_BY_DECISION_GATE`; no calibration, behavior deduplication, or candidate selection was run.
 - `heldout_mode=REJECTION_CONFIRMATION_ONLY`; no candidate can enter the held-out set or RL matrix.
-- Commit: `a95e16d` (`phase1-037-stage5-calibration-skipped`).
+- Commit: `c838c01` (`phase1-037-stage5-calibration-skipped`).
 
 ## Stage 6 — 2026-07-19
 
-- Status: `COMPLETED`; result commit `1b0050d` (`phase1-037-stage6-reject-frft-separability`).
+- Status: `COMPLETED`; result commit `fc84026` (`phase1-037-stage6-reject-frft-separability`).
 - Decision: `REJECTED_NO_USABLE_SEPARABILITY`.
 - Held-out: seeds `10300..10349`, target/negative-control matrix, JSR `0/10/20/30`, five positions; 26000 trial rows and 105 aggregate rows.
 - Stage 5 candidate hash was checked before execution; candidate state remained the decision-gated empty set. Calibration-after-held-out is false.
@@ -62,13 +62,13 @@
 
 ## Stage 7 — 2026-07-19
 
-- Status: `COMPLETED`; result commit `caf51fa` (`phase1-037-stage7-finalize`). Regression gate passed: Interface `800/800`, correctness failures `0`.
+- Status: `COMPLETED`; result commit `f75bf44` (`phase1-037-stage7-finalize`). Regression gate passed: Interface `800/800`, correctness failures `0`.
 - Final decision: `REJECTED_NO_USABLE_SEPARABILITY`; no observable candidate, candidate matrix eligibility, or RL eligibility; Task 038 not started.
 - Next action: create the required final record commit, then perform one real push/remote verification attempt without force push or merge.
 
 ## Push / remote verification — 2026-07-19
 
-- Record commit: local `b5e7642` (rewritten full SHA is recorded in the remote verification file).
+- Record commit: `47fa629` (`phase1-037-record-commit`).
 - Push: `PUSH_BLOCKED_BY_POLICY`; GitHub rejected the 130.34 MB `stage2/per_order_metrics.csv` file before updating the branch.
 - Remote verification: `REMOTE_SHA=7fe8b146fe34b6667061c844bd3e1887e6fe5fa2`, so remote is not synchronized with local.
 - Raw push stdout/stderr and verification are saved under `results/phase1/task037/`; no force push, merge, or fake sync was performed.

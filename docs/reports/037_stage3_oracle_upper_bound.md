@@ -4,7 +4,7 @@
 
 状态：`COMPLETED`
 
-阶段提交：`e3486bf`（`phase1-037-stage3-frft-oracle-upper-bound`）
+阶段提交：`38d3778`（`phase1-037-stage3-frft-oracle-upper-bound`）
 
 Git 分支：`algorithm_design_0711`
 
