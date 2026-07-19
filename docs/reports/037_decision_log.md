@@ -53,7 +53,7 @@
 
 ## Stage 6 — 2026-07-19
 
-- Status: `COMPLETED`; result commit to be recorded after the stage commit.
+- Status: `COMPLETED`; result commit `a9d16e8` (`phase1-037-stage6-reject-frft-separability`).
 - Decision: `REJECTED_NO_USABLE_SEPARABILITY`.
 - Held-out: seeds `10300..10349`, target/negative-control matrix, JSR `0/10/20/30`, five positions; 26000 trial rows and 105 aggregate rows.
 - Stage 5 candidate hash was checked before execution; candidate state remained the decision-gated empty set. Calibration-after-held-out is false.

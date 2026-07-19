@@ -20,7 +20,7 @@
     "stage5": {"status": "SKIPPED_BY_DECISION_GATE", "start_commit": "37dc370", "result_commit": "de67528", "report": "docs/reports/037_stage5_calibration.md", "result_dir": "results/phase1/task037/stage5", "exit_code": 0, "decision": "ORACLE_UPPER_BOUND_FAILED", "next_stage": "stage6"},
     "stage4": {"status": "NOT_STARTED", "report": "docs/reports/037_stage4_observable_design.md", "result_dir": "results/phase1/task037/stage4"},
     "stage5": {"status": "NOT_STARTED", "report": "docs/reports/037_stage5_calibration.md", "result_dir": "results/phase1/task037/stage5"},
-    "stage6": {"status": "COMPLETED", "start_commit": "c01fc52", "result_commit": "TBD", "report": "docs/reports/037_stage6_heldout.md", "result_dir": "results/phase1/task037/stage6", "exit_code": 0, "decision": "REJECTED_NO_USABLE_SEPARABILITY", "next_stage": "stage7"},
+    "stage6": {"status": "COMPLETED", "start_commit": "c01fc52", "result_commit": "a9d16e8", "report": "docs/reports/037_stage6_heldout.md", "result_dir": "results/phase1/task037/stage6", "exit_code": 0, "decision": "REJECTED_NO_USABLE_SEPARABILITY", "next_stage": "stage7"},
     "stage7": {"status": "NOT_STARTED", "report": "docs/reports/037_stage7_final_decision.md", "result_dir": "results/phase1/task037/stage7"}
   }
 }
