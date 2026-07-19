@@ -59,3 +59,9 @@
 - Stage 5 candidate hash was checked before execution; candidate state remained the decision-gated empty set. Calibration-after-held-out is false.
 - Current FrFT remained near Identity with negligible target damage but no meaningful ΔSINR gain. Oracle reference did not produce a usable upper bound either.
 - No observable candidate, candidate-matrix eligibility, or RL eligibility is registered. Fallback is Identity; Stage 038 is not started.
+
+## Stage 7 — 2026-07-19
+
+- Status: `COMPLETED`; result commit `1406b49` (`phase1-037-stage7-finalize`). Regression gate passed: Interface `800/800`, correctness failures `0`.
+- Final decision: `REJECTED_NO_USABLE_SEPARABILITY`; no observable candidate, candidate matrix eligibility, or RL eligibility; Task 038 not started.
+- Next action: create the required final record commit, then perform one real push/remote verification attempt without force push or merge.

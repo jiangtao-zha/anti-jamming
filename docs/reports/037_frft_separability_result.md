@@ -40,7 +40,7 @@ Stage 6 使用 seeds `10300..10349`，正式 jammer 加六类负控，8000 场�
 
 ## 7. 阶段提交
 
-`c65d7d1` Stage 0；`b6899b3` Stage 1；`4ed22df` Stage 2；`d2f2cb5` Stage 3；`37dc370` Stage 4 skipped；`de67528` Stage 5 skipped；`a9d16e8` Stage 6；Stage 7 finalize 和 record commit 在本报告提交链中补录。
+`c65d7d1` Stage 0；`b6899b3` Stage 1；`4ed22df` Stage 2；`d2f2cb5` Stage 3；`37dc370` Stage 4 skipped；`de67528` Stage 5 skipped；`a9d16e8` Stage 6；`1406b49` Stage 7 finalize；record commit 在本报告提交链中补录。
 
 ## 8. Regression
 
