@@ -14,4 +14,4 @@ MPLCONFIGDIR=/tmp/task037-mpl .venv/bin/python scripts/run_task037.py --stage ca
 
 Git 分支：`algorithm_design_0711`。
 
-规定提交：`de67528`（`phase1-037-stage5-calibration-skipped`）。
+规定提交：`a95e16d`（`phase1-037-stage5-calibration-skipped`）。

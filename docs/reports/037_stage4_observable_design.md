@@ -14,4 +14,4 @@ MPLCONFIGDIR=/tmp/task037-mpl .venv/bin/python scripts/run_task037.py --stage pr
 
 Git 分支：`algorithm_design_0711`。
 
-规定提交：`37dc370`（`phase1-037-stage4-observable-prototype-skipped`）。
+规定提交：`c42012d`（`phase1-037-stage4-observable-prototype-skipped`）。

@@ -286,7 +286,7 @@ def main():
             'Stage 4 observable prototype and Stage 5 calibration skipped by decision gate',
             'held-out is rejection confirmation only; no candidate was frozen',
         ],
-        'evidence_commits': ['b6899b3', '4ed22df', 'd2f2cb5', '37dc370', 'de67528'],
+        'evidence_commits': ['b6899b3', '4ed22df', 'e3486bf', 'c42012d', 'a95e16d'],
         'candidate_hash_sha256': candidate_hash,
     }
     (output / 'final_decision.json').write_text(json.dumps(final_decision, ensure_ascii=False, indent=2) + '\n')

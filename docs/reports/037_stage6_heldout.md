@@ -4,7 +4,7 @@
 
 状态：`COMPLETED`
 
-阶段提交：`a9d16e8`（`phase1-037-stage6-reject-frft-separability`）
+阶段提交：`1b0050d`（`phase1-037-stage6-reject-frft-separability`）
 
 Git 分支：`algorithm_design_0711`
 
