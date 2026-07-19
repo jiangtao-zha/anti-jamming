@@ -1,0 +1,43 @@
+{
+  "task": "037",
+  "stage": "stage6",
+  "dataset_role": "HELD_OUT_REJECTION_CONFIRMATION",
+  "seeds": [
+    10300,
+    10349,
+    50
+  ],
+  "jsrs_db": [
+    0.0,
+    10.0,
+    20.0,
+    30.0
+  ],
+  "target_centers": [
+    1000,
+    1500,
+    2500,
+    3500,
+    4000
+  ],
+  "formal_jammers": [
+    "SMSP",
+    "FMNoiseSaopin"
+  ],
+  "negative_controls": [
+    "NoJammer",
+    "AMNoiseGaiJam",
+    "FMNoiseAimedJam",
+    "FMZuse",
+    "NoiseProductJamming",
+    "NoiseConvolutionJamming"
+  ],
+  "candidate_path": "/Users/jiangtao/anti_jamming/results/phase1/task037/stage5/selected_candidate.json",
+  "candidate_hash_sha256": "8a015e3f860296dd3aca796cda326c3703d87c07b3f719b51b1eb7fb9b7d4abb",
+  "candidate_status": "SKIPPED_BY_DECISION_GATE",
+  "calibration_after_heldout": false,
+  "frozen_current_frft_params": {
+    "mask_threshold": 0.1
+  },
+  "frozen_oracle_reference": "true_target_optimum + oracle_target_protection_90pct_support; diagnostic only"
+}

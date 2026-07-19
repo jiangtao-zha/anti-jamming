@@ -1,0 +1,15 @@
+{
+  "task": "037",
+  "stage": "stage6",
+  "status": "COMPLETED",
+  "decision": "REJECTED_NO_USABLE_SEPARABILITY",
+  "trial_rows": 26000,
+  "aggregate_rows": 104,
+  "oracle_rows": 2000,
+  "observable_candidate": "NONE",
+  "heldout_mode": "REJECTION_CONFIRMATION_ONLY",
+  "candidate_hash_sha256": "8a015e3f860296dd3aca796cda326c3703d87c07b3f719b51b1eb7fb9b7d4abb",
+  "calibration_after_heldout": false,
+  "candidate_matrix_eligible": false,
+  "rl_eligible": false
+}

@@ -50,3 +50,12 @@
 - Status: `SKIPPED_BY_DECISION_GATE`; no calibration, behavior deduplication, or candidate selection was run.
 - `heldout_mode=REJECTION_CONFIRMATION_ONLY`; no candidate can enter the held-out set or RL matrix.
 - Commit: `de67528` (`phase1-037-stage5-calibration-skipped`).
+
+## Stage 6 — 2026-07-19
+
+- Status: `COMPLETED`; result commit to be recorded after the stage commit.
+- Decision: `REJECTED_NO_USABLE_SEPARABILITY`.
+- Held-out: seeds `10300..10349`, target/negative-control matrix, JSR `0/10/20/30`, five positions; 26000 trial rows and 105 aggregate rows.
+- Stage 5 candidate hash was checked before execution; candidate state remained the decision-gated empty set. Calibration-after-held-out is false.
+- Current FrFT remained near Identity with negligible target damage but no meaningful ΔSINR gain. Oracle reference did not produce a usable upper bound either.
+- No observable candidate, candidate-matrix eligibility, or RL eligibility is registered. Fallback is Identity; Stage 038 is not started.

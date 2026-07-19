@@ -1,0 +1,25 @@
+{
+  "decision": "REJECTED_NO_USABLE_SEPARABILITY",
+  "current_frft_status": "RETAINED_BASELINE_ONLY",
+  "observable_candidate_registered": false,
+  "candidate_matrix_eligible": false,
+  "rl_eligible": false,
+  "oracle_upper_bound_available": true,
+  "oracle_upper_bound_status": "FAILED",
+  "supported_jammers": [],
+  "supported_jsr_region": [],
+  "fallback": "Identity",
+  "blocking_reasons": [
+    "Stage 3 Oracle upper bound failed for SMSP and FMNoiseSaopin",
+    "Stage 4 observable prototype and Stage 5 calibration skipped by decision gate",
+    "held-out is rejection confirmation only; no candidate was frozen"
+  ],
+  "evidence_commits": [
+    "b6899b3",
+    "4ed22df",
+    "d2f2cb5",
+    "37dc370",
+    "de67528"
+  ],
+  "candidate_hash_sha256": "8a015e3f860296dd3aca796cda326c3703d87c07b3f719b51b1eb7fb9b7d4abb"
+}

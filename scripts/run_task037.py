@@ -36,6 +36,14 @@ def run_one(stage_name, overwrite=False):
     if output.exists() and any(output.iterdir()) and not overwrite:
         print(f'RESULT_EXISTS: refusing to overwrite {output}', file=sys.stderr)
         return 2
+    if stage_name == 'heldout':
+        candidate_summary = RESULT_ROOT / 'stage5' / 'summary.json'
+        if not candidate_summary.exists():
+            print(f'DISPATCH_ERROR: heldout requires frozen Stage 5 summary {candidate_summary}', file=sys.stderr)
+            return 2
+    if stage_name == 'calibration' and (RESULT_ROOT / 'stage6' / 'summary.json').exists():
+        print('DISPATCH_ERROR: calibration is forbidden after heldout', file=sys.stderr)
+        return 2
     output.mkdir(parents=True, exist_ok=True)
     command = [sys.executable, str(script), '--output-dir', str(output)]
     completed = subprocess.run(command, cwd=ROOT, text=True, capture_output=True)

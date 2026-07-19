@@ -36,6 +36,7 @@ Task 035 结果：WLN 在 FMZuse JSR=10/20/30 有正收益，但 5 个负控平�
 - Task 037 Stage 2：完成 4800 个分量重组诊断；正式 SMSP/FMNoiseSaopin 均通过初步 order/spatial gate，进入 Oracle 上界实验。
 - Task 037 Stage 3：Oracle FrFT 上界失败；12800 个预注册 trial 无任何聚合同时达到 ΔSINR/Pd/target-only/position 门槛，Stage 4/5 按门跳过。
 - Task 037 Stage 4：因 Oracle 上界失败跳过 observable 原型设计；Stage 5 同步跳过 calibration，held-out 模式固定为 rejection confirmation only。
+- Task 037 Stage 6：独立 held-out 拒绝确认完成；Current FrFT 近似 Identity、Oracle reference 未形成上界，最终为 REJECTED_NO_USABLE_SEPARABILITY；candidate matrix/RL 均 false。
 
 ## Pending
 
