@@ -1,0 +1,34 @@
+{
+  "decision": "REJECTED_NO_USABLE_SEPARABILITY",
+  "current_frft_status": "RETAINED_BASELINE_ONLY",
+  "observable_candidate_registered": false,
+  "candidate_matrix_eligible": false,
+  "rl_eligible": false,
+  "oracle_upper_bound_available": true,
+  "oracle_upper_bound_status": "FAILED",
+  "supported_jammers": [],
+  "supported_jsr_region": [],
+  "fallback": "Identity",
+  "blocking_reasons": [
+    "Stage 3 Oracle upper bound failed for SMSP and FMNoiseSaopin",
+    "Stage 4 observable prototype and Stage 5 calibration skipped by decision gate",
+    "Stage 6 held-out rejection confirmation found no usable observable suppression"
+  ],
+  "evidence_commits": [
+    "c65d7d1",
+    "b6899b3",
+    "4ed22df",
+    "d2f2cb5",
+    "37dc370",
+    "de67528",
+    "a9d16e8"
+  ],
+  "regression": {
+    "validate_algorithms_exit": 0,
+    "interface_pass": "800/800",
+    "correctness_exit": 0,
+    "correctness_failures": 0
+  },
+  "task038_started": false,
+  "remote_status": "PENDING_RECORD_AND_PUSH"
+}

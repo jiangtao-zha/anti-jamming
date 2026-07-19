@@ -67,3 +67,9 @@ Therefore:
 - 8 个名义候选按真实行为去重为 2 个等价类；Stage B 校准未产生 qualified candidate，A 代表仅作为 canonical rejection representative。
 - 修正版 held-out 使用新 seeds `9200..9249`，按 jammer×JSR 跨 seed×position 聚合；两类目标 jammer 各只有 1 个通过 JSR 条件，因此最终只能确认 `ORACLE_UPPER_BOUND_ONLY_CONFIRMED`。
 - `rl_eligible=false`、`candidate_matrix_eligible=false`、`fair_registered=false`、`rl_action_space_modified=false`；Task 037 随后独立启动。旧 Task 036-fix2 的手工远端同步记录为 `COMPLETED_REMOTE_SYNCED`，SHA `7fe8b146fe34b6667061c844bd3e1887e6fe5fa2`，原始 push failure evidence 保留。
+
+## Task 037：FrFT 可分离性与动作资格
+
+- Stage 3 Oracle upper bound failed for formal SMSP/FMNoiseSaopin; Stage 4/5 skipped by decision gate.
+- Stage 6 held-out rejection confirmation completed; final decision `REJECTED_NO_USABLE_SEPARABILITY`, no observable candidate, candidate matrix, or RL eligibility.
+- Current FrFT remains baseline-only and Identity is the rejection fallback; Task 038 was not started.
