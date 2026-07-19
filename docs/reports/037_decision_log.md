@@ -69,6 +69,7 @@
 ## Push / remote verification — 2026-07-19
 
 - Record commit: `47fa629` (`phase1-037-record-commit`).
-- Push: `PUSH_BLOCKED_BY_POLICY`; GitHub rejected the 130.34 MB `stage2/per_order_metrics.csv` file before updating the branch.
-- Remote verification: `REMOTE_SHA=7fe8b146fe34b6667061c844bd3e1887e6fe5fa2`, so remote is not synchronized with local.
-- Raw push stdout/stderr and verification are saved under `results/phase1/task037/`; no force push, merge, or fake sync was performed.
+- Initial push: `PUSH_BLOCKED_BY_POLICY`; GitHub rejected the 130.34 MB `stage2/per_order_metrics.csv` file before updating the branch.
+- Remediation: the large file was removed from the pushed history and remains available locally only; the original rejection evidence is preserved.
+- Retry push: `REMOTE_SYNCHRONIZED`; the branch was accepted at `c23061f5fa1f5b719ac11ed9cd69c1f5a82b20a8`.
+- No force push or merge was performed. Retry output and remote verification are saved under `results/phase1/task037/`.

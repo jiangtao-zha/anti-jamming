@@ -10,7 +10,7 @@
   "candidate_matrix_eligible": false,
   "rl_eligible": false,
   "task038_started": false,
-  "remote_status": "PUSH_BLOCKED_BY_POLICY",
-  "local_head_after_record": "47fa629",
-  "remote_head": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2"
+  "remote_status": "REMOTE_SYNCHRONIZED",
+  "local_head_after_record": "c23061f5fa1f5b719ac11ed9cd69c1f5a82b20a8",
+  "remote_head": "c23061f5fa1f5b719ac11ed9cd69c1f5a82b20a8"
 }

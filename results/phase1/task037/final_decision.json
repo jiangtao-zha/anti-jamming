@@ -32,8 +32,9 @@
     "correctness_failures": 0
   },
   "task038_started": false,
-  "remote_status": "PUSH_BLOCKED_BY_POLICY",
-  "local_head_at_push": "47fa629",
-  "remote_head": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2",
-  "push_block_reason": "GitHub pre-receive file-size limit rejected stage2/per_order_metrics.csv at 130.34 MB"
+  "remote_status": "REMOTE_SYNCHRONIZED",
+  "local_head_at_push": "c23061f5fa1f5b719ac11ed9cd69c1f5a82b20a8",
+  "remote_head": "c23061f5fa1f5b719ac11ed9cd69c1f5a82b20a8",
+  "push_block_reason": "Initial push rejected the 130.34 MB file; the file was then excluded from pushed history and retained locally, after which retry push succeeded.",
+  "large_file_local_only": "results/phase1/task037/stage2/per_order_metrics.csv"
 }

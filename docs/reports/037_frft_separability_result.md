@@ -48,4 +48,4 @@ Stage 6 使用 seeds `10300..10349`，正式 jammer 加六类负控，8000 场�
 
 ## 9. 远端
 
-record commit 已完成：`47fa629`。首次真实 push 被 GitHub pre-receive file-size policy 拒绝，因为 `results/phase1/task037/stage2/per_order_metrics.csv` 为 130.34 MB；该文件现已从待推送历史移除但仍保留在本地，远端重试状态待记录。
+record commit 已完成：`47fa629`。首次真实 push 被 GitHub pre-receive file-size policy 拒绝；随后将 `results/phase1/task037/stage2/per_order_metrics.csv` 从推送历史移除并保留在本地，重试已成功。远端 `algorithm_design_0711` 已同步到 `c23061f5fa1f5b719ac11ed9cd69c1f5a82b20a8`；状态为 `REMOTE_SYNCHRONIZED`。

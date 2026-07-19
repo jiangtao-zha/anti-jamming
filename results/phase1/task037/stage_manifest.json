@@ -3,7 +3,7 @@
   "branch": "algorithm_design_0711",
   "source_task": "036-fix2",
   "record_commit": "47fa629",
-  "remote": {"status": "PUSH_BLOCKED_BY_POLICY", "local_sha": "b5e7642", "remote_sha": "7fe8b146fe34b6667061c844bd3e1887e6fe5fa2", "reason": "GitHub pre-receive file-size limit rejected stage2/per_order_metrics.csv at 130.34 MB"},
+  "remote": {"status": "REMOTE_SYNCHRONIZED", "local_sha": "c23061f5fa1f5b719ac11ed9cd69c1f5a82b20a8", "remote_sha": "c23061f5fa1f5b719ac11ed9cd69c1f5a82b20a8", "large_file": "results/phase1/task037/stage2/per_order_metrics.csv", "large_file_status": "LOCAL_ONLY_NOT_TRACKED", "initial_push_block_reason": "GitHub pre-receive file-size limit rejected the 130.34 MB file; retry succeeded after history exclusion"},
   "stages": {
     "stage0": {
       "status": "COMPLETED",
